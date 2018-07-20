@@ -146,7 +146,12 @@ extension ZNKTreeView: UITableViewDataSource {
 }
 
 extension ZNKTreeView: ZNKTreeNodeControllerDelegate {
+
     var numberOfSection: Int {
         return dataSource?.numberOfSectionInTreeView(self) ?? 1
+    }
+
+    func numberOfChildrenForItem(_ item: ZNKTreeItem, in section: Int) -> Int {
+        return dataSource?.treeView(self, numberOfChildrenForItem: item, in: section) ?? 0
     }
 }

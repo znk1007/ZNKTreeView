@@ -20,10 +20,8 @@ final class ZNKTreeNode {
     }
     /// 数据模型
     let item: ZNKTreeItem
-
-//    let indexPath: IndexPath = <#value#>
-
-
+    /// 地址索引
+    let indexPath: IndexPath
     /// 节点所处层级
     var level: Int {
         if let p = parent {
@@ -35,9 +33,10 @@ final class ZNKTreeNode {
     /// 展开收缩回调
     private var expandHandler: ((_ item: ZNKTreeItem) -> Bool)?
     /// 初始化
-    init(_ item: ZNKTreeItem, parent: ZNKTreeNode?, expandHandler: ((_ item: ZNKTreeItem) -> Bool)?) {
+    init(_ item: ZNKTreeItem, parent: ZNKTreeNode?, indexPath: IndexPath, expandHandler: ((_ item: ZNKTreeItem) -> Bool)?) {
         self.parent = parent
         self.item = item
+        self.indexPath = indexPath
         self.expandHandler = expandHandler
     }
 }

@@ -14,11 +14,12 @@ protocol ZNKTreeViewDelete {
 
 protocol ZNKTreeViewDataSource {
 
-    /// 视图分段数，默认1
+
+    /// 根节点
     ///
-    /// - Parameter treeView: 树形图
-    /// - Returns: Int
-    func numberOfSectionInTreeView(_ treeView: ZNKTreeView) -> Int
+    /// - Parameter treeView: ZNKTreeView
+    /// - Returns: 根节点数组
+    func rootItemsInTreeView(_ treeView: ZNKTreeView) -> [ZNKTreeItem]
 
     /// 每段指定ZNKTreeItem子行数
     ///
@@ -32,9 +33,18 @@ protocol ZNKTreeViewDataSource {
 
 extension ZNKTreeViewDataSource {
 
-    func numberOfSectionInTreeView(_ treeView: ZNKTreeView) -> Int {
-        return 1
+    /// 默认实现
+    ///
+    /// - Parameter treeView: ZNKTreeView
+    /// - Returns: [ZNKTreeItem]
+    func rootItemsInTreeView(_ treeView: ZNKTreeView) -> [ZNKTreeItem] {
+        let item = ZNKTreeItem.init()
+        let rootTreeNode = ZNKTreeNode.init(item, parent: nil, indexPath: item.indexPath) { (_) -> Bool in
+            return true
+        }
+        return [rootTreeNode.item]
     }
+
 }
 
 
