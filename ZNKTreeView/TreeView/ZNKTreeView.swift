@@ -131,7 +131,7 @@ extension ZNKTreeView: UITableViewDelegate {
 extension ZNKTreeView: UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return dataSource?.numberOfSectionInTreeView(self) ?? 1
+        return dataSource?.rootItemsInTreeView(self).count ?? 1
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -147,8 +147,8 @@ extension ZNKTreeView: UITableViewDataSource {
 
 extension ZNKTreeView: ZNKTreeNodeControllerDelegate {
 
-    var numberOfSection: Int {
-        return dataSource?.numberOfSectionInTreeView(self) ?? 1
+    var roomItems: [ZNKTreeItem] {
+        return dataSource?.rootItemsInTreeView(self) ?? []
     }
 
     func numberOfChildrenForItem(_ item: ZNKTreeItem, in section: Int) -> Int {

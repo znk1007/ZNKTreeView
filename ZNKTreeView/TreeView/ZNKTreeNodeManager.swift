@@ -10,9 +10,8 @@ import UIKit
 
 protocol ZNKTreeNodeControllerDelegate {
 
-    
-    /// 段数
-    var numberOfSection: Int { get }
+    /// 根节点数组
+    var roomItems: [ZNKTreeItem] { get }
 
     /// 指定段的指定item子item数
     ///
@@ -33,7 +32,17 @@ final class ZNKTreeNodeController {
     var treeNodes: [ZNKTreeNode] = []
 
     /// 代理
-    var delegate: ZNKTreeNodeControllerDelegate?
+    var delegate: ZNKTreeNodeControllerDelegate? {
+        didSet {
+            if let del = delegate {
+                let items = del.roomItems
+                let nodes = items.map({ZNKTreeNode.init($0, parent: nil, indexPath: $0.indexPath, expandHandler: { (_) -> Bool in
+                    return true
+                })})
+                rootTreeNodes.append(contentsOf: nodes)
+            }
+        }
+    }
 
     deinit {
         self.delegate = nil
