@@ -10,7 +10,6 @@
 		27768C872101685C00FD9774 /* ZNKTreeNodeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27768C862101685C00FD9774 /* ZNKTreeNodeManager.swift */; };
 		27768C892101690D00FD9774 /* ZNKTreeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27768C882101690D00FD9774 /* ZNKTreeView.swift */; };
 		27768C8B21016B6000FD9774 /* ZNKTreeViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27768C8A21016B6000FD9774 /* ZNKTreeViewProtocol.swift */; };
-		27768C8D21016E8C00FD9774 /* ZNKTreeViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27768C8C21016E8C00FD9774 /* ZNKTreeViewExtension.swift */; };
 		278ABFBD2100C81900DFFE26 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278ABFBC2100C81900DFFE26 /* AppDelegate.swift */; };
 		278ABFBF2100C81900DFFE26 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278ABFBE2100C81900DFFE26 /* ViewController.swift */; };
 		278ABFC22100C81900DFFE26 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 278ABFC02100C81900DFFE26 /* Main.storyboard */; };
@@ -25,7 +24,6 @@
 		27768C862101685C00FD9774 /* ZNKTreeNodeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeNodeManager.swift; sourceTree = "<group>"; };
 		27768C882101690D00FD9774 /* ZNKTreeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeView.swift; sourceTree = "<group>"; };
 		27768C8A21016B6000FD9774 /* ZNKTreeViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeViewProtocol.swift; sourceTree = "<group>"; };
-		27768C8C21016E8C00FD9774 /* ZNKTreeViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeViewExtension.swift; sourceTree = "<group>"; };
 		278ABFB92100C81900DFFE26 /* ZNKTreeView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZNKTreeView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		278ABFBC2100C81900DFFE26 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		278ABFBE2100C81900DFFE26 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -87,7 +85,6 @@
 				27768C862101685C00FD9774 /* ZNKTreeNodeManager.swift */,
 				278ABFD02100C82800DFFE26 /* ZNKBatchChanges.swift */,
 				27768C882101690D00FD9774 /* ZNKTreeView.swift */,
-				27768C8C21016E8C00FD9774 /* ZNKTreeViewExtension.swift */,
 				27768C8A21016B6000FD9774 /* ZNKTreeViewProtocol.swift */,
 			);
 			path = TreeView;
@@ -165,7 +162,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				278ABFD12100C82800DFFE26 /* ZNKTreeItem.swift in Sources */,
-				27768C8D21016E8C00FD9774 /* ZNKTreeViewExtension.swift in Sources */,
 				278ABFD52100E02B00DFFE26 /* ZNKTreeNode.swift in Sources */,
 				278ABFBF2100C81900DFFE26 /* ViewController.swift in Sources */,
 				27768C872101685C00FD9774 /* ZNKTreeNodeManager.swift in Sources */,

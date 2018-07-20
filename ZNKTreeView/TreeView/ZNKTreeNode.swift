@@ -11,8 +11,6 @@ import UIKit
 final class ZNKTreeNode {
     /// 父节点
     var parent: ZNKTreeNode?
-    /// 子节点
-    var children: [ZNKTreeNode] = []
     /// 是否展开
     var expanded: Bool {
         get {
@@ -22,6 +20,9 @@ final class ZNKTreeNode {
     }
     /// 数据模型
     let item: ZNKTreeItem
+
+//    let indexPath: IndexPath = <#value#>
+
 
     /// 节点所处层级
     var level: Int {
@@ -34,10 +35,9 @@ final class ZNKTreeNode {
     /// 展开收缩回调
     private var expandHandler: ((_ item: ZNKTreeItem) -> Bool)?
     /// 初始化
-    init(_ item: ZNKTreeItem, parent: ZNKTreeNode?, children: [ZNKTreeNode] = [], expandHandler: ((_ item: ZNKTreeItem) -> Bool)?) {
+    init(_ item: ZNKTreeItem, parent: ZNKTreeNode?, expandHandler: ((_ item: ZNKTreeItem) -> Bool)?) {
         self.parent = parent
         self.item = item
-        self.children = children
         self.expandHandler = expandHandler
     }
 }

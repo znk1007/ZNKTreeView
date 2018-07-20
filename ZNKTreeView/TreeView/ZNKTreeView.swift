@@ -78,7 +78,7 @@ class ZNKTreeView: UIView {
     private var tableStyle: UITableViewStyle = .plain
 
     /// 节点管理
-    private var manager: ZNKTreeNodeManager = .init()
+    private var manager: ZNKTreeNodeController = .init()
 
     /// 批量处理对象
     private var batchChanges: ZNKBatchChanges = .init()
@@ -94,6 +94,7 @@ class ZNKTreeView: UIView {
     }
 
     required init?(coder aDecoder: NSCoder) {
+        self.style = .plain
         super.init(coder: aDecoder)
         self.commonInit()
     }
@@ -101,6 +102,7 @@ class ZNKTreeView: UIView {
     /// 初始化
     private func commonInit() {
         initSubview()
+        initConfiguration()
     }
 
     /// 初始化视图
@@ -117,6 +119,34 @@ class ZNKTreeView: UIView {
 
     /// 初始化配置
     private func initConfiguration() {
+        manager.delegate = self
+    }
+}
 
+
+extension ZNKTreeView: UITableViewDelegate {
+
+}
+
+extension ZNKTreeView: UITableViewDataSource {
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return dataSource?.numberOfSectionInTreeView(self) ?? 1
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 0
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        return .init()
+    }
+
+
+}
+
+extension ZNKTreeView: ZNKTreeNodeControllerDelegate {
+    var numberOfSection: Int {
+        return dataSource?.numberOfSectionInTreeView(self) ?? 1
     }
 }

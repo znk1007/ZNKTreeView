@@ -8,6 +8,24 @@
 
 import UIKit
 
-final class ZNKTreeNodeManager {
+protocol ZNKTreeNodeControllerDelegate {
+    var numberOfSection: Int { get }
 
+}
+
+
+final class ZNKTreeNodeController {
+    /// 节点数组
+    var treeNodes: [ZNKTreeNode] = []
+
+    /// 代理
+    var delegate: ZNKTreeNodeControllerDelegate?
+
+    deinit {
+        self.delegate = nil
+    }
+
+    init() {
+        treeNodes = []
+    }
 }

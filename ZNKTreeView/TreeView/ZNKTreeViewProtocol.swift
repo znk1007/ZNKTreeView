@@ -20,7 +20,14 @@ protocol ZNKTreeViewDataSource {
     /// - Returns: Int
     func numberOfSectionInTreeView(_ treeView: ZNKTreeView) -> Int
 
-    
+    /// 每段指定ZNKTreeItem子行数
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    ///   - section: 指定段
+    /// - Returns: 行数
+    func treeView(_ treeView: ZNKTreeView, numberOfChildrenForItem item: ZNKTreeItem, in section: Int) -> Int
 }
 
 extension ZNKTreeViewDataSource {
