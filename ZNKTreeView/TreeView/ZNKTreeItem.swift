@@ -17,6 +17,7 @@ class ZNKTreeItem {
     let item: Any
     /// 索引
     let indexPath: IndexPath
+    /// 初始化
     init(identifier: String, indexPath: IndexPath, item: Any) {
         self.identifier = identifier
         self.indexPath = indexPath
