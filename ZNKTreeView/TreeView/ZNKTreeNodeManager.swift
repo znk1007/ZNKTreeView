@@ -9,8 +9,17 @@
 import UIKit
 
 protocol ZNKTreeNodeControllerDelegate {
+
+    /// 段数
     var numberOfSection: Int { get }
 
+    /// 指定段的指定item子item数
+    ///
+    /// - Parameters:
+    ///   - item: <#item description#>
+    ///   - section: <#section description#>
+    /// - Returns: <#return value description#>
+    func numberOfChildrenForItem(_ item: ZNKTreeItem, in section: Int) -> Int
 }
 
 
