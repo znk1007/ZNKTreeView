@@ -10,8 +10,14 @@ import UIKit
 
 protocol ZNKTreeNodeControllerDelegate {
 
+    /// 根节点数
+    ///
+    /// - Returns: 根节点数
+    func numberOfRootItem() -> Int
     /// 根节点数组
-    var roomItems: [ZNKTreeItem] { get }
+    ///
+    /// - Returns: 根节点数组
+    func rootNotes() -> [ZNKTreeNode]
 
     /// 指定段的指定item子item数
     ///
@@ -19,7 +25,17 @@ protocol ZNKTreeNodeControllerDelegate {
     ///   - item: 指定item
     ///   - section: 指定段
     /// - Returns: Int
-    func numberOfChildrenForItem(_ item: ZNKTreeItem, in section: Int) -> Int
+    func numberOfChildrenForNote(_ item: ZNKTreeNode?) -> Int
+}
+
+extension ZNKTreeNodeControllerDelegate {
+
+    /// 默认实现
+    ///
+    /// - Returns: 1
+    func numberOfRootItem() -> Int {
+        return 1
+    }
 }
 
 
@@ -35,11 +51,7 @@ final class ZNKTreeNodeController {
     var delegate: ZNKTreeNodeControllerDelegate? {
         didSet {
             if let del = delegate {
-                let items = del.roomItems
-                let nodes = items.map({ZNKTreeNode.init($0, parent: nil, indexPath: $0.indexPath, expandHandler: { (_) -> Bool in
-                    return true
-                })})
-                rootTreeNodes.append(contentsOf: nodes)
+                
             }
         }
     }

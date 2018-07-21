@@ -17,7 +17,6 @@ class ZNKTreeItem {
     let item: Any
     /// 索引
     let indexPath: IndexPath
-    /// 初始化
 
     /// 初始化
     ///

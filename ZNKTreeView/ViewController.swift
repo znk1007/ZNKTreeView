@@ -34,7 +34,12 @@ extension ViewController: ZNKTreeViewDelete {
 }
 
 extension ViewController: ZNKTreeViewDataSource {
-    func treeView(_ treeView: ZNKTreeView, numberOfChildrenForItem item: ZNKTreeItem, in section: Int) -> Int {
+
+    func numberOfRootItemInTreeView(_ treeView: ZNKTreeView) -> Int {
+        return 1
+    }
+
+    func treeView(_ treeView: ZNKTreeView, numberOfChildrenForItem item: ZNKTreeItem, atRootItemIndex index: Int) -> Int {
         return 0
     }
 

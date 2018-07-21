@@ -131,7 +131,7 @@ extension ZNKTreeView: UITableViewDelegate {
 extension ZNKTreeView: UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return dataSource?.rootItemsInTreeView(self).count ?? 1
+        return dataSource?.numberOfRootItemInTreeView(self) ?? 1
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -147,11 +147,31 @@ extension ZNKTreeView: UITableViewDataSource {
 
 extension ZNKTreeView: ZNKTreeNodeControllerDelegate {
 
-    var roomItems: [ZNKTreeItem] {
-        return dataSource?.rootItemsInTreeView(self) ?? []
+//    func rootNotes() -> [ZNKTreeNode] {
+//        let items = dataSource?.rootItemsInTreeView(self) ?? []
+//        let nodes = items.map({ZNKTreeNode.init($0, parent: nil, indexPath: $0.indexPath, expandHandler: { (_) -> Bool in
+//            return true
+//        })})
+//        return nodes
+//    }
+
+    func numberOfChildrenForNote(_ item: ZNKTreeNode?) -> Int {
+        return 0
     }
 
-    func numberOfChildrenForItem(_ item: ZNKTreeItem, in section: Int) -> Int {
-        return dataSource?.treeView(self, numberOfChildrenForItem: item, in: section) ?? 0
-    }
+
+//    func rootNotes() -> [ZNKTreeNode] {
+//        let items = dataSource?.rootItemsInTreeView(self) ?? []
+//        let nodes = items.map({ZNKTreeNode.init($0, parent: nil, indexPath: $0.indexPath, expandHandler: { (_) -> Bool in
+//            return true
+//        })})
+//        return nodes
+//    }
+//
+//    func numberOfChildrenForItem(_ item: ZNKTreeItem?) -> Int {
+//        return dataSource?.treeView(self, numberOfChildrenForItem: item) ?? 0
+//    }
+
+
+
 }
