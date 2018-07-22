@@ -114,15 +114,25 @@ final class ZNKTreeNodeController {
     ///   - node: 节点
     ///   - rootIndex: 跟节点下标
     private func children(of node: ZNKTreeNode?, at rootIndex: Int) -> [ZNKTreeNode] {
+        
+        var newNode = node
+        let rootNodes = rootTreeNodes()
+        if newNode == nil {
+            if rootNodes.count - 1 < rootIndex {
+                return []
+            }
+            newNode = rootNodes[rootIndex]
+        }
+
         let childNumber = self.numberOfChildNode(for: node, rootIndex: rootIndex)
         for i in 0 ..< childNumber {
             pthread_mutex_lock(&childMutex)
-            if let childNode = delegate?.treeNode(at: i, of: node, atRootIndex: rootIndex) {
-                node?.append(childNode)
+            if let childNode = delegate?.treeNode(at: i, of: newNode, atRootIndex: rootIndex) {
+                newNode?.append(childNode)
             }
             pthread_mutex_unlock(&childMutex)
         }
-        return node?.children ?? []
+        return newNode?.children ?? []
     }
 
     /// 添加结点
