@@ -32,8 +32,20 @@ final class ZNKTreeNode {
         return 0
     }
 
-    /// 初始化
-
+    /// 可见的子节点数
+    var numberOfVisibleChildren: Int {
+        get {
+            if self.expanded {
+                var visibelNumber = self.children.count
+                for child in self.children {
+                    visibelNumber += child.numberOfVisibleChildren
+                }
+                return visibelNumber
+            } else {
+                return 0
+            }
+        }
+    }
     /// 初始化
     ///
     /// - Parameters:
@@ -55,4 +67,5 @@ final class ZNKTreeNode {
         children = children.filter({$0.item.identifier != child.item.identifier})
         children.append(child)
     }
+
 }
