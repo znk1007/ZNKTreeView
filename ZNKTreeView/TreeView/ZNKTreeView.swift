@@ -155,7 +155,7 @@ extension ZNKTreeView: ZNKTreeNodeControllerDelegate {
         return dataSource?.treeView(self, numberOfChildrenForItem: node?.item, atRootItemIndex: index) ?? 0
     }
 
-    func treeNode(at childIndex: Int, of node: ZNKTreeNode?, atRootIndex index: Int, expandHandler: ((ZNKTreeNode) -> Bool)?) -> ZNKTreeNode? {
+    func treeNode(at childIndex: Int, of node: ZNKTreeNode?, atRootIndex index: Int) -> ZNKTreeNode? {
         if let item = dataSource?.treeView(self, childIndex: childIndex, ofItem: node?.item, atRootIndex: index) {
             return ZNKTreeNode.init(item: item, parent: node, indexPath: IndexPath.init(row: childIndex, section: index))
         } else {

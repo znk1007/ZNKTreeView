@@ -31,7 +31,7 @@ protocol ZNKTreeNodeControllerDelegate {
     ///   - index: 根结点下标
     ///   - expandHandler: 展开回调
     /// - Returns: 节点
-    func treeNode(at childIndex: Int, of node: ZNKTreeNode?, atRootIndex index: Int, expandHandler: ((ZNKTreeNode) -> Bool)?) -> ZNKTreeNode?
+    func treeNode(at childIndex: Int, of node: ZNKTreeNode?, atRootIndex index: Int) -> ZNKTreeNode?
 }
 
 extension ZNKTreeNodeControllerDelegate {
@@ -47,20 +47,32 @@ extension ZNKTreeNodeControllerDelegate {
 
 
 final class ZNKTreeNodeController {
-    /// 根结点数组
-    private var rootNodes: [ZNKTreeNode] = []
-    /// 节点数组
-    private var nodes: [ZNKTreeNode] = []
     /// 代理
     var delegate: ZNKTreeNodeControllerDelegate?
+    /// 根结点互斥锁
+    private var rootMutex: pthread_mutex_t
+    /// 子节点互斥锁
+    private var childMutex: pthread_mutex_t
+    /// 结点数组
+    private var treeNodes: [ZNKTreeNode] = []
 
     deinit {
         self.delegate = nil
+        pthread_mutex_destroy(&rootMutex)
+        pthread_mutex_destroy(&childMutex)
     }
 
     init() {
-        rootNodes = []
-        nodes = []
+        rootMutex = pthread_mutex_t.init()
+        childMutex = pthread_mutex_t.init()
+    }
+
+    /// 根据item获取节点
+    ///
+    /// - Parameter item: item
+    /// - Returns: 节点
+    func treeNodeForItem(_ item: ZNKTreeItem) -> ZNKTreeNode? {
+        return treeNodes.filter({$0.item.identifier == item.identifier}).first
     }
 
     /// 根结点数
@@ -73,30 +85,18 @@ final class ZNKTreeNodeController {
     /// 获取根结点
     ///
     /// - Returns: 根结点数组
-    private func rootTreeNodes() {
-        rootNodes = []
+    private func rootTreeNodes() -> [ZNKTreeNode] {
         for i in 0 ..< numberOfRoot() {
-            if let node = delegate?.treeNode(at: -1, of: nil, atRootIndex: i, expandHandler: { (_) -> Bool in
-                return true
-            }) {
-                rootNodes.append(node)
+            pthread_mutex_lock(&rootMutex)
+            if let node = delegate?.treeNode(at: -1, of: nil, atRootIndex: i) {
+                append(node)
             }
+            pthread_mutex_unlock(&rootMutex)
         }
+        return treeNodes
     }
 
 
-
-    private func treeNodes() {
-        for i in 0 ..< numberOfRoot() {
-            let rootNode = rootNodes[i]
-            let childNumber = self.numberOfChildNode(for: rootNode, index: i)
-            for j in 0 ..< childNumber {
-                let node = delegate?.treeNode(at: j, of: rootNode, atRootIndex: i, expandHandler: { (_) -> Bool in
-                    return true
-                })
-            }
-        }
-    }
 
     /// 某个节点子节点数
     ///
@@ -104,13 +104,32 @@ final class ZNKTreeNodeController {
     ///   - node: 节点
     ///   - index: 节点下标
     /// - Returns: 子节点数
-    private func numberOfChildNode(for node: ZNKTreeNode?, index: Int) -> Int {
-        return delegate?.numberOfChildreForNode(node, atRootIndex: index) ?? 0
+    private func numberOfChildNode(for node: ZNKTreeNode?, rootIndex: Int) -> Int {
+        return delegate?.numberOfChildreForNode(node, atRootIndex: rootIndex) ?? 0
     }
 
+    /// 某节点的子节点数组
+    ///
+    /// - Parameters:
+    ///   - node: 节点
+    ///   - rootIndex: 跟节点下标
+    private func children(of node: ZNKTreeNode, at rootIndex: Int) -> [ZNKTreeNode] {
+        let childNumber = self.numberOfChildNode(for: node, rootIndex: rootIndex)
+        for i in 0 ..< childNumber {
+            pthread_mutex_lock(&childMutex)
+            if let childNode = delegate?.treeNode(at: i, of: node, atRootIndex: rootIndex) {
+                node.append(childNode)
+            }
+            pthread_mutex_unlock(&childMutex)
+        }
+        return node.children
+    }
 
-    private func childNode(at childIndex: Int, of node: ZNKTreeNode?, at rootIndex: Int) {
-        
+    /// 添加结点
+    ///
+    /// - Parameter root: 根结点
+    private func append(_ child: ZNKTreeNode) {
+        treeNodes = treeNodes.filter({$0.item.identifier != child.item.identifier})
     }
 
 }

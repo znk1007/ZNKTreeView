@@ -11,6 +11,8 @@ import UIKit
 final class ZNKTreeNode {
     /// 父节点
     var parent: ZNKTreeNode?
+    /// 子节点数组
+    var children: [ZNKTreeNode]
     /// 是否展开
     var expanded: Bool {
         get {
@@ -31,9 +33,26 @@ final class ZNKTreeNode {
     }
 
     /// 初始化
-    init(item: ZNKTreeItem, parent: ZNKTreeNode?, indexPath: IndexPath) {
+
+    /// 初始化
+    ///
+    /// - Parameters:
+    ///   - item: 数据源
+    ///   - parent: 父节点
+    ///   - children: 子节点数组
+    ///   - indexPath: 地址索引
+    init(item: ZNKTreeItem, parent: ZNKTreeNode?, children: [ZNKTreeNode] = [], indexPath: IndexPath) {
         self.parent = parent
         self.item = item
         self.indexPath = indexPath
+        self.children = children
+    }
+
+    /// 添加子节点
+    ///
+    /// - Parameter child: 子节点
+    func append(_ child: ZNKTreeNode) {
+        children = children.filter({$0.item.identifier != child.item.identifier})
+        children.append(child)
     }
 }
