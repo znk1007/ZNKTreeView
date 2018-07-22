@@ -10,6 +10,8 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    private var dataSource: [TreeObject] = []
+
     private lazy var treeView: ZNKTreeView = {
         $0.delegate = self
         $0.dataSource = self
@@ -36,11 +38,24 @@ extension ViewController: ZNKTreeViewDelete {
 extension ViewController: ZNKTreeViewDataSource {
 
     func numberOfRootItemInTreeView(_ treeView: ZNKTreeView) -> Int {
-        return 1
+        return dataSource.count
     }
 
     func treeView(_ treeView: ZNKTreeView, numberOfChildrenForItem item: ZNKTreeItem?, atRootItemIndex index: Int) -> Int {
-        return 0
+        if let item = item as? TreeObject {
+            return item.children.count
+        } else {
+            return dataSource[index].children.count
+        }
     }
+
+    func treeView(_ treeView: ZNKTreeView, childIndex child: Int, ofItem item: ZNKTreeItem?, atRootIndex root: Int) -> ZNKTreeItem? {
+        if let item = item as? TreeObject {
+            return item.children[child]
+        } else {
+            return dataSource[root]
+        }
+    }
+
 }
 

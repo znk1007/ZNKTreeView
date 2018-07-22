@@ -29,7 +29,15 @@ protocol ZNKTreeViewDataSource {
     /// - Returns: 行数
     func treeView(_ treeView: ZNKTreeView, numberOfChildrenForItem item: ZNKTreeItem?, atRootItemIndex index: Int) -> Int
 
-//    func treeView(_ treeView: ZNKTreeView, childIndexPath indexPath: IndexPath, ofItem item: ZNKTreeItem?) -> ZNKTreeItem
+    /// 树形图每段每行数据源元素
+    ///
+    /// - Parameters:
+    ///   - treeView: 树形图
+    ///   - child: 子节点下标
+    ///   - item: 数据源
+    ///   - root: 根结点下标
+    /// - Returns: 数据源
+    func treeView(_ treeView: ZNKTreeView, childIndex child: Int, ofItem item: ZNKTreeItem?, atRootIndex root: Int) -> ZNKTreeItem?
 }
 
 extension ZNKTreeViewDataSource {

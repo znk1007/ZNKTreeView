@@ -14,14 +14,14 @@ final class ZNKTreeNode {
     /// 是否展开
     var expanded: Bool {
         get {
-            return self.expandHandler?(item) ?? false
+            return item.expand
         }
-        set { }
+        set { item.expand = newValue }
     }
-    /// 数据模型
-    let item: ZNKTreeItem
     /// 地址索引
     let indexPath: IndexPath
+    /// 数据源
+    let item: ZNKTreeItem
     /// 节点所处层级
     var level: Int {
         if let p = parent {
@@ -30,13 +30,10 @@ final class ZNKTreeNode {
         return 0
     }
 
-    /// 展开收缩回调
-    private var expandHandler: ((_ item: ZNKTreeItem) -> Bool)?
     /// 初始化
-    init(_ item: ZNKTreeItem, parent: ZNKTreeNode?, indexPath: IndexPath, expandHandler: ((_ item: ZNKTreeItem) -> Bool)?) {
+    init(item: ZNKTreeItem, parent: ZNKTreeNode?, indexPath: IndexPath) {
         self.parent = parent
         self.item = item
         self.indexPath = indexPath
-        self.expandHandler = expandHandler
     }
 }
