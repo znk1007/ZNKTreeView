@@ -14,10 +14,6 @@ protocol ZNKTreeNodeControllerDelegate {
     ///
     /// - Returns: 根节点数
     func numberOfRootItem() -> Int
-    /// 根节点数组
-    ///
-    /// - Returns: 根节点数组
-    func rootNotes() -> [ZNKTreeNode]
 
     /// 指定段的指定item子item数
     ///
@@ -25,7 +21,7 @@ protocol ZNKTreeNodeControllerDelegate {
     ///   - item: 指定item
     ///   - section: 指定段
     /// - Returns: Int
-    func numberOfChildrenForNote(_ item: ZNKTreeNode?) -> Int
+    func numberOfChildreForNode(_ node: ZNKTreeNode?, atRootIndex index: Int) -> Int
 }
 
 extension ZNKTreeNodeControllerDelegate {
@@ -36,6 +32,7 @@ extension ZNKTreeNodeControllerDelegate {
     func numberOfRootItem() -> Int {
         return 1
     }
+
 }
 
 
@@ -48,13 +45,7 @@ final class ZNKTreeNodeController {
     var treeNodes: [ZNKTreeNode] = []
 
     /// 代理
-    var delegate: ZNKTreeNodeControllerDelegate? {
-        didSet {
-            if let del = delegate {
-                
-            }
-        }
-    }
+    var delegate: ZNKTreeNodeControllerDelegate?
 
     deinit {
         self.delegate = nil

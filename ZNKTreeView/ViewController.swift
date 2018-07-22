@@ -39,12 +39,8 @@ extension ViewController: ZNKTreeViewDataSource {
         return 1
     }
 
-    func treeView(_ treeView: ZNKTreeView, numberOfChildrenForItem item: ZNKTreeItem, atRootItemIndex index: Int) -> Int {
+    func treeView(_ treeView: ZNKTreeView, numberOfChildrenForItem item: ZNKTreeItem?, atRootItemIndex index: Int) -> Int {
         return 0
-    }
-
-    func numberOfSectionInTreeView(_ treeView: ZNKTreeView) -> Int {
-        return 5
     }
 }
 

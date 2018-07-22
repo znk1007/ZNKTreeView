@@ -147,31 +147,12 @@ extension ZNKTreeView: UITableViewDataSource {
 
 extension ZNKTreeView: ZNKTreeNodeControllerDelegate {
 
-//    func rootNotes() -> [ZNKTreeNode] {
-//        let items = dataSource?.rootItemsInTreeView(self) ?? []
-//        let nodes = items.map({ZNKTreeNode.init($0, parent: nil, indexPath: $0.indexPath, expandHandler: { (_) -> Bool in
-//            return true
-//        })})
-//        return nodes
-//    }
-
-    func numberOfChildrenForNote(_ item: ZNKTreeNode?) -> Int {
-        return 0
+    func numberOfRootItem() -> Int {
+        return dataSource?.numberOfRootItemInTreeView(self) ?? 0
     }
 
-
-//    func rootNotes() -> [ZNKTreeNode] {
-//        let items = dataSource?.rootItemsInTreeView(self) ?? []
-//        let nodes = items.map({ZNKTreeNode.init($0, parent: nil, indexPath: $0.indexPath, expandHandler: { (_) -> Bool in
-//            return true
-//        })})
-//        return nodes
-//    }
-//
-//    func numberOfChildrenForItem(_ item: ZNKTreeItem?) -> Int {
-//        return dataSource?.treeView(self, numberOfChildrenForItem: item) ?? 0
-//    }
-
-
+    func numberOfChildreForNode(_ node: ZNKTreeNode?, atRootIndex index: Int) -> Int {
+        return dataSource?.treeView(self, numberOfChildrenForItem: node?.item, atRootItemIndex: index) ?? 0
+    }
 
 }

@@ -27,7 +27,7 @@ protocol ZNKTreeViewDataSource {
     ///   - item: ZNKTreeItem
     ///   - index: 指定段下标
     /// - Returns: 行数
-    func treeView(_ treeView: ZNKTreeView, numberOfChildrenForItem item: ZNKTreeItem, atRootItemIndex index: Int) -> Int
+    func treeView(_ treeView: ZNKTreeView, numberOfChildrenForItem item: ZNKTreeItem?, atRootItemIndex index: Int) -> Int
 
 //    func treeView(_ treeView: ZNKTreeView, childIndexPath indexPath: IndexPath, ofItem item: ZNKTreeItem?) -> ZNKTreeItem
 }
