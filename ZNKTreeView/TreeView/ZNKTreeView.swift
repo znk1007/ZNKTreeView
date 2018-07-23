@@ -122,6 +122,72 @@ class ZNKTreeView: UIView {
         manager.delegate = self
     }
 }
+//MARK: ************ public methods ******************
+extension ZNKTreeView {
+
+    /// 注册UITableViewCell类
+    ///
+    /// - Parameters:
+    ///   - cellClass: UITableViewCell类
+    ///   - identifier: 唯一标识
+    func register(_ cellClass: AnyClass?, forCellReuseIdentifier identifier: String)  {
+        self.treeTable.register(cellClass, forCellReuseIdentifier: identifier)
+    }
+
+    /// 注册UITableViewCell的UINib
+    ///
+    /// - Parameters:
+    ///   - nib: UINib
+    ///   - identifier: 唯一标识
+    func register(_ nib: UINib?, forCellReuseIdentifier identifier: String) {
+        self.treeTable.register(nib, forCellReuseIdentifier: identifier)
+
+    }
+
+    /// 注册UITableView头部类
+    ///
+    /// - Parameters:
+    ///   - aClass: 头部视图类
+    ///   - identifier: 唯一标识
+    func register(_ aClass: AnyClass?, forHeaderFooterViewReuseIdentifier identifier: String) {
+        self.treeTable.register(aClass, forHeaderFooterViewReuseIdentifier: identifier)
+    }
+
+    /// 注册UITableView头部UINib
+    ///
+    /// - Parameters:
+    ///   - nib: UINib
+    ///   - identifier: 唯一标识
+    func register(_ nib: UINib?, forHeaderFooterViewReuseIdentifier identifier: String) {
+        self.treeTable.register(nib, forHeaderFooterViewReuseIdentifier: identifier)
+    }
+
+    /// 复用UITableViewCell
+    ///
+    /// - Parameter identifier: 唯一标识
+    /// - Returns: UITableViewCell 可能为nil
+    func dequeueReusableCell(_ identifier: String) -> UITableViewCell? {
+        return self.treeTable.dequeueReusableCell(withIdentifier: identifier)
+    }
+
+    /// 复用UITableViewCell
+    ///
+    /// - Parameters:
+    ///   - identifier: 唯一标识
+    ///   - indexPath: 地址索引
+    /// - Returns: UITableViewCell
+    func dequeueReusableCell(_ identifier: String, for indexPath: IndexPath) -> UITableViewCell {
+        return self.treeTable.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
+    }
+
+    /// 复用段头段尾
+    ///
+    /// - Parameter identifier: 唯一标识
+    /// - Returns: UITableViewHeaderFooterView?
+    func dequeueReusableHeaderFooterView(_ identifier: String) -> UITableViewHeaderFooterView? {
+        return self.treeTable.dequeueReusableHeaderFooterView(withIdentifier: identifier)
+    }
+}
 
 
 extension ZNKTreeView: UITableViewDelegate {
@@ -151,7 +217,7 @@ extension ZNKTreeView: ZNKTreeNodeControllerDelegate {
         return dataSource?.numberOfRootItemInTreeView(self) ?? 0
     }
 
-    func numberOfChildreForNode(_ node: ZNKTreeNode?, atRootIndex index: Int) -> Int {
+    func numberOfChildrenForNode(_ node: ZNKTreeNode?, atRootIndex index: Int) -> Int {
         return dataSource?.treeView(self, numberOfChildrenForItem: node?.item, atRootItemIndex: index) ?? 0
     }
 

@@ -21,7 +21,7 @@ protocol ZNKTreeNodeControllerDelegate {
     ///   - item: 指定item
     ///   - section: 指定段
     /// - Returns: Int
-    func numberOfChildreForNode(_ node: ZNKTreeNode?, atRootIndex index: Int) -> Int
+    func numberOfChildrenForNode(_ node: ZNKTreeNode?, atRootIndex index: Int) -> Int
 
     /// 树形图每个节点的数据源
     ///
@@ -75,6 +75,13 @@ final class ZNKTreeNodeController {
         return treeNodes.filter({$0.item.identifier == item.identifier}).first
     }
 
+    func visibleNodes() {
+        for root in rootTreeNodes() {
+            print("visible children number \(root.numberOfVisibleChildren)")
+            print("sep ==================")
+        }
+    }
+
     /// 根结点数
     ///
     /// - Returns: 根结点数
@@ -105,7 +112,7 @@ final class ZNKTreeNodeController {
     ///   - index: 节点下标
     /// - Returns: 子节点数
     private func numberOfChildNode(for node: ZNKTreeNode?, rootIndex: Int) -> Int {
-        return delegate?.numberOfChildreForNode(node, atRootIndex: rootIndex) ?? 0
+        return delegate?.numberOfChildrenForNode(node, atRootIndex: rootIndex) ?? 0
     }
 
     /// 某节点的子节点数组

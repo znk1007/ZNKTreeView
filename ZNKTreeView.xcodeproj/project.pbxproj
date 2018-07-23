@@ -12,6 +12,7 @@
 		27768C872101685C00FD9774 /* ZNKTreeNodeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27768C862101685C00FD9774 /* ZNKTreeNodeManager.swift */; };
 		27768C892101690D00FD9774 /* ZNKTreeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27768C882101690D00FD9774 /* ZNKTreeView.swift */; };
 		27768C8B21016B6000FD9774 /* ZNKTreeViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27768C8A21016B6000FD9774 /* ZNKTreeViewProtocol.swift */; };
+		2779225321057548002E013F /* TreeViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2779225221057548002E013F /* TreeViewCell.swift */; };
 		278ABFBD2100C81900DFFE26 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278ABFBC2100C81900DFFE26 /* AppDelegate.swift */; };
 		278ABFBF2100C81900DFFE26 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278ABFBE2100C81900DFFE26 /* ViewController.swift */; };
 		278ABFC22100C81900DFFE26 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 278ABFC02100C81900DFFE26 /* Main.storyboard */; };
@@ -27,6 +28,7 @@
 		27768C862101685C00FD9774 /* ZNKTreeNodeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeNodeManager.swift; sourceTree = "<group>"; };
 		27768C882101690D00FD9774 /* ZNKTreeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeView.swift; sourceTree = "<group>"; };
 		27768C8A21016B6000FD9774 /* ZNKTreeViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeViewProtocol.swift; sourceTree = "<group>"; };
+		2779225221057548002E013F /* TreeViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeViewCell.swift; sourceTree = "<group>"; };
 		278ABFB92100C81900DFFE26 /* ZNKTreeView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZNKTreeView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		278ABFBC2100C81900DFFE26 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		278ABFBE2100C81900DFFE26 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -72,6 +74,7 @@
 				278ABFBC2100C81900DFFE26 /* AppDelegate.swift */,
 				278ABFBE2100C81900DFFE26 /* ViewController.swift */,
 				270133F32104181A00A4C846 /* TreeItem.swift */,
+				2779225221057548002E013F /* TreeViewCell.swift */,
 				278ABFC02100C81900DFFE26 /* Main.storyboard */,
 				278ABFC32100C81A00DFFE26 /* Assets.xcassets */,
 				278ABFC52100C81A00DFFE26 /* LaunchScreen.storyboard */,
@@ -170,6 +173,7 @@
 				278ABFBF2100C81900DFFE26 /* ViewController.swift in Sources */,
 				27768C872101685C00FD9774 /* ZNKTreeNodeManager.swift in Sources */,
 				27768C8B21016B6000FD9774 /* ZNKTreeViewProtocol.swift in Sources */,
+				2779225321057548002E013F /* TreeViewCell.swift in Sources */,
 				278ABFD22100C82800DFFE26 /* ZNKBatchChanges.swift in Sources */,
 				27768C892101690D00FD9774 /* ZNKTreeView.swift in Sources */,
 				278ABFBD2100C81900DFFE26 /* AppDelegate.swift in Sources */,

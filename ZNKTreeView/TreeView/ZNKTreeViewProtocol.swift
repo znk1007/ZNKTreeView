@@ -38,6 +38,9 @@ protocol ZNKTreeViewDataSource {
     ///   - root: 根结点下标
     /// - Returns: 数据源
     func treeView(_ treeView: ZNKTreeView, childIndex child: Int, ofItem item: ZNKTreeItem?, atRootIndex root: Int) -> ZNKTreeItem?
+
+    func treeView(_ treeView: ZNKTreeView, cellForItem item: ZNKTreeItem?) -> UITableViewCell
+
 }
 
 extension ZNKTreeViewDataSource {
