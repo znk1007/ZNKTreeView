@@ -124,12 +124,12 @@ final class ZNKTreeNodeController {
     /// - Parameters:
     ///   - node: 节点
     ///   - rootIndex: 跟节点下标
-    private func children(of node: ZNKTreeNode?, at rootIndex: Int) -> [ZNKTreeNode] {
+    private func treeNode(of node: ZNKTreeNode?, at rootIndex: Int) {
         var newNode = node
         let rootNodes = rootTreeNodes()
         if newNode == nil {
             if rootNodes.count - 1 < rootIndex {
-                return []
+                return
             }
             newNode = rootNodes[rootIndex]
         }
@@ -142,7 +142,10 @@ final class ZNKTreeNodeController {
             }
             pthread_mutex_unlock(&childMutex)
         }
-        return newNode?.children ?? []
+        if childNumber > 0 {
+            let childs = treeNode(of: newNode, at: rootIndex)
+        }
+
     }
 
     /// 添加结点
