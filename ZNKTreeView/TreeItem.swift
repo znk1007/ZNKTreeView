@@ -12,7 +12,7 @@ class TreeObject: ZNKTreeItem {
     let name: String
     var children: [TreeObject]
 
-    init(identifier: String, name: String, expand: Bool = false, children: [TreeObject] = []) {
+    init(identifier: String, name: String, expand: Bool = true, children: [TreeObject] = []) {
         self.name = name
         self.children = children
         super.init(identifier: identifier, expand: expand)

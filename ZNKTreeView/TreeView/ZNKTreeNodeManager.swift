@@ -93,12 +93,16 @@ final class ZNKTreeNodeController {
     ///
     /// - Returns: 根结点数组
     private func rootTreeNodes() -> [ZNKTreeNode] {
-        for i in 0 ..< numberOfRoot() {
-            pthread_mutex_lock(&rootMutex)
-            if let node = delegate?.treeNode(at: -1, of: nil, atRootIndex: i) {
-                append(node)
+        let rootNumber = numberOfRoot()
+        if treeNodes.count == 0 || rootNumber != treeNodes.count{
+            for i in 0 ..< numberOfRoot() {
+                pthread_mutex_lock(&rootMutex)
+                if let node = delegate?.treeNode(at: -1, of: nil, atRootIndex: i) {
+                    append(node)
+                }
+                pthread_mutex_unlock(&rootMutex)
             }
-            pthread_mutex_unlock(&rootMutex)
+            return treeNodes
         }
         return treeNodes
     }
@@ -146,6 +150,7 @@ final class ZNKTreeNodeController {
     /// - Parameter root: 根结点
     private func append(_ child: ZNKTreeNode) {
         treeNodes = treeNodes.filter({$0.item.identifier != child.item.identifier})
+        treeNodes.append(child)
     }
 
 }

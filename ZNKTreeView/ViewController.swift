@@ -15,14 +15,17 @@ class ViewController: UIViewController {
     private lazy var treeView: ZNKTreeView = {
         $0.delegate = self
         $0.dataSource = self
-
+        $0.register(TreeViewCell.self, forCellReuseIdentifier: TreeViewCell.Setting.identifier)
         return $0
     }(ZNKTreeView.init(frame: view.bounds, style: .plain))
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         view.addSubview(treeView)
-        treeView.register(TreeViewCell.self, forCellReuseIdentifier: TreeViewCell.Setting.identifier)
+        TreeObject.initTest { [weak self] (objects) in
+            self?.dataSource = objects
+            self?.treeView.reloadData()
+        }
     }
 
     override func didReceiveMemoryWarning() {

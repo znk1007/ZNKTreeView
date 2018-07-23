@@ -46,6 +46,8 @@ final class ZNKTreeNode {
             }
         }
     }
+
+    private var mutex: pthread_mutex_t
     /// 初始化
     ///
     /// - Parameters:
@@ -58,14 +60,24 @@ final class ZNKTreeNode {
         self.item = item
         self.indexPath = indexPath
         self.children = children
+        mutex = pthread_mutex_t.init()
+    }
+
+    /// 删除子节点
+    ///
+    /// - Parameter child: 子节点
+    func remove(_ child: ZNKTreeNode) {
+        children = children.filter({$0.item.identifier != child.item.identifier})
     }
 
     /// 添加子节点
     ///
     /// - Parameter child: 子节点
     func append(_ child: ZNKTreeNode) {
-        children = children.filter({$0.item.identifier != child.item.identifier})
+        pthread_mutex_lock(&mutex)
+        remove(child)
         children.append(child)
+        pthread_mutex_unlock(&mutex)
     }
 
 }

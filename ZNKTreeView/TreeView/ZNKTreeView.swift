@@ -99,14 +99,23 @@ class ZNKTreeView: UIView {
         self.commonInit()
     }
 
+    deinit {
+        treeTable.delegate = nil
+        treeTable.dataSource = nil
+        treeTable = nil
+    }
+
     /// 初始化
     private func commonInit() {
-        initSubview()
+        if treeTable == nil {
+            initTable()
+        }
         initConfiguration()
     }
 
+
     /// 初始化视图
-    private func initSubview() {
+    private func initTable() {
         self.treeTable = UITableView.init(frame: bounds, style: tableStyle)
         treeTable.autoresizingMask = [.flexibleTopMargin, .flexibleLeftMargin, .flexibleBottomMargin, .flexibleRightMargin]
         treeTable.estimatedRowHeight = 0
@@ -131,7 +140,8 @@ extension ZNKTreeView {
     ///   - cellClass: UITableViewCell类
     ///   - identifier: 唯一标识
     func register(_ cellClass: AnyClass?, forCellReuseIdentifier identifier: String)  {
-        self.treeTable.register(cellClass, forCellReuseIdentifier: identifier)
+        guard let table = treeTable else { return }
+        table.register(cellClass, forCellReuseIdentifier: identifier)
     }
 
     /// 注册UITableViewCell的UINib
@@ -140,7 +150,8 @@ extension ZNKTreeView {
     ///   - nib: UINib
     ///   - identifier: 唯一标识
     func register(_ nib: UINib?, forCellReuseIdentifier identifier: String) {
-        self.treeTable.register(nib, forCellReuseIdentifier: identifier)
+        guard let table = treeTable else { return }
+        table.register(nib, forCellReuseIdentifier: identifier)
 
     }
 
@@ -150,7 +161,8 @@ extension ZNKTreeView {
     ///   - aClass: 头部视图类
     ///   - identifier: 唯一标识
     func register(_ aClass: AnyClass?, forHeaderFooterViewReuseIdentifier identifier: String) {
-        self.treeTable.register(aClass, forHeaderFooterViewReuseIdentifier: identifier)
+        guard let table = treeTable else { return }
+        table.register(aClass, forHeaderFooterViewReuseIdentifier: identifier)
     }
 
     /// 注册UITableView头部UINib
@@ -159,7 +171,8 @@ extension ZNKTreeView {
     ///   - nib: UINib
     ///   - identifier: 唯一标识
     func register(_ nib: UINib?, forHeaderFooterViewReuseIdentifier identifier: String) {
-        self.treeTable.register(nib, forHeaderFooterViewReuseIdentifier: identifier)
+        guard let table = treeTable else { return }
+        table.register(nib, forHeaderFooterViewReuseIdentifier: identifier)
     }
 
     /// 复用UITableViewCell
@@ -167,7 +180,8 @@ extension ZNKTreeView {
     /// - Parameter identifier: 唯一标识
     /// - Returns: UITableViewCell 可能为nil
     func dequeueReusableCell(_ identifier: String) -> UITableViewCell? {
-        return self.treeTable.dequeueReusableCell(withIdentifier: identifier)
+        guard let table = treeTable else { return nil }
+        return table.dequeueReusableCell(withIdentifier: identifier)
     }
 
     /// 复用UITableViewCell
@@ -177,7 +191,8 @@ extension ZNKTreeView {
     ///   - indexPath: 地址索引
     /// - Returns: UITableViewCell
     func dequeueReusableCell(_ identifier: String, for indexPath: IndexPath) -> UITableViewCell {
-        return self.treeTable.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
+        guard let table = treeTable else { return .init() }
+        return table.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
     }
 
     /// 复用段头段尾
@@ -185,7 +200,14 @@ extension ZNKTreeView {
     /// - Parameter identifier: 唯一标识
     /// - Returns: UITableViewHeaderFooterView?
     func dequeueReusableHeaderFooterView(_ identifier: String) -> UITableViewHeaderFooterView? {
-        return self.treeTable.dequeueReusableHeaderFooterView(withIdentifier: identifier)
+        guard let table = treeTable else { return nil }
+        return table.dequeueReusableHeaderFooterView(withIdentifier: identifier)
+    }
+
+    /// 刷新表格
+    func reloadData() {
+        guard let table = treeTable else { return }
+        table.reloadData()
     }
 }
 
@@ -201,7 +223,8 @@ extension ZNKTreeView: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+        manager.visibleNodes()
+        return 1
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
