@@ -67,6 +67,11 @@ final class ZNKTreeNodeController {
         childMutex = pthread_mutex_t.init()
     }
 
+    func treeItemForIndexPath(_ indexPath: IndexPath) -> ZNKTreeItem? {
+        let rootIndex = indexPath.section
+        return nil
+    }
+
     /// 根据item获取节点
     ///
     /// - Parameter item: item
@@ -75,12 +80,6 @@ final class ZNKTreeNodeController {
         return treeNodes.filter({$0.item.identifier == item.identifier}).first
     }
 
-    func visibleNodes() {
-        for root in rootTreeNodes() {
-            print("visible children number \(root.numberOfVisibleChildren)")
-            print("sep ==================")
-        }
-    }
 
     /// 根结点数
     ///
@@ -97,7 +96,7 @@ final class ZNKTreeNodeController {
         if treeNodes.count == 0 || rootNumber != treeNodes.count{
             for i in 0 ..< numberOfRoot() {
                 pthread_mutex_lock(&rootMutex)
-                if let node = delegate?.treeNode(at: -1, of: nil, atRootIndex: i) {
+                if let node = delegate?.treeNode(at: 0, of: nil, atRootIndex: i) {
                     append(node)
                 }
                 pthread_mutex_unlock(&rootMutex)
@@ -143,10 +142,12 @@ final class ZNKTreeNodeController {
             pthread_mutex_unlock(&childMutex)
         }
         if childNumber > 0 {
-            let childs = treeNode(of: newNode, at: rootIndex)
+            treeNode(of: newNode, at: rootIndex)
         }
 
     }
+
+
 
     /// 添加结点
     ///

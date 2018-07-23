@@ -223,12 +223,13 @@ extension ZNKTreeView: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        manager.visibleNodes()
         return 1
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return .init()
+        let item = manager.treeItemForIndexPath(indexPath)
+        let cell = dataSource?.treeView(self, cellForItem: item) ?? .init()
+        return cell
     }
 
 
