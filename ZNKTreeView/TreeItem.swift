@@ -44,12 +44,12 @@ extension TreeObject {
             let grandson4 = TreeObject.init(identifier: "grandson4", name: "grandson4", children: [grandgrandson3, grandgrandson5, grandgrandson1])
             let grandson5 = TreeObject.init(identifier: "grandson5", name: "grandson5", children: [grandgrandson2, grandgrandson1, grandgrandson5])
 
-            let child1 = TreeObject.init(identifier: "child1", name: "child1", children: [grandson1, grandson2, grandson3, grandson4, grandson5])
-            let child2 = TreeObject.init(identifier: "child2", name: "child2", children: [grandson2, grandson1, grandson5, grandson4, grandson3])
-            let child3 = TreeObject.init(identifier: "child3", name: "child3", children: [grandson2, grandson1, grandson5, grandson4, grandson3])
-            let child4 = TreeObject.init(identifier: "child4", name: "child4", children: [grandson5, grandson1, grandson2, grandson4, grandson3])
-            let child5 = TreeObject.init(identifier: "child5", name: "child5", children: [grandson2, grandson4, grandson3])
-            let child6 = TreeObject.init(identifier: "child6", name: "child6", children: [grandson2, grandson4, grandson3])
+            let child1 = TreeObject.init(identifier: "child1", name: "child1", children: [/*grandson1, grandson2, grandson3, grandson4, grandson5*/])
+            let child2 = TreeObject.init(identifier: "child2", name: "child2", children: [/*grandson2, grandson1, grandson5, grandson4, grandson3*/])
+            let child3 = TreeObject.init(identifier: "child3", name: "child3", children: [/*grandson2, grandson1, grandson5, grandson4, grandson3*/])
+            let child4 = TreeObject.init(identifier: "child4", name: "child4", children: [/*grandson5, grandson1, grandson2, grandson4, grandson3*/])
+            let child5 = TreeObject.init(identifier: "child5", name: "child5", children: [/*grandson2, grandson4, grandson3*/])
+            let child6 = TreeObject.init(identifier: "child6", name: "child6", children: [/*grandson2, grandson4, grandson3*/])
 
             let root1 = TreeObject.init(identifier: "root1", name: "root1", children: [child1, child2, child3, child4, child5, child6])
             let root2 = TreeObject.init(identifier: "root2", name: "root2", children: [child4, child5, child6])
