@@ -205,11 +205,11 @@ fileprivate class ZNKTreeNode {
         get {
             let this = self
             if self.expanded {
-                var visibelNumber = this.children.count
+                var visibleNumber = this.children.count
                 for child in this.children {
-                    visibelNumber += child.numberOfVisibleChildren
+                    visibleNumber += child.numberOfVisibleChildren
                 }
-                return visibelNumber
+                return visibleNumber
             } else {
                 return 0
             }
@@ -218,19 +218,21 @@ fileprivate class ZNKTreeNode {
 
     func itemForIndexPath(_ indexPath: IndexPath) -> ZNKTreeItem? {
         let this = self
-        if this.indexPath.compare(indexPath) == .orderedSame {
-            return this.item
-        }
         if this.item.expand == false {
             return nil
         }
+        if this.indexPath.compare(indexPath) == .orderedSame {
+            return this.item
+        }
+
         for child in this.children {
+//            print("child item identifier ---> ", child.item.identifier)
 //            print("child indexPath ---> ", child.indexPath)
 //            print("give indexPath ---> ", indexPath)
-            if child.indexPath.compare(indexPath) == .orderedSame {
-                return child.item
-            }
-            return child.itemForIndexPath(child.indexPath)
+//            if child.indexPath.compare(indexPath) == .orderedSame {
+//                return child.item
+//            }
+            return child.itemForIndexPath(indexPath)
         }
         return nil
     }
@@ -342,6 +344,7 @@ fileprivate class ZNKTreeNodeController {
                 if let node = delegate?.treeNode(at: 0, of: nil, atRootIndex: i) {
                     append(node)
                     insertTreeNode(of: node, at: i)
+                    enumeric(node)
                 }
             }
         }
@@ -352,26 +355,34 @@ fileprivate class ZNKTreeNodeController {
     /// - Parameter index: 根结点下标
     /// - Returns: 可见节点数
     func numberOfVisibleNodeAtIndex(_ index: Int) -> Int {
-        guard treeNodes.count - 1 > index else { return 0 }
+        guard treeNodes.count - 1 >= index else { return 0 }
         let node = treeNodes[index]
         let number = node.numberOfVisibleChildren
         return number
     }
 
-    var i = 0
-
     func treeItemForIndexPath(_ indexPath: IndexPath) -> ZNKTreeItem? {
-        i += 1
-        print("indexPath ----> ", i)
         let section = indexPath.section
-        if section > treeNodes.count - 1 {
-            return nil
-        }
+        guard treeNodes.count - 1 >= section else { return nil }
         let node = treeNodes[section]
-        return node.itemForIndexPath(indexPath)
+        let item = itemOfNode(node, at: indexPath)
+        print("item ----> ", item?.identifier ?? "")
+        return item
     }
 
-    
+    func itemOfNode(_ node: ZNKTreeNode, at indexPath: IndexPath) -> ZNKTreeItem? {
+        guard node.expanded else { return nil }
+        if node.indexPath.compare(indexPath) == .orderedSame {
+            return node.item
+        }
+        for child in node.children {
+            if child.indexPath.compare(indexPath) == .orderedSame {
+                return child.item
+            }
+            return itemOfNode(child, at: indexPath)
+        }
+        return nil
+    }
 
     /// 根据item获取节点
     ///
@@ -554,10 +565,10 @@ class ZNKTreeView: UIView {
     private var tableStyle: UITableViewStyle = .plain
 
     /// 节点管理
-    private var manager: ZNKTreeNodeController = .init()
+    private var manager: ZNKTreeNodeController?
 
     /// 批量处理对象
-    private var batchChanges: ZNKBatchChanges = .init()
+    private var batchChanges: ZNKBatchChanges?
     /// 初始化
     ///
     /// - Parameters:
@@ -579,6 +590,8 @@ class ZNKTreeView: UIView {
         treeTable.delegate = nil
         treeTable.dataSource = nil
         treeTable = nil
+        manager = nil
+        batchChanges = nil
     }
 
     /// 初始化
@@ -604,7 +617,9 @@ class ZNKTreeView: UIView {
 
     /// 初始化配置
     private func initConfiguration() {
-        manager.delegate = self
+        batchChanges = .init()
+        manager = .init()
+        manager?.delegate = self
     }
 }
 //MARK: ************ public methods ******************
@@ -683,7 +698,7 @@ extension ZNKTreeView {
     /// 刷新表格
     func reloadData() {
         guard let table = treeTable else { return }
-        manager.rootTreeNodes()
+        manager?.rootTreeNodes()
         table.reloadData()
     }
 }
@@ -700,15 +715,11 @@ extension ZNKTreeView: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return manager.numberOfVisibleNodeAtIndex(section)
+        return manager?.numberOfVisibleNodeAtIndex(section) ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let item = manager.treeItemForIndexPath(indexPath)
-        if let obj = item as? TreeObject {
-            print("obj name ----> ", obj.name)
-            print("obj identifier ----> ", obj.identifier)
-        }
+        let item = manager?.treeItemForIndexPath(indexPath)
         let cell = dataSource?.treeView(self, cellForItem: item) ?? .init()
         return cell
     }
