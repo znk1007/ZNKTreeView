@@ -17,7 +17,7 @@ class ViewController: UIViewController {
         $0.dataSource = self
         $0.register(TreeViewCell.self, forCellReuseIdentifier: TreeViewCell.Setting.identifier)
         return $0
-    }(ZNKTreeView.init(frame: view.bounds, style: .plain))
+    }(ZNKTreeView.init(frame: view.bounds, style: .grouped))
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.

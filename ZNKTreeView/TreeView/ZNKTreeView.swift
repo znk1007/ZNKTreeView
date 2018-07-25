@@ -217,22 +217,20 @@ fileprivate class ZNKTreeNode {
     }
 
     func itemForIndexPath(_ indexPath: IndexPath) -> ZNKTreeItem? {
+
         let this = self
-        if this.item.expand == false {
-            return nil
-        }
         if this.indexPath.compare(indexPath) == .orderedSame {
             return this.item
         }
+        if this.item.expand == false {
+            return nil
+        }
 
         for child in this.children {
-//            print("child item identifier ---> ", child.item.identifier)
-//            print("child indexPath ---> ", child.indexPath)
-//            print("give indexPath ---> ", indexPath)
-//            if child.indexPath.compare(indexPath) == .orderedSame {
-//                return child.item
-//            }
-            return child.itemForIndexPath(indexPath)
+            let item =  child.itemForIndexPath(indexPath)
+            if item != nil {
+                return item
+            }
         }
         return nil
     }
@@ -264,9 +262,9 @@ fileprivate class ZNKTreeNode {
     /// 添加子节点
     ///
     /// - Parameter child: 子节点
-    func append(_ child: ZNKTreeNode, duple: Bool = false) {
+    func append(_ child: ZNKTreeNode, duple: Bool = true) {
         pthread_mutex_lock(&mutex)
-        if duple {
+        if !duple {
             remove(child)
         }
         children.append(child)
@@ -355,41 +353,19 @@ fileprivate class ZNKTreeNodeController {
     /// - Parameter index: 根结点下标
     /// - Returns: 可见节点数
     func numberOfVisibleNodeAtIndex(_ index: Int) -> Int {
-        guard treeNodes.count - 1 >= index else { return 0 }
+        guard treeNodes.count > index else { return 0 }
         let node = treeNodes[index]
-        let number = node.numberOfVisibleChildren
+        var number = 1
+        number += node.numberOfVisibleChildren
         return number
     }
 
     func treeItemForIndexPath(_ indexPath: IndexPath) -> ZNKTreeItem? {
         let section = indexPath.section
-        guard treeNodes.count - 1 >= section else { return nil }
+        guard treeNodes.count > section else { return nil }
         let node = treeNodes[section]
-        let item = itemOfNode(node, at: indexPath)
-        print("item ----> ", item?.identifier ?? "")
+        let item = node.itemForIndexPath(indexPath)
         return item
-    }
-
-    func itemOfNode(_ node: ZNKTreeNode, at indexPath: IndexPath) -> ZNKTreeItem? {
-        guard node.expanded else { return nil }
-        if node.indexPath.compare(indexPath) == .orderedSame {
-            return node.item
-        }
-        for child in node.children {
-            if child.indexPath.compare(indexPath) == .orderedSame {
-                return child.item
-            }
-            return itemOfNode(child, at: indexPath)
-        }
-        return nil
-    }
-
-    /// 根据item获取节点
-    ///
-    /// - Parameter item: item
-    /// - Returns: 节点
-    func treeNodeForItem(_ item: ZNKTreeItem) -> ZNKTreeNode? {
-        return treeNodes.filter({$0.item.identifier == item.identifier}).first
     }
 
 
@@ -401,9 +377,14 @@ fileprivate class ZNKTreeNodeController {
     }
 
 
-
-    func enumeric(_ node: ZNKTreeNode?) {
+    /// 遍历节点
+    ///
+    /// - Parameter node: 节点
+    private func enumeric(_ node: ZNKTreeNode?) {
         guard let node = node else { return }
+        print("node item identifier ----> ", node.item.identifier)
+        print("node indexPath ----> ", node.indexPath)
+        print("========================== ")
         for child in node.children {
             enumeric(child)
         }
@@ -439,13 +420,21 @@ fileprivate class ZNKTreeNodeController {
     /// 添加结点
     ///
     /// - Parameter root: 根结点
-    private func append(_ child: ZNKTreeNode) {
+    private func append(_ child: ZNKTreeNode, duple: Bool = true) {
         pthread_mutex_lock(&rootMutex)
-        treeNodes = treeNodes.filter({$0.item.identifier != child.item.identifier})
+        if !duple {
+            remove(child)
+        }
         treeNodes.append(child)
         pthread_mutex_unlock(&rootMutex)
     }
 
+    /// 删除子节点
+    ///
+    /// - Parameter child: 子节点
+    private func remove(_ child: ZNKTreeNode) {
+        treeNodes = treeNodes.filter({$0.item.identifier != child.item.identifier})
+    }
 }
 
 
@@ -481,6 +470,12 @@ protocol ZNKTreeViewDataSource {
     /// - Returns: 数据源
     func treeView(_ treeView: ZNKTreeView, childIndex child: Int, ofItem item: ZNKTreeItem?, atRootIndex root: Int) -> ZNKTreeItem?
 
+    /// 数据源展示单元格
+    ///
+    /// - Parameters:
+    ///   - treeView: 树形图
+    ///   - item: 展示数据源
+    /// - Returns: UITableViewCell
     func treeView(_ treeView: ZNKTreeView, cellForItem item: ZNKTreeItem?) -> UITableViewCell
 
 }
@@ -739,7 +734,8 @@ extension ZNKTreeView: ZNKTreeNodeControllerDelegate {
 
     fileprivate func treeNode(at childIndex: Int, of node: ZNKTreeNode?, atRootIndex index: Int) -> ZNKTreeNode? {
         if let item = dataSource?.treeView(self, childIndex: childIndex, ofItem: node?.item, atRootIndex: index) {
-            let indexPath = IndexPath.init(row: childIndex, section: index)
+            let row = (node != nil) ? (childIndex + 1) : 0
+            let indexPath = IndexPath.init(row: row, section: index)
             return ZNKTreeNode.init(item: item, parent: node, indexPath: indexPath)
         } else {
             return nil
