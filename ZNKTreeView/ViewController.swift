@@ -38,7 +38,9 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: ZNKTreeViewDelete {
+    func treeView(_ treeView: ZNKTreeView, didSelect item: ZNKTreeItem?) {
 
+    }
 }
 
 extension ViewController: ZNKTreeViewDataSource {

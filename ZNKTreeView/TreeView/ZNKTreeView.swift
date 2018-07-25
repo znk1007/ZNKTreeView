@@ -217,19 +217,18 @@ fileprivate class ZNKTreeNode {
     }
 
     func itemForIndexPath(_ indexPath: IndexPath) -> ZNKTreeItem? {
-
         let this = self
+
         if this.indexPath.compare(indexPath) == .orderedSame {
             return this.item
         }
         if this.item.expand == false {
             return nil
         }
-
         for child in this.children {
-            let item =  child.itemForIndexPath(indexPath)
-            if item != nil {
-                return item
+
+            if let childItem =  child.itemForIndexPath(indexPath) {
+                return childItem
             }
         }
         return nil
@@ -345,6 +344,7 @@ fileprivate class ZNKTreeNodeController {
                     enumeric(node)
                 }
             }
+            print("i -----------> ", i)
         }
     }
 
@@ -380,7 +380,10 @@ fileprivate class ZNKTreeNodeController {
     /// 遍历节点
     ///
     /// - Parameter node: 节点
+    var i = 1
     private func enumeric(_ node: ZNKTreeNode?) {
+        i += 1
+
         guard let node = node else { return }
         print("node item identifier ----> ", node.item.identifier)
         print("node indexPath ----> ", node.indexPath)
@@ -441,6 +444,7 @@ fileprivate class ZNKTreeNodeController {
 //MARK: ************************** ZNKTreeViewDelete ***********************
 protocol ZNKTreeViewDelete {
 
+    func treeView(_ treeView: ZNKTreeView, didSelect item: ZNKTreeItem?)
 }
 //MARK: ************************** ZNKTreeViewDataSource ***********************
 protocol ZNKTreeViewDataSource {
@@ -545,19 +549,7 @@ class ZNKTreeView: UIView {
     }
 
     /// 显示类型
-    private var style: TreeViewStyle {
-        didSet {
-            switch style {
-            case .plain:
-                tableStyle = .plain
-            case .grouped:
-                tableStyle = .grouped
-            }
-        }
-    }
-
-    /// 表格类型
-    private var tableStyle: UITableViewStyle = .plain
+    private var style: TreeViewStyle = .plain
 
     /// 节点管理
     private var manager: ZNKTreeNodeController?
@@ -570,14 +562,14 @@ class ZNKTreeView: UIView {
     ///   - frame: 坐标及大小
     ///   - style: 类型
     init(frame: CGRect, style: TreeViewStyle) {
-        self.style = style
         super.init(frame: frame)
+        self.style = style
         self.commonInit()
     }
 
     required init?(coder aDecoder: NSCoder) {
-        self.style = .plain
         super.init(coder: aDecoder)
+        self.style = .plain
         self.commonInit()
     }
 
@@ -600,7 +592,12 @@ class ZNKTreeView: UIView {
 
     /// 初始化视图
     private func initTable() {
-        self.treeTable = UITableView.init(frame: bounds, style: tableStyle)
+        switch style {
+        case .grouped:
+            self.treeTable = UITableView.init(frame: bounds, style: .grouped)
+        case .plain:
+            self.treeTable = UITableView.init(frame: bounds, style: .plain)
+        }
         treeTable.autoresizingMask = [.flexibleTopMargin, .flexibleLeftMargin, .flexibleBottomMargin, .flexibleRightMargin]
         treeTable.estimatedRowHeight = 0
         treeTable.estimatedSectionHeaderHeight = 0
@@ -700,6 +697,11 @@ extension ZNKTreeView {
 
 
 extension ZNKTreeView: UITableViewDelegate {
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let item = manager?.treeItemForIndexPath(indexPath)
+
+    }
 
 }
 
