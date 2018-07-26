@@ -38,11 +38,11 @@ extension TreeObject {
             let grandgrandson4 = TreeObject.init(identifier: "grandgrandson4", name: "grandgrandson4", children: [/*grandgrandgrandson1, grandgrandgrandson4, grandgrandgrandson2*/])
             let grandgrandson5 = TreeObject.init(identifier: "grandgrandson5", name: "grandgrandson5", children: [/*grandgrandgrandson5, grandgrandgrandson1, grandgrandgrandson4*/])
 
-            let grandson1 = TreeObject.init(identifier: "grandson1", name: "grandson1", children: [grandgrandson1, grandgrandson5, grandgrandson4, grandgrandson2])
-            let grandson2 = TreeObject.init(identifier: "grandson2", name: "grandson2", children: [grandgrandson2, grandgrandson4, grandgrandson5, grandgrandson3, grandgrandson1])
-            let grandson3 = TreeObject.init(identifier: "grandson3", name: "grandson3", children: [grandgrandson3, grandgrandson4, grandgrandson2])
-            let grandson4 = TreeObject.init(identifier: "grandson4", name: "grandson4", children: [grandgrandson3, grandgrandson5, grandgrandson1])
-            let grandson5 = TreeObject.init(identifier: "grandson5", name: "grandson5", children: [grandgrandson2, grandgrandson1, grandgrandson5])
+            let grandson1 = TreeObject.init(identifier: "grandson1", name: "grandson1", children: [/*grandgrandson1, grandgrandson5, grandgrandson4, grandgrandson2*/])
+            let grandson2 = TreeObject.init(identifier: "grandson2", name: "grandson2", children: [/*grandgrandson2, grandgrandson4, grandgrandson5, grandgrandson3, grandgrandson1*/])
+            let grandson3 = TreeObject.init(identifier: "grandson3", name: "grandson3", children: [/*grandgrandson3, grandgrandson4, grandgrandson2*/])
+            let grandson4 = TreeObject.init(identifier: "grandson4", name: "grandson4", children: [/*grandgrandson3, grandgrandson5, grandgrandson1*/])
+            let grandson5 = TreeObject.init(identifier: "grandson5", name: "grandson5", children: [/*grandgrandson2, grandgrandson1, grandgrandson5*/])
 
             let child1 = TreeObject.init(identifier: "child1", name: "child1", children: [grandson1, grandson2, grandson3, grandson4, grandson5])
             let child2 = TreeObject.init(identifier: "child2", name: "child2", children: [grandson2, grandson1, grandson5, grandson4, grandson3])
