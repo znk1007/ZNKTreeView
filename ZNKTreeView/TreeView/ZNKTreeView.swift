@@ -328,6 +328,8 @@ fileprivate class ZNKTreeNodeController {
         rootMutex = pthread_mutex_t.init()
     }
 
+    private var childIndex: Int = 0
+
     /// 获取根结点
     ///
     /// - Returns: 根结点数组
@@ -340,6 +342,7 @@ fileprivate class ZNKTreeNodeController {
             for i in 0 ..< numberOfRoot() {
                 if let node = delegate?.treeNode(at: 0, of: nil, atRootIndex: i) {
                     append(node)
+                    childIndex = -1
                     insertTreeNode(of: node, at: i)
                     enumeric(node)
                 }
@@ -383,7 +386,6 @@ fileprivate class ZNKTreeNodeController {
     var i = 1
     private func enumeric(_ node: ZNKTreeNode?) {
         i += 1
-
         guard let node = node else { return }
         print("node item identifier ----> ", node.item.identifier)
         print("node indexPath ----> ", node.indexPath)
@@ -412,6 +414,8 @@ fileprivate class ZNKTreeNodeController {
         guard let node = node else { return }
         let childNumber = self.numberOfChildNode(for: node, rootIndex: rootIndex)
         if childNumber == 0 { return }
+        childIndex += 1
+        print("child index ===> ", childIndex)
         for i in 0 ..< childNumber {
             if let childNode = delegate?.treeNode(at: i, of: node, atRootIndex: rootIndex) {
                 node.append(childNode)
