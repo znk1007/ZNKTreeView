@@ -358,9 +358,8 @@ fileprivate class ZNKTreeNodeController {
     func numberOfVisibleNodeAtIndex(_ index: Int) -> Int {
         guard treeNodes.count > index else { return 0 }
         let node = treeNodes[index]
-        let number = node.numberOfVisibleChildren
-        print("visible number --> ", number)
-        return node.numberOfVisibleChildren
+        let number = node.numberOfVisibleChildren + 1
+        return number
     }
 
     func treeItemForIndexPath(_ indexPath: IndexPath) -> ZNKTreeItem? {
@@ -415,9 +414,11 @@ fileprivate class ZNKTreeNodeController {
         let childNumber = self.numberOfChildNode(for: node, rootIndex: rootIndex)
         if childNumber == 0 { return }
         print("child number ===> ", childNumber)
-        childIndex += 1
+//        childIndex += 1
         print("child index ===> ", childIndex)
+
         for i in 0 ..< childNumber {
+            childIndex += 1
             if let childNode = delegate?.treeNode(at: i, of: node, atRootIndex: rootIndex) {
                 childNode.indexPath = IndexPath.init(row: childIndex, section: rootIndex)
                 print("child node indexPath ===> ", childNode.indexPath)
@@ -425,6 +426,7 @@ fileprivate class ZNKTreeNodeController {
                 insertTreeNode(of: childNode, at: rootIndex)
             }
         }
+
     }
 
     /// 添加结点
