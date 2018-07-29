@@ -6,11 +6,21 @@
 //  Copyright © 2018年 SunEee. All rights reserved.
 //
 
+
 import UIKit
 //MARK: ************************** ZNKTreeItem ***********************
 class ZNKTreeItem {
+
+    /// 唯一标识
     let identifier: String
+    /// 是否已展开
     var expand: Bool
+
+    /// 初始化
+    ///
+    /// - Parameters:
+    ///   - identifier: 唯一标识
+    ///   - expand: 是否展开
     init(identifier: String, expand: Bool) {
         self.identifier = identifier
         self.expand = expand
@@ -177,6 +187,7 @@ fileprivate class ZNKBatchChanges {
 //MARK: ************************** ZNKTreeNode ***********************
 
 fileprivate class ZNKTreeNode {
+
     /// 父节点
     var parent: ZNKTreeNode?
     /// 子节点数组
@@ -203,10 +214,9 @@ fileprivate class ZNKTreeNode {
     /// 可见的子节点数
     var numberOfVisibleChildren: Int {
         get {
-            let this = self
             if self.expanded {
-                var visibleNumber = this.children.count
-                for child in this.children {
+                var visibleNumber = self.children.count
+                for child in self.children {
                     visibleNumber += child.numberOfVisibleChildren
                 }
                 return visibleNumber
@@ -216,22 +226,7 @@ fileprivate class ZNKTreeNode {
         }
     }
 
-    func itemForIndexPath(_ indexPath: IndexPath) -> ZNKTreeItem? {
-        let this = self
 
-        if this.indexPath.compare(indexPath) == .orderedSame {
-            return this.item
-        }
-        if this.item.expand == false {
-            return nil
-        }
-        for child in this.children {
-            if let childItem =  child.itemForIndexPath(indexPath) {
-                return childItem
-            }
-        }
-        return nil
-    }
 
     /// 互斥锁
     private var mutex: pthread_mutex_t
@@ -248,6 +243,44 @@ fileprivate class ZNKTreeNode {
         self.indexPath = indexPath
         self.children = children
         mutex = pthread_mutex_t.init()
+    }
+
+    /// 根据ZNKTreeItem获取ZNKTreeNode
+    ///
+    /// - Parameter item: ZNKTreeItem
+    /// - Returns: ZNKTreeNode
+    func treeNodeFromItem(_ item: ZNKTreeItem) -> ZNKTreeNode? {
+        if self.item.identifier == item.identifier {
+            return self
+        }
+        for child in self.children {
+            if let node = child.treeNodeFromItem(item) {
+                return node
+            }
+        }
+        return nil
+    }
+
+
+    /// 根据地址索引获取item
+    ///
+    /// - Parameter indexPath: 地址索引
+    /// - Returns: ZNKTreeItem
+    func itemForIndexPath(_ indexPath: IndexPath) -> ZNKTreeItem? {
+        let this = self
+
+        if this.indexPath.compare(indexPath) == .orderedSame {
+            return this.item
+        }
+        if this.item.expand == false {
+            return nil
+        }
+        for child in this.children {
+            if let childItem =  child.itemForIndexPath(indexPath) {
+                return childItem
+            }
+        }
+        return nil
     }
 
     /// 删除子节点
@@ -344,10 +377,8 @@ fileprivate class ZNKTreeNodeController {
                     append(node)
                     childIndex = 0
                     insertTreeNode(of: node, at: i)
-//                    enumeric(node)
                 }
             }
-//            print("i -----------> ", i)
         }
     }
 
@@ -362,6 +393,10 @@ fileprivate class ZNKTreeNodeController {
         return number
     }
 
+    /// 根据indexPath获取item
+    ///
+    /// - Parameter indexPath: 地址索引
+    /// - Returns: ZNKTreeItem
     func treeItemForIndexPath(_ indexPath: IndexPath) -> ZNKTreeItem? {
         let section = indexPath.section
         guard treeNodes.count > section else { return nil }
@@ -369,6 +404,26 @@ fileprivate class ZNKTreeNodeController {
         let item = node.itemForIndexPath(indexPath)
         return item
     }
+
+    /// 获取ZNKTreeItem所处的层级
+    ///
+    /// - Parameters:
+    ///   - item: ZNKTreeItem
+    ///   - indexPath: 地址索引
+    /// - Returns: 层级
+    func levelForItem(_ item: ZNKTreeItem, at indexPath: IndexPath? = nil) -> Int {
+        if let indexPath = indexPath {
+            guard treeNodes.count > indexPath.section else { return -1 }
+            let rootNode = treeNodes[indexPath.section]
+            return rootNode.treeNodeFromItem(item)?.level ?? -1
+        } else {
+            for rootNode in treeNodes {
+                return rootNode.treeNodeFromItem(item)?.level ?? -1
+            }
+        }
+        return -1
+    }
+
 
 
     /// 根结点数
@@ -413,20 +468,14 @@ fileprivate class ZNKTreeNodeController {
         guard let node = node else { return }
         let childNumber = self.numberOfChildNode(for: node, rootIndex: rootIndex)
         if childNumber == 0 { return }
-        print("child number ===> ", childNumber)
-//        childIndex += 1
-        print("child index ===> ", childIndex)
-
         for i in 0 ..< childNumber {
             childIndex += 1
             if let childNode = delegate?.treeNode(at: i, of: node, atRootIndex: rootIndex) {
                 childNode.indexPath = IndexPath.init(row: childIndex, section: rootIndex)
-                print("child node indexPath ===> ", childNode.indexPath)
                 node.append(childNode)
                 insertTreeNode(of: childNode, at: rootIndex)
             }
         }
-
     }
 
     /// 添加结点
@@ -447,13 +496,33 @@ fileprivate class ZNKTreeNodeController {
     private func remove(_ child: ZNKTreeNode) {
         treeNodes = treeNodes.filter({$0.item.identifier != child.item.identifier})
     }
+
+
 }
 
 
 //MARK: ************************** ZNKTreeViewDelete ***********************
 protocol ZNKTreeViewDelete {
 
+    /// 选择item
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
     func treeView(_ treeView: ZNKTreeView, didSelect item: ZNKTreeItem?)
+
+    /// 每个ZNKTreeItem行高
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    func treeView(_ treeView: ZNKTreeView, heightForItem item: ZNKTreeItem?) -> CGFloat
+}
+
+extension ZNKTreeViewDelete {
+    func treeView(_ treeView: ZNKTreeView, didSelect item: ZNKTreeItem?) {}
+    func treeView(_ treeView: ZNKTreeView, heightForItem item: ZNKTreeItem?) -> CGFloat { return 0}
+
 }
 //MARK: ************************** ZNKTreeViewDataSource ***********************
 protocol ZNKTreeViewDataSource {
@@ -489,7 +558,7 @@ protocol ZNKTreeViewDataSource {
     ///   - treeView: 树形图
     ///   - item: 展示数据源
     /// - Returns: UITableViewCell
-    func treeView(_ treeView: ZNKTreeView, cellForItem item: ZNKTreeItem?) -> UITableViewCell
+    func treeView(_ treeView: ZNKTreeView, cellForItem item: ZNKTreeItem?, at indexPath: IndexPath) -> UITableViewCell
 
 }
 
@@ -542,6 +611,24 @@ class ZNKTreeView: UIView {
             table.backgroundView = backgroundView
         }
     }
+
+    /// 分割线嵌入
+    var separatorInset: UIEdgeInsets = .zero {
+        didSet {
+            guard let table = treeTable else { return }
+            table.separatorInset = separatorInset
+        }
+    }
+
+
+    /// 树形图行高
+    var treeViewRowHeight: CGFloat = 44 {
+        didSet {
+            guard let table = treeTable else { return }
+            table.rowHeight = treeViewRowHeight
+        }
+    }
+
 
 
     //MARK: ******Private*********
@@ -626,6 +713,10 @@ class ZNKTreeView: UIView {
 //MARK: ************ public methods ******************
 extension ZNKTreeView {
 
+    func levelForItem(_ item: ZNKTreeItem, at indexPath: IndexPath? = nil) -> Int {
+        return manager?.levelForItem(item, at: indexPath) ?? -1
+    }
+
     /// 注册UITableViewCell类
     ///
     /// - Parameters:
@@ -709,9 +800,13 @@ extension ZNKTreeView: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let item = manager?.treeItemForIndexPath(indexPath)
-
+        delegate?.treeView(self, didSelect: item)
     }
 
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let item = manager?.treeItemForIndexPath(indexPath)
+        return delegate?.treeView(self, heightForItem: item) ?? 0
+    }
 }
 
 extension ZNKTreeView: UITableViewDataSource {
@@ -726,7 +821,7 @@ extension ZNKTreeView: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let item = manager?.treeItemForIndexPath(indexPath)
-        let cell = dataSource?.treeView(self, cellForItem: item) ?? .init()
+        let cell = dataSource?.treeView(self, cellForItem: item, at: indexPath) ?? .init()
         return cell
     }
 
@@ -748,6 +843,23 @@ extension ZNKTreeView: ZNKTreeNodeControllerDelegate {
             return ZNKTreeNode.init(item: item, parent: node)
         } else {
             return nil
+        }
+    }
+
+}
+
+extension UITableViewCell {
+
+    /// 关联key
+    private struct AssociatedKeys {
+        static var buttonName = "cell_expandButton"
+    }
+    var expandButton: UIButton {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKeys.buttonName) as! UIButton
+        }
+        set {
+            objc_setAssociatedObject(self, &AssociatedKeys.buttonName, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 

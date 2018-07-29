@@ -15,6 +15,7 @@ class ViewController: UIViewController {
     private lazy var treeView: ZNKTreeView = {
         $0.delegate = self
         $0.dataSource = self
+        $0.separatorInset = .zero
         $0.register(TreeViewCell.self, forCellReuseIdentifier: TreeViewCell.Setting.identifier)
         return $0
     }(ZNKTreeView.init(frame: view.bounds, style: .grouped))
@@ -39,7 +40,14 @@ class ViewController: UIViewController {
 
 extension ViewController: ZNKTreeViewDelete {
     func treeView(_ treeView: ZNKTreeView, didSelect item: ZNKTreeItem?) {
+        print("select item identifier ---> ", item?.identifier ?? "")
+        if let item = item {
+            print("level ====> ", treeView.levelForItem(item))
+        }
+    }
 
+    func treeView(_ treeView: ZNKTreeView, heightForItem item: ZNKTreeItem?) -> CGFloat {
+        return 50
     }
 }
 
@@ -65,14 +73,15 @@ extension ViewController: ZNKTreeViewDataSource {
         }
     }
 
-    func treeView(_ treeView: ZNKTreeView, cellForItem item: ZNKTreeItem?) -> UITableViewCell {
+    func treeView(_ treeView: ZNKTreeView, cellForItem item: ZNKTreeItem?, at indexPath: IndexPath) -> UITableViewCell {
         var cell = treeView.dequeueReusableCell(TreeViewCell.Setting.identifier) as? TreeViewCell
         if cell == nil {
             cell = TreeViewCell.init(style: .default, reuseIdentifier: TreeViewCell.Setting.identifier)
         }
         guard let c = cell else { return .init() }
         if let item = item as? TreeObject {
-            c.textLabel?.text = item.name
+            let level = treeView.levelForItem(item, at: indexPath)
+            c.updateTreeCell(item, level: level)
         }
         return c
     }
