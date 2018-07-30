@@ -517,11 +517,20 @@ protocol ZNKTreeViewDelete {
     ///   - treeView: ZNKTreeView
     ///   - item: ZNKTreeItem
     func treeView(_ treeView: ZNKTreeView, heightForItem item: ZNKTreeItem?) -> CGFloat
+
+    /// 编辑item
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - editingStyle: 编辑类型
+    ///   - item: ZNKTreeItem
+    func treeView(_ treeView: ZNKTreeView, commit editingStyle: UITableViewCellEditingStyle, forItem item: ZNKTreeItem)
 }
 
 extension ZNKTreeViewDelete {
     func treeView(_ treeView: ZNKTreeView, didSelect item: ZNKTreeItem?) {}
-    func treeView(_ treeView: ZNKTreeView, heightForItem item: ZNKTreeItem?) -> CGFloat { return 0}
+    func treeView(_ treeView: ZNKTreeView, heightForItem item: ZNKTreeItem?) -> CGFloat { return 0 }
+    func treeView(_ treeView: ZNKTreeView, commit editingStyle: UITableViewCellEditingStyle, forItem item: ZNKTreeItem) {}
 
 }
 //MARK: ************************** ZNKTreeViewDataSource ***********************
@@ -799,13 +808,24 @@ extension ZNKTreeView {
 extension ZNKTreeView: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item = manager?.treeItemForIndexPath(indexPath)
-        delegate?.treeView(self, didSelect: item)
+        if let delegate = delegate {
+            let item = manager?.treeItemForIndexPath(indexPath)
+            delegate.treeView(self, didSelect: item)
+        }
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let item = manager?.treeItemForIndexPath(indexPath)
-        return delegate?.treeView(self, heightForItem: item) ?? 0
+        if let delegate = delegate {
+            let item = manager?.treeItemForIndexPath(indexPath)
+            return delegate.treeView(self, heightForItem: item)
+        }
+        return 0
+    }
+
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if let delegate = delegate, let item = manager?.treeItemForIndexPath(indexPath){
+            delegate.treeView(self, commit: editingStyle, forItem: item)
+        }
     }
 }
 
@@ -854,7 +874,7 @@ extension UITableViewCell {
     private struct AssociatedKeys {
         static var buttonName = "cell_expandButton"
     }
-    var expandButton: UIButton {
+    fileprivate var expandButton: UIButton {
         get {
             return objc_getAssociatedObject(self, &AssociatedKeys.buttonName) as! UIButton
         }
@@ -862,5 +882,7 @@ extension UITableViewCell {
             objc_setAssociatedObject(self, &AssociatedKeys.buttonName, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
+
+    
 
 }
