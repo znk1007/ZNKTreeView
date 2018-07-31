@@ -1081,16 +1081,6 @@ class ZNKTreeView: UIView {
         }
     }
 
-    /// 行高
-    var rowHeight: CGFloat {
-        didSet {
-            guard let table = treeTable else { return }
-            table.rowHeight = rowHeight
-        }
-    }
-
-
-
     //MARK: ******Private*********
     /// 表格
     private var treeTable: UITableView!
