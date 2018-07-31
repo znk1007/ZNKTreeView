@@ -405,13 +405,32 @@ fileprivate class ZNKTreeNodeController {
         return item
     }
 
+    /// 根据ZNKTreeItem获取节点的地址索引
+    ///
+    /// - Parameters:
+    ///   - item: ZNKTreeItem
+    ///   - indexPath: 地址索引
+    /// - Returns: 地址索引
+    func indexPathForItem(_ item: ZNKTreeItem, for indexPath: IndexPath? = nil) -> IndexPath? {
+        if let indexPath = indexPath {
+            guard treeNodes.count > indexPath.section else { return nil }
+            let rootNode = treeNodes[indexPath.section]
+            return rootNode.treeNodeFromItem(item)?.indexPath
+        } else {
+            for rootNode in treeNodes {
+                return rootNode.treeNodeFromItem(item)?.indexPath
+            }
+        }
+        return nil
+    }
+
     /// 获取ZNKTreeItem所处的层级
     ///
     /// - Parameters:
     ///   - item: ZNKTreeItem
     ///   - indexPath: 地址索引
     /// - Returns: 层级
-    func levelForItem(_ item: ZNKTreeItem, at indexPath: IndexPath? = nil) -> Int {
+    func levelfor(_ item: ZNKTreeItem, at indexPath: IndexPath? = nil) -> Int {
         if let indexPath = indexPath {
             guard treeNodes.count > indexPath.section else { return -1 }
             let rootNode = treeNodes[indexPath.section]
@@ -516,22 +535,360 @@ protocol ZNKTreeViewDelete {
     /// - Parameters:
     ///   - treeView: ZNKTreeView
     ///   - item: ZNKTreeItem
-    func treeView(_ treeView: ZNKTreeView, heightForItem item: ZNKTreeItem?) -> CGFloat
+    func treeView(_ treeView: ZNKTreeView, heightfor item: ZNKTreeItem?) -> CGFloat
 
-    /// 编辑item
+    /// 将要展示单元格
     ///
     /// - Parameters:
     ///   - treeView: ZNKTreeView
-    ///   - editingStyle: 编辑类型
+    ///   - cell: UITableViewCell
     ///   - item: ZNKTreeItem
-    func treeView(_ treeView: ZNKTreeView, commit editingStyle: UITableViewCellEditingStyle, forItem item: ZNKTreeItem)
+    func treeView(_ treeView: ZNKTreeView, willDisplay cell: UITableViewCell, for item: ZNKTreeItem?)
+
+    /// 将要展示段头视图
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - view: 段头视图
+    ///   - rootIndex: 根结点下标
+    func treeView(_ treeView: ZNKTreeView, willDisplayHeaderView view: UIView, for rootIndex: Int)
+
+    /// 将要展示段尾视图
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - view: 段尾视图
+    ///   - rootIndex: 根结点下标
+    func treeView(_ treeView: ZNKTreeView, willDisplayFooterView view: UIView, for rootIndex: Int)
+
+    /// 完成单元格展示
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - cell: UITableViewCell
+    ///   - item: ZNKTreeItem
+    func treeView(_ treeView: ZNKTreeView, didEndDisplaying cell: UITableViewCell, for item: ZNKTreeItem?)
+
+    /// 完成段尾视图展示
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - view: 段尾视图
+    ///   - rootIndex: 根结点下标
+    func treeView(_ treeView: ZNKTreeView, didEndDisplayingFooterView view: UIView, for rootIndex: Int)
+
+    /// 完成段头视图展示
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - view: 段头视图
+    ///   - rootIndex: 根结点下标
+    func treeView(_ treeView: ZNKTreeView, didEndDisplayingHeaderView view: UIView, for rootIndex: Int)
+
+    /// 段头高度
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - rootIndex: 根结点下标
+    /// - Returns: 高度
+    func treeView(_ treeView: ZNKTreeView, heightForHeaderIn rootIndex: Int) -> CGFloat
+
+    /// 段尾高度
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - rootIndex: 根结点下标
+    /// - Returns: 高度
+    func treeView(_ treeView: ZNKTreeView, heightForFooterIn rootIndex: Int) -> CGFloat
+
+    /// 单元格预设高度
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: 高度
+    func treeView(_ treeView: ZNKTreeView, estimatedHeightFor item: ZNKTreeItem?) -> CGFloat
+
+    /// 段头预设高度
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: 高度
+    func treeView(_ treeView: ZNKTreeView, estimatedHeightForHeaderIn rootIndex: Int) -> CGFloat
+
+    /// 段尾预设高度
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: 高度
+    func treeView(_ treeView: ZNKTreeView, estimatedHeightForFooterIn rootIndex: Int) -> CGFloat
+
+    /// 段头视图
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - rootIndex: 根结点下标
+    /// - Returns: 段头视图
+    func treeView(_ treeView: ZNKTreeView, viewForHeaderIn rootIndex: Int) -> UIView?
+
+    /// 段头视图
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - rootIndex: 根结点下标
+    /// - Returns: 段头视图
+    func treeView(_ treeView: ZNKTreeView, viewForFooterIn rootIndex: Int) -> UIView?
+
+    /// 点击单元格右侧指示按钮事件
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    func treeView(_ treeView: ZNKTreeView, accessoryButtonTappedFor item: ZNKTreeItem?)
+
+    /// 是否对ZNKTreeItem高亮
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: Bool
+    func treeView(_ treeView: ZNKTreeView, shouldHighlightFor item: ZNKTreeItem?) -> Bool
+
+    /// 已对ZNKTreeItem高亮
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: Bool
+    func treeView(_ treeView: ZNKTreeView, didHighlightFor item: ZNKTreeItem?)
+
+    /// 已对ZNKTreeItem取消高亮
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: Bool
+    func treeView(_ treeView: ZNKTreeView, didUnhighlightFor item: ZNKTreeItem?)
+
+    /// 将要选择单元格
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: ZNKTreeItem
+    func treeView(_ treeView: ZNKTreeView, willSelect item: ZNKTreeItem?) -> ZNKTreeItem?
+
+    /// 将要取消选择单元格
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: ZNKTreeItem
+    func treeView(_ treeView: ZNKTreeView, willDeselect item: ZNKTreeItem?) -> ZNKTreeItem?
+
+    /// 已取消选择单元格
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    func treeView(_ treeView: ZNKTreeView, didDeselect item: ZNKTreeItem?)
+
+    /// 单元格编辑类型风格
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: UITableViewCellEditingStyle
+    func treeView(_ treeView: ZNKTreeView, editingStyleFor item: ZNKTreeItem?) -> UITableViewCellEditingStyle
+
+    /// 删除按钮标题
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: 标题
+    func treeView(_ treeView: ZNKTreeView, titleForDeleteConfirmationButtonFor item: ZNKTreeItem?) -> String?
+
+    /// 单元格事件
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: UITableViewRowAction
+    func treeView(_ treeView: ZNKTreeView, editActionsFor item: ZNKTreeItem?) -> [UITableViewRowAction]?
+
+    /// 右滑手势配置
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: UISwipeActionsConfiguration
+    @available(iOS 11.0, *)
+    func treeView(_ treeView: ZNKTreeView, leadingSwipeActionsConfigurationFor item: ZNKTreeItem?) -> UISwipeActionsConfiguration?
+
+    /// 左滑手势配置
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: UISwipeActionsConfiguration
+    @available(iOS 11.0, *)
+    func treeView(_ treeView: ZNKTreeView, trailingSwipeActionsConfigurationFor item: ZNKTreeItem?) -> UISwipeActionsConfiguration?
+
+    /// 单元格编辑过程中是否缩进，默认true
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: Bool
+    func treeView(_ treeView: ZNKTreeView, shouldIndentWhileEditingFor item: ZNKTreeItem?) -> Bool
+
+    /// 将要编辑单元格
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    func treeView(_ treeView: ZNKTreeView, willBeginEditingFor item: ZNKTreeItem?)
+
+    /// 已完成单元格编辑
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    func treeView(_ treeView: ZNKTreeView, didEndEditingFor item: ZNKTreeItem?)
+
+    /// 编辑单元格拖行时所经过的ZNKTreeItem
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - sourceItem: 源ZNKTreeItem
+    ///   - item: 目标ZNKTreeItem
+    /// - Returns: 所经过的ZNKTreeItem
+    func treeView(_ treeView: ZNKTreeView, targetItemForMoveFrom sourceItem: ZNKTreeItem?, toProposed item: ZNKTreeItem?) -> ZNKTreeItem?
+
+    /// 缩进等级
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: Int 缩进等级
+    func treeView(_ treeView: ZNKTreeView, indentationLevelFor item: ZNKTreeItem?) -> Int
+
+    /// 是否需要显示菜单
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: Bool
+    func treeView(_ treeView: ZNKTreeView, shouldShowMenuFor item: ZNKTreeItem?) -> Bool
+
+    /// 单元格是否可以响应指定事件
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - action: Selector
+    ///   - item: ZNKTreeItem
+    ///   - sender: Any
+    /// - Returns: Bool
+    func treeView(_ treeView: ZNKTreeView, canPerformAction action: Selector, for item: ZNKTreeItem?, withSender sender: Any?) -> Bool
+
+    /// 单元格响应指定事件
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - action: Selector
+    ///   - item: ZNKTreeItem
+    ///   - sender: Any
+    func treeView(_ treeView: ZNKTreeView, performAction action: Selector, for item: ZNKTreeItem?, with sender: Any?)
+
+    /// 单元格可以聚焦
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: Bool
+    func treeView(_ treeView: ZNKTreeView, canFocus item: ZNKTreeItem?) -> Bool
+
+    /// 是否需要更新聚焦状态
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - context: UITableViewFocusUpdateContext
+    /// - Returns: Bool
+    func treeView(_ treeView: ZNKTreeView, shouldUpdateFocusIn context: UITableViewFocusUpdateContext) -> Bool
+
+    /// 完成聚焦更新
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - context: UITableViewFocusUpdateContext
+    ///   - coordinator: UIFocusAnimationCoordinator
+    func treeView(_ treeView: ZNKTreeView, didUpdateFocusIn context: UITableViewFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator)
+
+    /// 聚焦的ZNKTreeItem
+    ///
+    /// - Parameter treeView: ZNKTreeView
+    /// - Returns: 聚焦的ZNKTreeItem
+    func itemForPreferredFocusedView(in treeView: ZNKTreeView) -> ZNKTreeItem?
+
+
+    /// 弹性加载ZNKTreeItem
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    ///   - context: UISpringLoadedInteractionContext
+    /// - Returns: Bool
+    @available(iOS 11.0, *)
+    func treeView(_ treeView: ZNKTreeView, shouldSpringLoad item: ZNKTreeItem?, with context: UISpringLoadedInteractionContext) -> Bool
 }
 
 extension ZNKTreeViewDelete {
     func treeView(_ treeView: ZNKTreeView, didSelect item: ZNKTreeItem?) {}
-    func treeView(_ treeView: ZNKTreeView, heightForItem item: ZNKTreeItem?) -> CGFloat { return 0 }
-    func treeView(_ treeView: ZNKTreeView, commit editingStyle: UITableViewCellEditingStyle, forItem item: ZNKTreeItem) {}
-
+    func treeView(_ treeView: ZNKTreeView, heightfor item: ZNKTreeItem?) -> CGFloat { return 0 }
+    func treeView(_ treeView: ZNKTreeView, willDisplay cell: UITableViewCell, for item: ZNKTreeItem?)  { }
+    func treeView(_ treeView: ZNKTreeView, willDisplayHeaderView view: UIView, for rootIndex: Int) {}
+    func treeView(_ treeView: ZNKTreeView, willDisplayFooterView view: UIView, for rootIndex: Int) {}
+    func treeView(_ treeView: ZNKTreeView, didEndDisplaying cell: UITableViewCell, for item: ZNKTreeItem?) { }
+    func treeView(_ treeView: ZNKTreeView, didEndDisplayingHeaderView view: UIView, for rootIndex: Int) { }
+    func treeView(_ treeView: ZNKTreeView, didEndDisplayingFooterView view: UIView, for rootIndex: Int) {}
+    func treeView(_ treeView: ZNKTreeView, heightForHeaderIn rootIndex: Int) -> CGFloat { return 45 }
+    func treeView(_ treeView: ZNKTreeView, heightForFooterIn rootIndex: Int) -> CGFloat { return 45 }
+    func treeView(_ treeView: ZNKTreeView, estimatedHeightFor item: ZNKTreeItem?) -> CGFloat { return 45 }
+    func treeView(_ treeView: ZNKTreeView, estimatedHeightForHeaderIn rootIndex: Int) -> CGFloat { return 45 }
+    func treeView(_ treeView: ZNKTreeView, estimatedHeightForFooterIn rootIndex: Int) -> CGFloat { return 45 }
+    func treeView(_ treeView: ZNKTreeView, viewForHeaderIn rootIndex: Int) -> UIView? { return nil }
+    func treeView(_ treeView: ZNKTreeView, viewForFooterIn rootIndex: Int) -> UIView? { return nil }
+    func treeView(_ treeView: ZNKTreeView, accessoryButtonTappedFor item: ZNKTreeItem?) { }
+    func treeView(_ treeView: ZNKTreeView, shouldHighlightFor item: ZNKTreeItem?) -> Bool { return true }
+    func treeView(_ treeView: ZNKTreeView, didHighlightFor item: ZNKTreeItem?) {}
+    func treeView(_ treeView: ZNKTreeView, didUnhighlightFor item: ZNKTreeItem?) {}
+    func treeView(_ treeView: ZNKTreeView, willSelect item: ZNKTreeItem?) -> ZNKTreeItem? { return nil }
+    func treeView(_ treeView: ZNKTreeView, willDeselect item: ZNKTreeItem?) -> ZNKTreeItem? { return nil }
+    func treeView(_ treeView: ZNKTreeView, didDeselect item: ZNKTreeItem?) {}
+    func treeView(_ treeView: ZNKTreeView, editingStyleFor item: ZNKTreeItem?) -> UITableViewCellEditingStyle { return .none }
+    func treeView(_ treeView: ZNKTreeView, titleForDeleteConfirmationButtonFor item: ZNKTreeItem?) -> String? { return nil }
+    func treeView(_ treeView: ZNKTreeView, editActionsFor item: ZNKTreeItem?) -> [UITableViewRowAction]? { return nil }
+    @available(iOS 11.0, *)
+    func treeView(_ treeView: ZNKTreeView, leadingSwipeActionsConfigurationFor item: ZNKTreeItem?) -> UISwipeActionsConfiguration? { return nil }
+    @available(iOS 11.0, *)
+    func treeView(_ treeView: ZNKTreeView, trailingSwipeActionsConfigurationFor item: ZNKTreeItem?) -> UISwipeActionsConfiguration? { return nil }
+    func treeView(_ treeView: ZNKTreeView, shouldIndentWhileEditingFor item: ZNKTreeItem?) -> Bool { return true }
+    func treeView(_ treeView: ZNKTreeView, willBeginEditingFor item: ZNKTreeItem?) { }
+    func treeView(_ treeView: ZNKTreeView, didEndEditingFor item: ZNKTreeItem?) {}
+    func treeView(_ treeView: ZNKTreeView, targetItemForMoveFrom sourceItem: ZNKTreeItem?, toProposed item: ZNKTreeItem?) -> ZNKTreeItem? { return nil }
+    func treeView(_ treeView: ZNKTreeView, indentationLevelFor item: ZNKTreeItem?) -> Int { return 0 }
+    func treeView(_ treeView: ZNKTreeView, shouldShowMenuFor item: ZNKTreeItem?) -> Bool { return false }
+    func treeView(_ treeView: ZNKTreeView, canPerformAction action: Selector, for item: ZNKTreeItem?, withSender sender: Any?) -> Bool { return false }
+    func treeView(_ treeView: ZNKTreeView, performAction action: Selector, for item: ZNKTreeItem?, with sender: Any?) { }
+    func treeView(_ treeView: ZNKTreeView, canFocus item: ZNKTreeItem?) -> Bool { return true }
+    func treeView(_ treeView: ZNKTreeView, shouldUpdateFocusIn context: UITableViewFocusUpdateContext) -> Bool { return true }
+    func treeView(_ treeView: ZNKTreeView, didUpdateFocusIn context: UITableViewFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator) { }
+    func itemForPreferredFocusedView(in treeView: ZNKTreeView) -> ZNKTreeItem? { return nil }
+    @available(iOS 11.0, *)
+    func treeView(_ treeView: ZNKTreeView, shouldSpringLoad item: ZNKTreeItem?, with context: UISpringLoadedInteractionContext) -> Bool { return true }
 }
 //MARK: ************************** ZNKTreeViewDataSource ***********************
 protocol ZNKTreeViewDataSource {
@@ -549,7 +906,7 @@ protocol ZNKTreeViewDataSource {
     ///   - item: ZNKTreeItem
     ///   - index: 指定段下标
     /// - Returns: 行数
-    func treeView(_ treeView: ZNKTreeView, numberOfChildrenForItem item: ZNKTreeItem?, atRootItemIndex index: Int) -> Int
+    func treeView(_ treeView: ZNKTreeView, numberOfChildrenFor item: ZNKTreeItem?, atRootItemIndex index: Int) -> Int
 
     /// 树形图每段每行数据源元素
     ///
@@ -567,8 +924,70 @@ protocol ZNKTreeViewDataSource {
     ///   - treeView: 树形图
     ///   - item: 展示数据源
     /// - Returns: UITableViewCell
-    func treeView(_ treeView: ZNKTreeView, cellForItem item: ZNKTreeItem?, at indexPath: IndexPath) -> UITableViewCell
+    func treeView(_ treeView: ZNKTreeView, cellFor item: ZNKTreeItem?, at indexPath: IndexPath) -> UITableViewCell
 
+    /// 编辑item
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - editingStyle: 编辑类型
+    ///   - item: ZNKTreeItem
+    func treeView(_ treeView: ZNKTreeView, commit editingStyle: UITableViewCellEditingStyle, for item: ZNKTreeItem?)
+
+    /// item是否可以编辑
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: Bool
+    func treeView(_ treeView: ZNKTreeView, canEditFor item: ZNKTreeItem?) -> Bool
+
+    /// 段头标题
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - index: 根结点下标
+    /// - Returns: 标题
+    func treeView(_ treeView: ZNKTreeView, titleForHeaderInRootIndex index: Int) -> String?
+
+    /// 段尾标题
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - index: 根结点下标
+    /// - Returns: 标题
+    func treeView(_ treeView: ZNKTreeView, titleForFooterInRootIndex index: Int) -> String?
+
+    /// 是否可移动ZNKTreeItem
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - item: ZNKTreeItem
+    /// - Returns: Bool
+    func treeView(_ treeView: ZNKTreeView, canMoveFor item: ZNKTreeItem?) -> Bool
+
+    /// 索引数组
+    ///
+    /// - Parameter treeView: ZNKTreeView
+    /// - Returns: 索引数组
+    func sectionIndexTitles(for treeView: ZNKTreeView) -> [String]?
+
+    /// 索引所在的位置
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - title: 标题
+    ///   - index: 下标
+    /// - Returns: 位置
+    func treeView(_ treeView: ZNKTreeView, sectionForSectionIndexTitle title: String, at index: Int) -> Int
+
+    /// 将item从源地址索引移动到目标地址索引
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - sourceIndexPath: 源地址索引
+    ///   - destinationIndexPath: 目标地址索引
+    func treeView(_ treeView: ZNKTreeView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath)
 }
 
 extension ZNKTreeViewDataSource {
@@ -576,6 +995,14 @@ extension ZNKTreeViewDataSource {
     func numberOfRootItemInTreeView(_ treeView: ZNKTreeView) -> Int {
         return 1
     }
+    func treeView(_ treeView: ZNKTreeView, commit editingStyle: UITableViewCellEditingStyle, for item: ZNKTreeItem?) {}
+    func treeView(_ treeView: ZNKTreeView, canEditFor item: ZNKTreeItem?) -> Bool { return false }
+    func treeView(_ treeView: ZNKTreeView, titleForHeaderInRootIndex index: Int) -> String? { return nil }
+    func treeView(_ treeView: ZNKTreeView, titleForFooterInRootIndex index: Int) -> String? { return nil }
+    func treeView(_ treeView: ZNKTreeView, canMoveFor item: ZNKTreeItem?) -> Bool { return false }
+    func sectionIndexTitles(for treeView: ZNKTreeView) -> [String]? { return nil }
+    func treeView(_ treeView: ZNKTreeView, sectionForSectionIndexTitle title: String, at index: Int) -> Int { return -1 }
+    func treeView(_ treeView: ZNKTreeView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {}
 }
 
 
@@ -638,23 +1065,38 @@ class ZNKTreeView: UIView {
         }
     }
 
+    /// 分割风格
+    var separatorStyle: ZNKTreeViewCellSeperatorStyle = .none {
+        didSet {
+            guard let table = treeTable else { return }
+            table.separatorStyle = separatorStyle.style
+        }
+    }
+
+    /// 分割颜色
+    var separatorColor: UIColor? = nil {
+        didSet {
+            guard let table = treeTable else { return }
+            table.separatorColor = separatorColor
+        }
+    }
+
+    /// 行高
+    var rowHeight: CGFloat {
+        didSet {
+            guard let table = treeTable else { return }
+            table.rowHeight = rowHeight
+        }
+    }
+
 
 
     //MARK: ******Private*********
     /// 表格
     private var treeTable: UITableView!
 
-    /// 树形图展示类型
-    ///
-    /// - grouped: 分组
-    /// - plain: 平铺
-    enum TreeViewStyle {
-        case grouped
-        case plain
-    }
-
     /// 显示类型
-    private var style: TreeViewStyle = .plain
+    private var style: ZNKTreeViewStyle = .plain
 
     /// 节点管理
     private var manager: ZNKTreeNodeController?
@@ -666,7 +1108,7 @@ class ZNKTreeView: UIView {
     /// - Parameters:
     ///   - frame: 坐标及大小
     ///   - style: 类型
-    init(frame: CGRect, style: TreeViewStyle) {
+    init(frame: CGRect, style: ZNKTreeViewStyle) {
         super.init(frame: frame)
         self.style = style
         self.commonInit()
@@ -697,12 +1139,7 @@ class ZNKTreeView: UIView {
 
     /// 初始化视图
     private func initTable() {
-        switch style {
-        case .grouped:
-            self.treeTable = UITableView.init(frame: bounds, style: .grouped)
-        case .plain:
-            self.treeTable = UITableView.init(frame: bounds, style: .plain)
-        }
+        self.treeTable = UITableView.init(frame: bounds, style: style.tableStyle)
         treeTable.autoresizingMask = [.flexibleTopMargin, .flexibleLeftMargin, .flexibleBottomMargin, .flexibleRightMargin]
         treeTable.estimatedRowHeight = 0
         treeTable.estimatedSectionHeaderHeight = 0
@@ -719,11 +1156,120 @@ class ZNKTreeView: UIView {
         manager?.delegate = self
     }
 }
+
+extension ZNKTreeView {
+    /// 树形图展示类型
+    ///
+    /// - grouped: 分组
+    /// - plain: 平铺
+    enum ZNKTreeViewStyle {
+        case grouped
+        case plain
+        var tableStyle: UITableViewStyle {
+            switch self {
+            case .grouped:
+                return UITableViewStyle.grouped
+            case .plain:
+                return UITableViewStyle.plain
+            }
+        }
+
+    }
+
+    /// 单元格分割风格
+    ///
+    /// - none: 无
+    /// - singleLine: 单线
+    /// - singleLineEtched: 单线蚀刻
+    enum ZNKTreeViewCellSeperatorStyle {
+        case none
+        case singleLine
+        case singleLineEtched
+        var style: UITableViewCellSeparatorStyle {
+            switch self {
+            case .none:
+                return UITableViewCellSeparatorStyle.none
+            case .singleLine:
+                return UITableViewCellSeparatorStyle.singleLine
+            case .singleLineEtched:
+                return UITableViewCellSeparatorStyle.singleLineEtched
+            }
+        }
+
+    }
+
+    /// 表格滚动位置
+    ///
+    /// - none: 无
+    /// - top: 顶部
+    /// - middle: 中间
+    /// - bottom: 底部
+    enum ZNKTreeViewScrollPosition {
+        case none
+        case top
+        case middle
+        case bottom
+        var position: UITableViewScrollPosition {
+            switch self {
+            case .none:
+                return UITableViewScrollPosition.none
+            case .top:
+                return UITableViewScrollPosition.top
+            case .middle:
+                return UITableViewScrollPosition.middle
+            case .bottom:
+                return UITableViewScrollPosition.bottom
+            }
+        }
+
+    }
+
+    /// 单元格动画效果
+    ///
+    /// - fade: 渐褪
+    /// - right: 向右
+    /// - left: 向左
+    /// - top: 顶部
+    /// - bottom: 底部
+    /// - middle: 中间
+    /// - automatic: 自动
+    enum ZNKTreeViewRowAnimation {
+        case none
+        case fade
+        case right
+        case left
+        case top
+        case bottom
+        case middle
+        case automatic
+        var animation: UITableViewRowAnimation {
+            switch self {
+            case .none:
+                return UITableViewRowAnimation.none
+            case .fade:
+                return UITableViewRowAnimation.fade
+            case .right:
+                return UITableViewRowAnimation.right
+            case .left:
+                return UITableViewRowAnimation.left
+            case .top:
+                return UITableViewRowAnimation.top
+            case .bottom:
+                return UITableViewRowAnimation.bottom
+            case .middle:
+                return UITableViewRowAnimation.middle
+            case .automatic:
+                return UITableViewRowAnimation.automatic
+            }
+        }
+    }
+}
+
 //MARK: ************ public methods ******************
 extension ZNKTreeView {
 
-    func levelForItem(_ item: ZNKTreeItem, at indexPath: IndexPath? = nil) -> Int {
-        return manager?.levelForItem(item, at: indexPath) ?? -1
+    func levelFor(_ item: ZNKTreeItem, at indexPath: IndexPath? = nil) -> Int {
+        return manager?.levelfor(item, at: indexPath) ?? -1
     }
 
     /// 注册UITableViewCell类
@@ -802,33 +1348,323 @@ extension ZNKTreeView {
         manager?.rootTreeNodes()
         table.reloadData()
     }
+
+
 }
 
+//MARK: *************** UITableViewDelegate ****************
 
 extension ZNKTreeView: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+
         if let delegate = delegate {
-            let item = manager?.treeItemForIndexPath(indexPath)
-            delegate.treeView(self, didSelect: item)
+            delegate.treeView(self, didSelect: manager?.treeItemForIndexPath(indexPath))
         }
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if let delegate = delegate {
-            let item = manager?.treeItemForIndexPath(indexPath)
-            return delegate.treeView(self, heightForItem: item)
+            return delegate.treeView(self, heightfor: manager?.treeItemForIndexPath(indexPath))
         }
         return 0
     }
 
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if let delegate = delegate, let item = manager?.treeItemForIndexPath(indexPath){
-            delegate.treeView(self, commit: editingStyle, forItem: item)
+
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if let delegate = delegate {
+            delegate.treeView(self, willDisplay: cell, for: manager?.treeItemForIndexPath(indexPath))
         }
     }
+
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        if let delegate = delegate {
+            delegate.treeView(self, willDisplayHeaderView: view, for: section)
+        }
+    }
+
+    func tableView(_ tableView: UITableView, willDisplayFooterView view: UIView, forSection section: Int) {
+        if let delegate = delegate {
+            delegate.treeView(self, willDisplayFooterView: view, for: section)
+        }
+    }
+
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if let delegate = delegate {
+            delegate.treeView(self, didEndDisplaying: cell, for: manager?.treeItemForIndexPath(indexPath))
+        }
+    }
+
+    func tableView(_ tableView: UITableView, didEndDisplayingHeaderView view: UIView, forSection section: Int) {
+        if let delegate = delegate {
+            delegate.treeView(self, didEndDisplayingHeaderView: view, for: section)
+        }
+    }
+
+    func tableView(_ tableView: UITableView, didEndDisplayingFooterView view: UIView, forSection section: Int) {
+        if let delegate = delegate {
+            delegate.treeView(self, didEndDisplayingFooterView: view, for: section)
+        }
+    }
+
+
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if let delegate = delegate {
+            return delegate.treeView(self, heightForHeaderIn: section)
+        }
+        return 45
+    }
+
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        if let delegate = delegate {
+            return delegate.treeView(self, heightForFooterIn: section)
+        }
+        return 45
+    }
+
+
+
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        if let delegate = delegate {
+            return delegate.treeView(self, estimatedHeightFor: manager?.treeItemForIndexPath(indexPath))
+        }
+        return 45
+    }
+
+
+    func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
+        if let delegate = delegate {
+            return delegate.treeView(self, estimatedHeightForHeaderIn: section)
+        }
+        return 45
+    }
+
+    func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {
+        if let delegate = delegate {
+            return delegate.treeView(self, estimatedHeightForFooterIn: section)
+        }
+        return 45
+    }
+
+
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        if let delegate = delegate {
+            return delegate.treeView(self, viewForHeaderIn: section)
+        }
+        return nil
+    }
+
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        if let delegate = delegate {
+            return delegate.treeView(self, viewForFooterIn: section)
+        }
+        return nil
+    }
+
+
+    func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
+        if let delegate = delegate {
+            delegate.treeView(self, accessoryButtonTappedFor: manager?.treeItemForIndexPath(indexPath))
+        }
+    }
+
+
+
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        if let delegate = delegate {
+            return delegate.treeView(self, shouldHighlightFor: manager?.treeItemForIndexPath(indexPath))
+        }
+        return false
+    }
+
+    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
+        if let delegate = delegate {
+            delegate.treeView(self, didHighlightFor: manager?.treeItemForIndexPath(indexPath))
+        }
+    }
+
+    func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
+        if let delegate = delegate {
+            delegate.treeView(self, didUnhighlightFor: manager?.treeItemForIndexPath(indexPath))
+        }
+    }
+
+
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        if let delegate = delegate {
+            if let item = delegate.treeView(self, willSelect: manager?.treeItemForIndexPath(indexPath)) {
+                return manager?.indexPathForItem(item, for: indexPath)
+            }
+        }
+        return indexPath
+    }
+
+
+    func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath? {
+        if let delegate = delegate {
+            if let item = delegate.treeView(self, willDeselect: manager?.treeItemForIndexPath(indexPath)) {
+                return manager?.indexPathForItem(item, for: indexPath)
+            }
+        }
+        return indexPath
+    }
+
+
+
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        if let delegate = delegate {
+            delegate.treeView(self, didDeselect: manager?.treeItemForIndexPath(indexPath))
+        }
+    }
+
+
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
+        if let delegate = delegate {
+            return delegate.treeView(self, editingStyleFor: manager?.treeItemForIndexPath(indexPath))
+        }
+        return .none
+    }
+
+    func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String? {
+        if let delegate = delegate {
+            return delegate.treeView(self, titleForDeleteConfirmationButtonFor: manager?.treeItemForIndexPath(indexPath))
+        }
+        return nil
+    }
+
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        if let delegate = delegate {
+            return delegate.treeView(self, editActionsFor: manager?.treeItemForIndexPath(indexPath))
+        }
+        return nil
+    }
+
+
+    @available(iOS 11.0, *)
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        if let delegate = delegate {
+            return delegate.treeView(self, leadingSwipeActionsConfigurationFor: manager?.treeItemForIndexPath(indexPath))
+        }
+        return nil
+    }
+
+    @available(iOS 11.0, *)
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        if let delegate = delegate {
+            return delegate.treeView(self, trailingSwipeActionsConfigurationFor: manager?.treeItemForIndexPath(indexPath))
+        }
+        return nil
+    }
+
+
+    func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
+        if let delegate = delegate {
+            return delegate.treeView(self, shouldIndentWhileEditingFor: manager?.treeItemForIndexPath(indexPath))
+        }
+        return true
+    }
+
+
+    func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
+        if let delegate = delegate {
+            delegate.treeView(self, willBeginEditingFor: manager?.treeItemForIndexPath(indexPath))
+        }
+    }
+
+
+    func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
+        if let delegate = delegate {
+            if let indexPath = indexPath {
+                delegate.treeView(self, didEndEditingFor: manager?.treeItemForIndexPath(indexPath))
+            } else {
+                delegate.treeView(self, didEndEditingFor: nil)
+            }
+        }
+    }
+
+
+    func tableView(_ tableView: UITableView, targetIndexPathForMoveFromRowAt sourceIndexPath: IndexPath, toProposedIndexPath proposedDestinationIndexPath: IndexPath) -> IndexPath {
+        if let delegate = delegate {
+            let sourceItem = manager?.treeItemForIndexPath(sourceIndexPath)
+            let destinationItem = manager?.treeItemForIndexPath(proposedDestinationIndexPath)
+            if let item = delegate.treeView(self, targetItemForMoveFrom: sourceItem, toProposed: destinationItem) {
+                return manager?.indexPathForItem(item) ?? proposedDestinationIndexPath
+            }
+        }
+        return proposedDestinationIndexPath
+    }
+
+
+
+    func tableView(_ tableView: UITableView, indentationLevelForRowAt indexPath: IndexPath) -> Int {
+        if let delegate = delegate {
+            return delegate.treeView(self, indentationLevelFor: manager?.treeItemForIndexPath(indexPath))
+        }
+        return 0
+    }
+
+
+    func tableView(_ tableView: UITableView, shouldShowMenuForRowAt indexPath: IndexPath) -> Bool {
+        if let delegate = delegate {
+            return delegate.treeView(self, shouldShowMenuFor: manager?.treeItemForIndexPath(indexPath))
+        }
+        return false
+    }
+
+    func tableView(_ tableView: UITableView, canPerformAction action: Selector, forRowAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
+        if let delegate = delegate {
+            return delegate.treeView(self, canPerformAction: action, for: manager?.treeItemForIndexPath(indexPath), withSender: sender)
+        }
+        return false
+    }
+
+    func tableView(_ tableView: UITableView, performAction action: Selector, forRowAt indexPath: IndexPath, withSender sender: Any?) {
+        if let delegate = delegate {
+            delegate.treeView(self, performAction: action, for: manager?.treeItemForIndexPath(indexPath), with: sender)
+        }
+    }
+
+
+    func tableView(_ tableView: UITableView, canFocusRowAt indexPath: IndexPath) -> Bool {
+        if let delegate = delegate {
+            return delegate.treeView(self, canFocus: manager?.treeItemForIndexPath(indexPath))
+        }
+        return true
+    }
+
+    func tableView(_ tableView: UITableView, shouldUpdateFocusIn context: UITableViewFocusUpdateContext) -> Bool {
+        if let delegate = delegate {
+            return delegate.treeView(self, shouldUpdateFocusIn: context)
+        }
+        return true
+    }
+
+
+    func tableView(_ tableView: UITableView, didUpdateFocusIn context: UITableViewFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator) {
+        if let delegate = delegate {
+            delegate.treeView(self, didUpdateFocusIn: context, with: coordinator)
+        }
+    }
+
+    func indexPathForPreferredFocusedView(in tableView: UITableView) -> IndexPath? {
+        if let delegate = delegate, let item = delegate.itemForPreferredFocusedView(in: self) {
+            return manager?.indexPathForItem(item)
+        }
+        return nil
+    }
+
+    @available(iOS 11.0, *)
+    func tableView(_ tableView: UITableView, shouldSpringLoadRowAt indexPath: IndexPath, with context: UISpringLoadedInteractionContext) -> Bool {
+        if let delegate = delegate {
+            return delegate.treeView(self, shouldSpringLoad: manager?.treeItemForIndexPath(indexPath), with: context)
+        }
+        return false
+    }
+
 }
 
+//MARK: *************** UITableViewDataSource ****************
 extension ZNKTreeView: UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -840,12 +1676,71 @@ extension ZNKTreeView: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let item = manager?.treeItemForIndexPath(indexPath)
-        let cell = dataSource?.treeView(self, cellForItem: item, at: indexPath) ?? .init()
+        let cell = dataSource?.treeView(self, cellFor: manager?.treeItemForIndexPath(indexPath), at: indexPath) ?? .init()
         return cell
     }
 
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if let dataSource = dataSource {
+            dataSource.treeView(self, commit: editingStyle, for: manager?.treeItemForIndexPath(indexPath))
+        }
+    }
 
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        if let dataSource = dataSource {
+            return dataSource.treeView(self, canEditFor: manager?.treeItemForIndexPath(indexPath))
+        }
+        return false
+    }
+
+
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if let dataSource = dataSource {
+            return dataSource.treeView(self, titleForHeaderInRootIndex: section)
+        }
+        return nil
+    }
+
+
+    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        if let dataSource = dataSource {
+            return dataSource.treeView(self, titleForFooterInRootIndex: section)
+        }
+        return nil
+    }
+
+
+    func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+        if let dataSource = dataSource {
+            return dataSource.treeView(self, canMoveFor: manager?.treeItemForIndexPath(indexPath))
+        }
+        return false
+    }
+
+
+
+    func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+        if let dataSource = dataSource {
+            return dataSource.sectionIndexTitles(for: self)
+        }
+        return nil
+    }
+
+
+    func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
+        if let dataSource = dataSource {
+            return dataSource.treeView(self, sectionForSectionIndexTitle: title, at: index)
+        }
+        return -1
+    }
+
+
+
+    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        if let dataSource = dataSource {
+            dataSource.treeView(self, moveItemAt: sourceIndexPath, to: destinationIndexPath)
+        }
+    }
 }
 
 extension ZNKTreeView: ZNKTreeNodeControllerDelegate {
@@ -855,7 +1750,7 @@ extension ZNKTreeView: ZNKTreeNodeControllerDelegate {
     }
 
     fileprivate func numberOfChildrenForNode(_ node: ZNKTreeNode?, atRootIndex index: Int) -> Int {
-        return dataSource?.treeView(self, numberOfChildrenForItem: node?.item, atRootItemIndex: index) ?? 0
+        return dataSource?.treeView(self, numberOfChildrenFor: node?.item, atRootItemIndex: index) ?? 0
     }
 
     fileprivate func treeNode(at childIndex: Int, of node: ZNKTreeNode?, atRootIndex index: Int) -> ZNKTreeNode? {
