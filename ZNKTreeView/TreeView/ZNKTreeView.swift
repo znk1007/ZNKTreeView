@@ -1006,6 +1006,22 @@ extension ZNKTreeViewDataSource {
 }
 
 
+protocol ZNKTreeViewDataSourcePrefetching {
+
+    /// 展示前预取ZNKTreeItem数组
+    ///
+    /// - Parameters:
+    ///   - treeView: ZNKTreeView
+    ///   - items: ZNKTreeItem数组
+    func treeView(_ treeView: ZNKTreeView, prefecth items: [ZNKTreeItem])
+}
+
+
+extension ZNKTreeViewDataSourcePrefetching {
+    func treeView(_ treeView: ZNKTreeView, prefecth items: [ZNKTreeItem]) { }
+}
+
+
 //MARK: ************************** ZNKTreeView ***********************
 
 class ZNKTreeView: UIView {
@@ -1016,7 +1032,8 @@ class ZNKTreeView: UIView {
     var delegate: ZNKTreeViewDelete?
     /// 数据源
     var dataSource: ZNKTreeViewDataSource?
-
+    /// 预取数据源
+    var prefetchDataSource: ZNKTreeViewDataSourcePrefetching?
     /// 预估行高 默认0
     var estimatedRowHeight: CGFloat = 0 {
         didSet {
@@ -1080,6 +1097,273 @@ class ZNKTreeView: UIView {
             table.separatorColor = separatorColor
         }
     }
+
+    /// 调整右侧像素
+    var cellLayoutMarginsFollowReadableWidth: Bool = false {
+        didSet {
+            guard let table = treeTable else { return }
+            table.cellLayoutMarginsFollowReadableWidth = cellLayoutMarginsFollowReadableWidth
+        }
+    }
+
+    /// 分割效果
+    var seperatorEffect: UIVisualEffect? {
+        didSet {
+            guard let table = treeTable else { return }
+            table.separatorEffect = seperatorEffect
+        }
+    }
+
+
+    var prefetchDataSource: UITableViewDataSourcePrefetching? {
+        didSet {
+            guard let table = treeTable else { return }
+            table.separatorEffect = seperatorEffect
+        }
+    }
+
+    @available(iOS 11.0, *)
+    weak open var dragDelegate: UITableViewDragDelegate?
+
+    @available(iOS 11.0, *)
+    weak open var dropDelegate: UITableViewDropDelegate?
+
+
+    open var rowHeight: CGFloat // default is UITableViewAutomaticDimension
+
+    open var sectionHeaderHeight: CGFloat // default is UITableViewAutomaticDimension
+
+    open var sectionFooterHeight: CGFloat // default is UITableViewAutomaticDimension
+
+    @available(iOS 7.0, *)
+    open var estimatedRowHeight: CGFloat // default is UITableViewAutomaticDimension, set to 0 to disable
+
+    @available(iOS 7.0, *)
+    open var estimatedSectionHeaderHeight: CGFloat // default is UITableViewAutomaticDimension, set to 0 to disable
+
+    @available(iOS 7.0, *)
+    open var estimatedSectionFooterHeight: CGFloat // default is UITableViewAutomaticDimension, set to 0 to disable
+
+
+    @available(iOS 7.0, *)
+    open var separatorInset: UIEdgeInsets // allows customization of the frame of cell separators; see also the separatorInsetReference property. Use UITableViewAutomaticDimension for the automatic inset for that edge.
+
+    @available(iOS 11.0, *)
+    open var separatorInsetReference: UITableViewSeparatorInsetReference // Changes how custom separatorInset values are interpreted. The default value is UITableViewSeparatorInsetFromCellEdges
+
+
+    @available(iOS 3.2, *)
+    open var backgroundView: UIView? // the background view will be automatically resized to track the size of the table view.  this will be placed as a subview of the table view behind all cells and headers/footers.  default may be non-nil for some devices.
+
+
+    // Info
+
+    open var numberOfSections: Int { get }
+
+    open func numberOfRows(inSection section: Int) -> Int
+
+
+    open func rect(forSection section: Int) -> CGRect // includes header, footer and all rows
+
+    open func rectForHeader(inSection section: Int) -> CGRect
+
+    open func rectForFooter(inSection section: Int) -> CGRect
+
+    open func rectForRow(at indexPath: IndexPath) -> CGRect
+
+
+    open func indexPathForRow(at point: CGPoint) -> IndexPath? // returns nil if point is outside of any row in the table
+
+    open func indexPath(for cell: UITableViewCell) -> IndexPath? // returns nil if cell is not visible
+
+    open func indexPathsForRows(in rect: CGRect) -> [IndexPath]? // returns nil if rect not valid
+
+
+    open func cellForRow(at indexPath: IndexPath) -> UITableViewCell? // returns nil if cell is not visible or index path is out of range
+
+    open var visibleCells: [UITableViewCell] { get }
+
+    open var indexPathsForVisibleRows: [IndexPath]? { get }
+
+
+    @available(iOS 6.0, *)
+    open func headerView(forSection section: Int) -> UITableViewHeaderFooterView?
+
+    @available(iOS 6.0, *)
+    open func footerView(forSection section: Int) -> UITableViewHeaderFooterView?
+
+
+    open func scrollToRow(at indexPath: IndexPath, at scrollPosition: UITableViewScrollPosition, animated: Bool)
+
+    open func scrollToNearestSelectedRow(at scrollPosition: UITableViewScrollPosition, animated: Bool)
+
+
+    // Reloading and Updating
+
+    // Allows multiple insert/delete/reload/move calls to be animated simultaneously. Nestable.
+    @available(iOS 11.0, *)
+    open func performBatchUpdates(_ updates: (() -> Swift.Void)?, completion: ((Bool) -> Swift.Void)? = nil)
+
+
+    // Use -performBatchUpdates:completion: instead of these methods, which will be deprecated in a future release.
+    open func beginUpdates()
+
+    open func endUpdates()
+
+
+    open func insertSections(_ sections: IndexSet, with animation: UITableViewRowAnimation)
+
+    open func deleteSections(_ sections: IndexSet, with animation: UITableViewRowAnimation)
+
+    @available(iOS 3.0, *)
+    open func reloadSections(_ sections: IndexSet, with animation: UITableViewRowAnimation)
+
+    @available(iOS 5.0, *)
+    open func moveSection(_ section: Int, toSection newSection: Int)
+
+
+    open func insertRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation)
+
+    open func deleteRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation)
+
+    @available(iOS 3.0, *)
+    open func reloadRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation)
+
+    @available(iOS 5.0, *)
+    open func moveRow(at indexPath: IndexPath, to newIndexPath: IndexPath)
+
+
+    // Returns YES if the table view is in the middle of reordering, is displaying a drop target gap, or has drop placeholders. If possible, avoid calling -reloadData while there are uncommitted updates to avoid interfering with user-initiated interactions that have not yet completed.
+    @available(iOS 11.0, *)
+    open var hasUncommittedUpdates: Bool { get }
+
+
+    // Reloads everything from scratch. Redisplays visible rows. Note that this will cause any existing drop placeholder rows to be removed.
+    open func reloadData()
+
+
+    // Reloads the section index bar.
+    @available(iOS 3.0, *)
+    open func reloadSectionIndexTitles()
+
+
+    // Editing. When set, rows show insert/delete/reorder controls based on data source queries
+
+    open var isEditing: Bool // default is NO. setting is not animated.
+
+    open func setEditing(_ editing: Bool, animated: Bool)
+
+
+    @available(iOS 3.0, *)
+    open var allowsSelection: Bool // default is YES. Controls whether rows can be selected when not in editing mode
+
+    open var allowsSelectionDuringEditing: Bool // default is NO. Controls whether rows can be selected when in editing mode
+
+    @available(iOS 5.0, *)
+    open var allowsMultipleSelection: Bool // default is NO. Controls whether multiple rows can be selected simultaneously
+
+    @available(iOS 5.0, *)
+    open var allowsMultipleSelectionDuringEditing: Bool // default is NO. Controls whether multiple rows can be selected simultaneously in editing mode
+
+
+    // Selection
+
+    open var indexPathForSelectedRow: IndexPath? { get } // returns nil or index path representing section and row of selection.
+
+    @available(iOS 5.0, *)
+    open var indexPathsForSelectedRows: [IndexPath]? { get } // returns nil or a set of index paths representing the sections and rows of the selection.
+
+
+    // Selects and deselects rows. These methods will not call the delegate methods (-tableView:willSelectRowAtIndexPath: or tableView:didSelectRowAtIndexPath:), nor will it send out a notification.
+    open func selectRow(at indexPath: IndexPath?, animated: Bool, scrollPosition: UITableViewScrollPosition)
+
+    open func deselectRow(at indexPath: IndexPath, animated: Bool)
+
+
+    // Appearance
+
+    open var sectionIndexMinimumDisplayRowCount: Int // show special section index list on right when row count reaches this value. default is 0
+
+    @available(iOS 6.0, *)
+    open var sectionIndexColor: UIColor? // color used for text of the section index
+
+    @available(iOS 7.0, *)
+    open var sectionIndexBackgroundColor: UIColor? // the background color of the section index while not being touched
+
+    @available(iOS 6.0, *)
+    open var sectionIndexTrackingBackgroundColor: UIColor? // the background color of the section index while it is being touched
+
+
+    open var separatorStyle: UITableViewCellSeparatorStyle // default is UITableViewCellSeparatorStyleSingleLine
+
+    open var separatorColor: UIColor? // default is the standard separator gray
+
+    @available(iOS 8.0, *)
+    @NSCopying open var separatorEffect: UIVisualEffect? // effect to apply to table separators
+
+
+    @available(iOS 9.0, *)
+    open var cellLayoutMarginsFollowReadableWidth: Bool // if cell margins are derived from the width of the readableContentGuide.
+
+    @available(iOS 11.0, *)
+    open var insetsContentViewsToSafeArea: Bool // default value is YES
+
+
+    open var tableHeaderView: UIView? // accessory view for above row content. default is nil. not to be confused with section header
+
+    open var tableFooterView: UIView? // accessory view below content. default is nil. not to be confused with section footer
+
+
+    open func dequeueReusableCell(withIdentifier identifier: String) -> UITableViewCell? // Used by the delegate to acquire an already allocated cell, in lieu of allocating a new one.
+
+    @available(iOS 6.0, *)
+    open func dequeueReusableCell(withIdentifier identifier: String, for indexPath: IndexPath) -> UITableViewCell // newer dequeue method guarantees a cell is returned and resized properly, assuming identifier is registered
+
+    @available(iOS 6.0, *)
+    open func dequeueReusableHeaderFooterView(withIdentifier identifier: String) -> UITableViewHeaderFooterView? // like dequeueReusableCellWithIdentifier:, but for headers/footers
+
+
+    // Beginning in iOS 6, clients can register a nib or class for each cell.
+    // If all reuse identifiers are registered, use the newer -dequeueReusableCellWithIdentifier:forIndexPath: to guarantee that a cell instance is returned.
+    // Instances returned from the new dequeue method will also be properly sized when they are returned.
+    @available(iOS 5.0, *)
+    open func register(_ nib: UINib?, forCellReuseIdentifier identifier: String)
+
+    @available(iOS 6.0, *)
+    open func register(_ cellClass: Swift.AnyClass?, forCellReuseIdentifier identifier: String)
+
+
+    @available(iOS 6.0, *)
+    open func register(_ nib: UINib?, forHeaderFooterViewReuseIdentifier identifier: String)
+
+    @available(iOS 6.0, *)
+    open func register(_ aClass: Swift.AnyClass?, forHeaderFooterViewReuseIdentifier identifier: String)
+
+
+    // Focus
+
+    @available(iOS 9.0, *)
+    open var remembersLastFocusedIndexPath: Bool // defaults to NO. If YES, when focusing on a table view the last focused index path is focused automatically. If the table view has never been focused, then the preferred focused index path is used.
+
+
+    // Drag & Drop
+
+    // To enable intra-app drags on iPhone, set this to YES.
+    // You can also force drags to be disabled for this table view by setting this to NO.
+    // By default, this will return YES on iPad and NO on iPhone.
+    @available(iOS 11.0, *)
+    open var dragInteractionEnabled: Bool
+
+
+    // YES if a drag session is currently active. A drag session begins after rows are "lifted" from the table view.
+    @available(iOS 11.0, *)
+    open var hasActiveDrag: Bool { get }
+
+
+    // YES if table view is currently tracking a drop session.
+    @available(iOS 11.0, *)
+    open var hasActiveDrop: Bool { get }
+
 
     //MARK: ******Private*********
     /// 表格
@@ -1340,6 +1624,26 @@ extension ZNKTreeView {
     }
 
 
+}
+
+extension ZNKTreeView: UITableViewDataSourcePrefetching {
+
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        if let prefetch = prefetchDataSource {
+            var items: [ZNKTreeItem] = []
+            for indexPath in indexPaths {
+                if let item = manager?.treeItemForIndexPath(indexPath) {
+                    objc_sync_enter(self)
+                    items.append(item)
+                    objc_sync_exit(self)
+                }
+            }
+        }
+    }
+
+    func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
+
+    }
 }
 
 //MARK: *************** UITableViewDelegate ****************
