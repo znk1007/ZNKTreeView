@@ -27,6 +27,18 @@ class ZNKTreeItem {
     }
 }
 
+//MARK: *******************IndexSet***********************
+
+fileprivate extension IndexSet {
+
+    /// 从IndexSet获取IndexPath
+    ///
+    /// - Parameter section: 段
+    /// - Returns: [IndexPath]
+    func indexPathsForSection(_ section: Int) -> [IndexPath] {
+        return self.map({ IndexPath.init(item: $0, section: section) })
+    }
+}
 
 //MARK: ************************** ZNKBatchChangeObject ***********************
 /// 批量处理对象
@@ -349,8 +361,9 @@ fileprivate class ZNKTreeNodeController {
     /// 根结点互斥锁
     private var rootMutex: pthread_mutex_t
     /// 结点数组
-    private var treeNodes: [ZNKTreeNode] = []
-
+    private var treeNodeArray: [ZNKTreeNode] = []
+    /// 节点字典
+    private var treeNodeDictionary: [String: [ZNKTreeNode]] = [:]
     deinit {
         self.delegate = nil
         pthread_mutex_destroy(&rootMutex)
@@ -368,18 +381,19 @@ fileprivate class ZNKTreeNodeController {
     func rootTreeNodes() {
         let rootNumber = numberOfRoot()
         if rootNumber == 0 {
-            treeNodes = []
+            treeNodeArray = []
         }
-        if treeNodes.count == 0 || rootNumber != treeNodes.count {
+        if treeNodeArray.count == 0 || rootNumber != treeNodeArray.count {
             for i in 0 ..< numberOfRoot() {
                 if let node = delegate?.treeNode(at: 0, of: nil, atRootIndex: i) {
                     node.indexPath = IndexPath.init(row: 0, section: i)
-                    append(node)
+                    appendRootNode(node)
                     childIndex = 0
-                    insertTreeNode(of: node, at: i)
+                    insertChildNode(of: node, at: i)
                 }
             }
         }
+        sortedByIndexPath()
     }
 
     /// 可见节点数
@@ -387,8 +401,8 @@ fileprivate class ZNKTreeNodeController {
     /// - Parameter index: 根结点下标
     /// - Returns: 可见节点数
     func numberOfVisibleNodeAtIndex(_ index: Int) -> Int {
-        guard treeNodes.count > index else { return 0 }
-        let node = treeNodes[index]
+        guard treeNodeArray.count > index else { return 0 }
+        let node = treeNodeArray[index]
         let number = node.numberOfVisibleChildren + 1
         return number
     }
@@ -399,8 +413,8 @@ fileprivate class ZNKTreeNodeController {
     /// - Returns: ZNKTreeItem
     func treeItemForIndexPath(_ indexPath: IndexPath) -> ZNKTreeItem? {
         let section = indexPath.section
-        guard treeNodes.count > section else { return nil }
-        let node = treeNodes[section]
+        guard treeNodeArray.count > section else { return nil }
+        let node = treeNodeArray[section]
         let item = node.itemForIndexPath(indexPath)
         return item
     }
@@ -413,11 +427,11 @@ fileprivate class ZNKTreeNodeController {
     /// - Returns: 地址索引
     func indexPathForItem(_ item: ZNKTreeItem, for indexPath: IndexPath? = nil) -> IndexPath? {
         if let indexPath = indexPath {
-            guard treeNodes.count > indexPath.section else { return nil }
-            let rootNode = treeNodes[indexPath.section]
+            guard treeNodeArray.count > indexPath.section else { return nil }
+            let rootNode = treeNodeArray[indexPath.section]
             return rootNode.treeNodeFromItem(item)?.indexPath
         } else {
-            for rootNode in treeNodes {
+            for rootNode in treeNodeArray {
                 return rootNode.treeNodeFromItem(item)?.indexPath
             }
         }
@@ -432,18 +446,45 @@ fileprivate class ZNKTreeNodeController {
     /// - Returns: 层级
     func levelfor(_ item: ZNKTreeItem, at indexPath: IndexPath? = nil) -> Int {
         if let indexPath = indexPath {
-            guard treeNodes.count > indexPath.section else { return -1 }
-            let rootNode = treeNodes[indexPath.section]
+            guard treeNodeArray.count > indexPath.section else { return -1 }
+            let rootNode = treeNodeArray[indexPath.section]
             return rootNode.treeNodeFromItem(item)?.level ?? -1
         } else {
-            for rootNode in treeNodes {
+            for rootNode in treeNodeArray {
                 return rootNode.treeNodeFromItem(item)?.level ?? -1
             }
         }
         return -1
     }
 
+    func childrenFor(_ parent: ZNKTreeNode) -> [ZNKTreeNode] {
+        return []
+    }
 
+    /// 添加根结点
+    ///
+    /// - Parameter root: 根结点
+    func appendRootNode(_ root: ZNKTreeNode) {
+        pthread_mutex_lock(&rootMutex)
+        treeNodeDictionary[root.item.identifier] = [root]
+        treeNodeArray.append(root)
+        pthread_mutex_unlock(&rootMutex)
+    }
+
+    /// 删除根节点
+    ///
+    /// - Parameter child: 根节点
+    func removeRoot(_ root: ZNKTreeNode) {
+        treeNodeDictionary.removeValue(forKey: root.item.identifier)
+        treeNodeArray = treeNodeArray.filter({$0.item.identifier != root.item.identifier})
+    }
+
+    /// 根据indexPath升序排序
+    func sortedByIndexPath() {
+        treeNodeArray.sort { (lhs, rhs) -> Bool in
+            return lhs.indexPath.compare(rhs.indexPath) == .orderedAscending
+        }
+    }
 
     /// 根结点数
     ///
@@ -483,7 +524,7 @@ fileprivate class ZNKTreeNodeController {
     /// - Parameters:
     ///   - node: 节点
     ///   - rootIndex: 跟节点下标
-    private func insertTreeNode(of node: ZNKTreeNode?, at rootIndex: Int) {
+    private func insertChildNode(of node: ZNKTreeNode?, at rootIndex: Int) {
         guard let node = node else { return }
         let childNumber = self.numberOfChildNode(for: node, rootIndex: rootIndex)
         if childNumber == 0 { return }
@@ -492,31 +533,10 @@ fileprivate class ZNKTreeNodeController {
             if let childNode = delegate?.treeNode(at: i, of: node, atRootIndex: rootIndex) {
                 childNode.indexPath = IndexPath.init(row: childIndex, section: rootIndex)
                 node.append(childNode)
-                insertTreeNode(of: childNode, at: rootIndex)
+                insertChildNode(of: childNode, at: rootIndex)
             }
         }
     }
-
-    /// 添加结点
-    ///
-    /// - Parameter root: 根结点
-    private func append(_ child: ZNKTreeNode, duple: Bool = true) {
-        pthread_mutex_lock(&rootMutex)
-        if !duple {
-            remove(child)
-        }
-        treeNodes.append(child)
-        pthread_mutex_unlock(&rootMutex)
-    }
-
-    /// 删除子节点
-    ///
-    /// - Parameter child: 子节点
-    private func remove(_ child: ZNKTreeNode) {
-        treeNodes = treeNodes.filter({$0.item.identifier != child.item.identifier})
-    }
-
-
 }
 
 
@@ -1075,7 +1095,7 @@ class ZNKTreeView: UIView {
 
 
     /// 树形图行高
-    var treeViewRowHeight: CGFloat = 44 {
+    var treeViewRowHeight: CGFloat = UITableViewAutomaticDimension {
         didSet {
             guard let table = treeTable else { return }
             table.rowHeight = treeViewRowHeight
@@ -1113,256 +1133,336 @@ class ZNKTreeView: UIView {
             table.separatorEffect = seperatorEffect
         }
     }
-
-
-    var prefetchDataSource: UITableViewDataSourcePrefetching? {
+    // 段头高度 默认 UITableViewAutomaticDimension
+    var sectionHeaderHeight: CGFloat = UITableViewAutomaticDimension {
         didSet {
             guard let table = treeTable else { return }
-            table.separatorEffect = seperatorEffect
+            table.sectionHeaderHeight = sectionHeaderHeight
+        }
+    }
+    // 段尾高度 默认 UITableViewAutomaticDimension
+    var sectionFooterHeight: CGFloat = UITableViewAutomaticDimension{
+        didSet {
+            guard let table = treeTable else { return }
+            table.sectionFooterHeight = sectionFooterHeight
         }
     }
 
-    @available(iOS 11.0, *)
-    weak open var dragDelegate: UITableViewDragDelegate?
-
-    @available(iOS 11.0, *)
-    weak open var dropDelegate: UITableViewDropDelegate?
-
-
-    open var rowHeight: CGFloat // default is UITableViewAutomaticDimension
-
-    open var sectionHeaderHeight: CGFloat // default is UITableViewAutomaticDimension
-
-    open var sectionFooterHeight: CGFloat // default is UITableViewAutomaticDimension
-
-    @available(iOS 7.0, *)
-    open var estimatedRowHeight: CGFloat // default is UITableViewAutomaticDimension, set to 0 to disable
-
-    @available(iOS 7.0, *)
-    open var estimatedSectionHeaderHeight: CGFloat // default is UITableViewAutomaticDimension, set to 0 to disable
-
-    @available(iOS 7.0, *)
-    open var estimatedSectionFooterHeight: CGFloat // default is UITableViewAutomaticDimension, set to 0 to disable
-
-
-    @available(iOS 7.0, *)
-    open var separatorInset: UIEdgeInsets // allows customization of the frame of cell separators; see also the separatorInsetReference property. Use UITableViewAutomaticDimension for the automatic inset for that edge.
-
-    @available(iOS 11.0, *)
-    open var separatorInsetReference: UITableViewSeparatorInsetReference // Changes how custom separatorInset values are interpreted. The default value is UITableViewSeparatorInsetFromCellEdges
-
-
-    @available(iOS 3.2, *)
-    open var backgroundView: UIView? // the background view will be automatically resized to track the size of the table view.  this will be placed as a subview of the table view behind all cells and headers/footers.  default may be non-nil for some devices.
-
-
-    // Info
-
-    open var numberOfSections: Int { get }
-
-    open func numberOfRows(inSection section: Int) -> Int
-
-
-    open func rect(forSection section: Int) -> CGRect // includes header, footer and all rows
-
-    open func rectForHeader(inSection section: Int) -> CGRect
-
-    open func rectForFooter(inSection section: Int) -> CGRect
-
-    open func rectForRow(at indexPath: IndexPath) -> CGRect
-
-
-    open func indexPathForRow(at point: CGPoint) -> IndexPath? // returns nil if point is outside of any row in the table
-
-    open func indexPath(for cell: UITableViewCell) -> IndexPath? // returns nil if cell is not visible
-
-    open func indexPathsForRows(in rect: CGRect) -> [IndexPath]? // returns nil if rect not valid
-
-
-    open func cellForRow(at indexPath: IndexPath) -> UITableViewCell? // returns nil if cell is not visible or index path is out of range
-
-    open var visibleCells: [UITableViewCell] { get }
-
-    open var indexPathsForVisibleRows: [IndexPath]? { get }
-
-
-    @available(iOS 6.0, *)
-    open func headerView(forSection section: Int) -> UITableViewHeaderFooterView?
-
-    @available(iOS 6.0, *)
-    open func footerView(forSection section: Int) -> UITableViewHeaderFooterView?
-
-
-    open func scrollToRow(at indexPath: IndexPath, at scrollPosition: UITableViewScrollPosition, animated: Bool)
-
-    open func scrollToNearestSelectedRow(at scrollPosition: UITableViewScrollPosition, animated: Bool)
-
-
-    // Reloading and Updating
-
-    // Allows multiple insert/delete/reload/move calls to be animated simultaneously. Nestable.
-    @available(iOS 11.0, *)
-    open func performBatchUpdates(_ updates: (() -> Swift.Void)?, completion: ((Bool) -> Swift.Void)? = nil)
-
-
-    // Use -performBatchUpdates:completion: instead of these methods, which will be deprecated in a future release.
-    open func beginUpdates()
-
-    open func endUpdates()
-
-
-    open func insertSections(_ sections: IndexSet, with animation: UITableViewRowAnimation)
-
-    open func deleteSections(_ sections: IndexSet, with animation: UITableViewRowAnimation)
-
-    @available(iOS 3.0, *)
-    open func reloadSections(_ sections: IndexSet, with animation: UITableViewRowAnimation)
-
-    @available(iOS 5.0, *)
-    open func moveSection(_ section: Int, toSection newSection: Int)
-
-
-    open func insertRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation)
-
-    open func deleteRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation)
-
-    @available(iOS 3.0, *)
-    open func reloadRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation)
-
-    @available(iOS 5.0, *)
-    open func moveRow(at indexPath: IndexPath, to newIndexPath: IndexPath)
-
-
-    // Returns YES if the table view is in the middle of reordering, is displaying a drop target gap, or has drop placeholders. If possible, avoid calling -reloadData while there are uncommitted updates to avoid interfering with user-initiated interactions that have not yet completed.
-    @available(iOS 11.0, *)
-    open var hasUncommittedUpdates: Bool { get }
-
-
-    // Reloads everything from scratch. Redisplays visible rows. Note that this will cause any existing drop placeholder rows to be removed.
-    open func reloadData()
-
-
-    // Reloads the section index bar.
-    @available(iOS 3.0, *)
-    open func reloadSectionIndexTitles()
-
-
-    // Editing. When set, rows show insert/delete/reorder controls based on data source queries
-
-    open var isEditing: Bool // default is NO. setting is not animated.
-
-    open func setEditing(_ editing: Bool, animated: Bool)
-
-
-    @available(iOS 3.0, *)
-    open var allowsSelection: Bool // default is YES. Controls whether rows can be selected when not in editing mode
-
-    open var allowsSelectionDuringEditing: Bool // default is NO. Controls whether rows can be selected when in editing mode
-
-    @available(iOS 5.0, *)
-    open var allowsMultipleSelection: Bool // default is NO. Controls whether multiple rows can be selected simultaneously
-
-    @available(iOS 5.0, *)
-    open var allowsMultipleSelectionDuringEditing: Bool // default is NO. Controls whether multiple rows can be selected simultaneously in editing mode
-
-
-    // Selection
-
-    open var indexPathForSelectedRow: IndexPath? { get } // returns nil or index path representing section and row of selection.
-
-    @available(iOS 5.0, *)
-    open var indexPathsForSelectedRows: [IndexPath]? { get } // returns nil or a set of index paths representing the sections and rows of the selection.
-
-
-    // Selects and deselects rows. These methods will not call the delegate methods (-tableView:willSelectRowAtIndexPath: or tableView:didSelectRowAtIndexPath:), nor will it send out a notification.
-    open func selectRow(at indexPath: IndexPath?, animated: Bool, scrollPosition: UITableViewScrollPosition)
-
-    open func deselectRow(at indexPath: IndexPath, animated: Bool)
-
-
-    // Appearance
-
-    open var sectionIndexMinimumDisplayRowCount: Int // show special section index list on right when row count reaches this value. default is 0
-
-    @available(iOS 6.0, *)
-    open var sectionIndexColor: UIColor? // color used for text of the section index
-
-    @available(iOS 7.0, *)
-    open var sectionIndexBackgroundColor: UIColor? // the background color of the section index while not being touched
-
-    @available(iOS 6.0, *)
-    open var sectionIndexTrackingBackgroundColor: UIColor? // the background color of the section index while it is being touched
-
-
-    open var separatorStyle: UITableViewCellSeparatorStyle // default is UITableViewCellSeparatorStyleSingleLine
-
-    open var separatorColor: UIColor? // default is the standard separator gray
-
-    @available(iOS 8.0, *)
-    @NSCopying open var separatorEffect: UIVisualEffect? // effect to apply to table separators
-
-
-    @available(iOS 9.0, *)
-    open var cellLayoutMarginsFollowReadableWidth: Bool // if cell margins are derived from the width of the readableContentGuide.
-
-    @available(iOS 11.0, *)
-    open var insetsContentViewsToSafeArea: Bool // default value is YES
-
-
-    open var tableHeaderView: UIView? // accessory view for above row content. default is nil. not to be confused with section header
-
-    open var tableFooterView: UIView? // accessory view below content. default is nil. not to be confused with section footer
-
-
-    open func dequeueReusableCell(withIdentifier identifier: String) -> UITableViewCell? // Used by the delegate to acquire an already allocated cell, in lieu of allocating a new one.
-
-    @available(iOS 6.0, *)
-    open func dequeueReusableCell(withIdentifier identifier: String, for indexPath: IndexPath) -> UITableViewCell // newer dequeue method guarantees a cell is returned and resized properly, assuming identifier is registered
-
-    @available(iOS 6.0, *)
-    open func dequeueReusableHeaderFooterView(withIdentifier identifier: String) -> UITableViewHeaderFooterView? // like dequeueReusableCellWithIdentifier:, but for headers/footers
-
-
-    // Beginning in iOS 6, clients can register a nib or class for each cell.
-    // If all reuse identifiers are registered, use the newer -dequeueReusableCellWithIdentifier:forIndexPath: to guarantee that a cell instance is returned.
-    // Instances returned from the new dequeue method will also be properly sized when they are returned.
-    @available(iOS 5.0, *)
-    open func register(_ nib: UINib?, forCellReuseIdentifier identifier: String)
-
-    @available(iOS 6.0, *)
-    open func register(_ cellClass: Swift.AnyClass?, forCellReuseIdentifier identifier: String)
-
-
-    @available(iOS 6.0, *)
-    open func register(_ nib: UINib?, forHeaderFooterViewReuseIdentifier identifier: String)
-
-    @available(iOS 6.0, *)
-    open func register(_ aClass: Swift.AnyClass?, forHeaderFooterViewReuseIdentifier identifier: String)
-
-
-    // Focus
-
-    @available(iOS 9.0, *)
-    open var remembersLastFocusedIndexPath: Bool // defaults to NO. If YES, when focusing on a table view the last focused index path is focused automatically. If the table view has never been focused, then the preferred focused index path is used.
-
-
-    // Drag & Drop
-
-    // To enable intra-app drags on iPhone, set this to YES.
-    // You can also force drags to be disabled for this table view by setting this to NO.
-    // By default, this will return YES on iPad and NO on iPhone.
-    @available(iOS 11.0, *)
-    open var dragInteractionEnabled: Bool
-
-
-    // YES if a drag session is currently active. A drag session begins after rows are "lifted" from the table view.
-    @available(iOS 11.0, *)
-    open var hasActiveDrag: Bool { get }
-
-
-    // YES if table view is currently tracking a drop session.
-    @available(iOS 11.0, *)
-    open var hasActiveDrop: Bool { get }
+    /// 根元素数
+    var numberOfRootItems: Int {
+        guard let table = treeTable else { return 0 }
+        return table.numberOfSections
+    }
+
+    /// 根元素下所有显示的子元素数量
+    ///
+    /// - Parameter rootIndex: 根下标
+    /// - Returns: 子元素数量
+    func numberOfChildren(inRoot index: Int) -> Int {
+        guard let table = treeTable else { return 0 }
+        return table.numberOfRows(inSection: index)
+    }
+
+    /// 包括头部，尾部，所有行的边框
+    ///
+    /// - Parameter index: 根下标
+    /// - Returns: CGRect
+    func treeRect(forRoot index: Int) -> CGRect {
+        guard let table = treeTable else { return .zero }
+        return table.rect(forSection: index)
+    }
+
+    /// 头部边框
+    ///
+    /// - Parameter index: 根下标
+    /// - Returns: CGRect
+    func treeRectForHeader(inRoot index: Int) -> CGRect {
+        guard let table = treeTable else { return .zero }
+        return table.rectForHeader(inSection: index)
+    }
+
+    /// 尾部边框
+    ///
+    /// - Parameter index: 根下标
+    /// - Returns: CGRect
+    func treeRectForFooter(inRoot index: Int) -> CGRect {
+        guard let table = treeTable else { return .zero }
+        return table.rectForFooter(inSection: index)
+    }
+
+    /// 指定元素边框
+    ///
+    /// - Parameter item: 指定元素
+    /// - Returns: CGRect
+    func treeRectForItem(_ item: ZNKTreeItem) -> CGRect {
+        guard let table = treeTable, let indexPath = manager?.indexPathForItem(item) else { return .zero }
+        return table.rectForRow(at: indexPath)
+    }
+
+    /// 指定坐标的元素, 超出表格，则为nil
+    ///
+    /// - Parameter point: 坐标
+    /// - Returns: 元素
+    func treeItem(at point: CGPoint) -> ZNKTreeItem? {
+        guard let table = treeTable, let indexPath = table.indexPathForRow(at: point) else { return nil }
+        return manager?.treeItemForIndexPath(indexPath)
+    }
+
+    /// 指定单元格的元素
+    ///
+    /// - Parameter cell: 单元格
+    /// - Returns: 元素
+    func treeItem(for cell: UITableViewCell) -> ZNKTreeItem? {
+        guard let table = treeTable, let indexPath = table.indexPath(for: cell) else { return nil }
+        return manager?.treeItemForIndexPath(indexPath)
+    }
+
+    /// 指定边框的所有元素
+    ///
+    /// - Parameter rect: 边框
+    /// - Returns: 元素数组
+    func treeItems(in rect: CGRect) -> [ZNKTreeItem]? {
+        guard let table = treeTable, let indexPaths = table.indexPathsForRows(in: rect) else { return nil }
+        var items: [ZNKTreeItem] = []
+        for indexPath in indexPaths {
+            if let item = manager?.treeItemForIndexPath(indexPath) {
+                objc_sync_enter(self)
+                items.append(item)
+                objc_sync_exit(self)
+            }
+        }
+        return items
+    }
+
+    /// 指定元素的单元格
+    ///
+    /// - Parameter item: 指定元素
+    /// - Returns: 单元格
+    func cell(for item: ZNKTreeItem) -> UITableViewCell? {
+        guard let table = treeTable, let indexPath = manager?.indexPathForItem(item) else { return nil }
+        return table.cellForRow(at: indexPath)
+    }
+
+    /// 可见的元素数组
+    var visibleItems: [ZNKTreeItem] {
+        guard let table = treeTable else { return [] }
+        var items: [ZNKTreeItem] = []
+        for cell in table.visibleCells {
+            if let item = treeItem(for: cell) {
+                objc_sync_enter(self)
+                items.append(item)
+                objc_sync_exit(self)
+            }
+        }
+        return items
+    }
+
+    /// 段头视图
+    ///
+    /// - Parameter index: 根元素下标
+    /// - Returns: 段头视图
+    func treeHeaderView(forRoot index: Int) -> UITableViewHeaderFooterView? {
+        guard let table = treeTable else { return nil }
+        return table.headerView(forSection: index)
+    }
+
+    /// 段尾视图
+    ///
+    /// - Parameter index: 根元素下标
+    /// - Returns: 段尾视图
+    func treeFooterView(forRoot index: Int) -> UITableViewHeaderFooterView? {
+        guard let table = treeTable else { return nil }
+        return table.footerView(forSection: index)
+    }
+
+    /// 滚动到指定元素
+    ///
+    /// - Parameters:
+    ///   - item: 指定元素
+    ///   - position: 滚动位置
+    ///   - animated: 动画
+    func scrollToItem(_ item: ZNKTreeItem, at position: ZNKTreeViewScrollPosition, animated: Bool) {
+        guard let table = treeTable, let indexPath = manager?.indexPathForItem(item) else { return }
+        table.scrollToRow(at: indexPath, at: position.position, animated: animated)
+    }
+
+    /// 滚动至选择item附件
+    ///
+    /// - Parameters:
+    ///   - position: 滚动位置
+    ///   - animated: 动画
+    func scrollToNearestSelectedItem(at position: ZNKTreeViewScrollPosition, animated: Bool) {
+        guard let table = treeTable else { return }
+        table.scrollToNearestSelectedRow(at: position.position, animated: animated)
+    }
+
+    func insertItem(at indexPath: IndexPath, in parent: ZNKTreeItem?, with animation: ZNKTreeViewRowAnimation) {
+        guard let table = treeTable else { return }
+        if let parent = parent {
+
+        }
+    }
+
+    func insertRootItems(_ index: Int , with animation: ZNKTreeViewRowAnimation) {
+
+    }
+
+    func insertRootItem(_ indexPath: IndexPath, with animation: ZNKTreeViewRowAnimation) {
+
+    }
+
+//    open func insertSections(_ sections: IndexSet, with animation: UITableViewRowAnimation)
+//
+//    open func deleteSections(_ sections: IndexSet, with animation: UITableViewRowAnimation)
+//
+//    @available(iOS 3.0, *)
+//    open func reloadSections(_ sections: IndexSet, with animation: UITableViewRowAnimation)
+//
+//    @available(iOS 5.0, *)
+//    open func moveSection(_ section: Int, toSection newSection: Int)
+//
+//
+//    open func insertRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation)
+//
+//    open func deleteRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation)
+//
+//    @available(iOS 3.0, *)
+//    open func reloadRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation)
+//
+//    @available(iOS 5.0, *)
+//    open func moveRow(at indexPath: IndexPath, to newIndexPath: IndexPath)
+//
+//
+//    // Returns YES if the table view is in the middle of reordering, is displaying a drop target gap, or has drop placeholders. If possible, avoid calling -reloadData while there are uncommitted updates to avoid interfering with user-initiated interactions that have not yet completed.
+//    @available(iOS 11.0, *)
+//    open var hasUncommittedUpdates: Bool { get }
+//
+//
+//    // Reloads everything from scratch. Redisplays visible rows. Note that this will cause any existing drop placeholder rows to be removed.
+//    open func reloadData()
+//
+//
+//    // Reloads the section index bar.
+//    @available(iOS 3.0, *)
+//    open func reloadSectionIndexTitles()
+//
+//
+//    // Editing. When set, rows show insert/delete/reorder controls based on data source queries
+//
+//    open var isEditing: Bool // default is NO. setting is not animated.
+//
+//    open func setEditing(_ editing: Bool, animated: Bool)
+//
+//
+//    @available(iOS 3.0, *)
+//    open var allowsSelection: Bool // default is YES. Controls whether rows can be selected when not in editing mode
+//
+//    open var allowsSelectionDuringEditing: Bool // default is NO. Controls whether rows can be selected when in editing mode
+//
+//    @available(iOS 5.0, *)
+//    open var allowsMultipleSelection: Bool // default is NO. Controls whether multiple rows can be selected simultaneously
+//
+//    @available(iOS 5.0, *)
+//    open var allowsMultipleSelectionDuringEditing: Bool // default is NO. Controls whether multiple rows can be selected simultaneously in editing mode
+//
+//
+//    // Selection
+//
+//    open var indexPathForSelectedRow: IndexPath? { get } // returns nil or index path representing section and row of selection.
+//
+//    @available(iOS 5.0, *)
+//    open var indexPathsForSelectedRows: [IndexPath]? { get } // returns nil or a set of index paths representing the sections and rows of the selection.
+//
+//
+//    // Selects and deselects rows. These methods will not call the delegate methods (-tableView:willSelectRowAtIndexPath: or tableView:didSelectRowAtIndexPath:), nor will it send out a notification.
+//    open func selectRow(at indexPath: IndexPath?, animated: Bool, scrollPosition: UITableViewScrollPosition)
+//
+//    open func deselectRow(at indexPath: IndexPath, animated: Bool)
+//
+//
+//    // Appearance
+//
+//    open var sectionIndexMinimumDisplayRowCount: Int // show special section index list on right when row count reaches this value. default is 0
+//
+//    @available(iOS 6.0, *)
+//    open var sectionIndexColor: UIColor? // color used for text of the section index
+//
+//    @available(iOS 7.0, *)
+//    open var sectionIndexBackgroundColor: UIColor? // the background color of the section index while not being touched
+//
+//    @available(iOS 6.0, *)
+//    open var sectionIndexTrackingBackgroundColor: UIColor? // the background color of the section index while it is being touched
+//
+//
+//    open var separatorStyle: UITableViewCellSeparatorStyle // default is UITableViewCellSeparatorStyleSingleLine
+//
+//    open var separatorColor: UIColor? // default is the standard separator gray
+//
+//    @available(iOS 8.0, *)
+//    @NSCopying open var separatorEffect: UIVisualEffect? // effect to apply to table separators
+//
+//
+//    @available(iOS 9.0, *)
+//    open var cellLayoutMarginsFollowReadableWidth: Bool // if cell margins are derived from the width of the readableContentGuide.
+//
+//    @available(iOS 11.0, *)
+//    open var insetsContentViewsToSafeArea: Bool // default value is YES
+//
+//
+//    open var tableHeaderView: UIView? // accessory view for above row content. default is nil. not to be confused with section header
+//
+//    open var tableFooterView: UIView? // accessory view below content. default is nil. not to be confused with section footer
+//
+//
+//    open func dequeueReusableCell(withIdentifier identifier: String) -> UITableViewCell? // Used by the delegate to acquire an already allocated cell, in lieu of allocating a new one.
+//
+//    @available(iOS 6.0, *)
+//    open func dequeueReusableCell(withIdentifier identifier: String, for indexPath: IndexPath) -> UITableViewCell // newer dequeue method guarantees a cell is returned and resized properly, assuming identifier is registered
+//
+//    @available(iOS 6.0, *)
+//    open func dequeueReusableHeaderFooterView(withIdentifier identifier: String) -> UITableViewHeaderFooterView? // like dequeueReusableCellWithIdentifier:, but for headers/footers
+//
+//
+//    // Beginning in iOS 6, clients can register a nib or class for each cell.
+//    // If all reuse identifiers are registered, use the newer -dequeueReusableCellWithIdentifier:forIndexPath: to guarantee that a cell instance is returned.
+//    // Instances returned from the new dequeue method will also be properly sized when they are returned.
+//    @available(iOS 5.0, *)
+//    open func register(_ nib: UINib?, forCellReuseIdentifier identifier: String)
+//
+//    @available(iOS 6.0, *)
+//    open func register(_ cellClass: Swift.AnyClass?, forCellReuseIdentifier identifier: String)
+//
+//
+//    @available(iOS 6.0, *)
+//    open func register(_ nib: UINib?, forHeaderFooterViewReuseIdentifier identifier: String)
+//
+//    @available(iOS 6.0, *)
+//    open func register(_ aClass: Swift.AnyClass?, forHeaderFooterViewReuseIdentifier identifier: String)
+//
+//
+//    // Focus
+//
+//    @available(iOS 9.0, *)
+//    open var remembersLastFocusedIndexPath: Bool // defaults to NO. If YES, when focusing on a table view the last focused index path is focused automatically. If the table view has never been focused, then the preferred focused index path is used.
+//
+//
+//    // Drag & Drop
+//
+//    // To enable intra-app drags on iPhone, set this to YES.
+//    // You can also force drags to be disabled for this table view by setting this to NO.
+//    // By default, this will return YES on iPad and NO on iPhone.
+//    @available(iOS 11.0, *)
+//    open var dragInteractionEnabled: Bool
+//
+//
+//    // YES if a drag session is currently active. A drag session begins after rows are "lifted" from the table view.
+//    @available(iOS 11.0, *)
+//    open var hasActiveDrag: Bool { get }
+//
+//
+//    // YES if table view is currently tracking a drop session.
+//    @available(iOS 11.0, *)
+//    open var hasActiveDrop: Bool { get }
 
 
     //MARK: ******Private*********
@@ -1638,6 +1738,7 @@ extension ZNKTreeView: UITableViewDataSourcePrefetching {
                     objc_sync_exit(self)
                 }
             }
+
         }
     }
 
