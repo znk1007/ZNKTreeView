@@ -8,7 +8,22 @@
 
 
 import UIKit
+
+/// 元素插入模式
+///
+/// - leading: 头部
+/// - trailing: 尾部
+/// - leadingFor: 指定元素头部
+/// - trailingFor: 地址元素尾部
+enum ZNKTreeItemInsertMode {
+    case leading
+    case trailing
+    case leadingFor(ZNKTreeItem)
+    case trailingFor(ZNKTreeItem)
+}
+
 //MARK: ************************** ZNKTreeItem ***********************
+
 class ZNKTreeItem {
 
     /// 唯一标识
@@ -360,6 +375,8 @@ fileprivate class ZNKTreeNodeController {
     var delegate: ZNKTreeNodeControllerDelegate?
     /// 根结点互斥锁
     private var rootMutex: pthread_mutex_t
+    /// 插入数据互斥锁
+    private var insertMutex: pthread_mutex_t
     /// 结点数组
     private var treeNodeArray: [ZNKTreeNode] = []
     /// 节点字典
@@ -367,10 +384,12 @@ fileprivate class ZNKTreeNodeController {
     deinit {
         self.delegate = nil
         pthread_mutex_destroy(&rootMutex)
+        pthread_mutex_destroy(&insertMutex)
     }
 
     init() {
         rootMutex = pthread_mutex_t.init()
+        insertMutex = pthread_mutex_t.init()
     }
 
     private var childIndex: Int = 0
@@ -457,7 +476,61 @@ fileprivate class ZNKTreeNodeController {
         return -1
     }
 
-    func childrenFor(_ parent: ZNKTreeNode) -> [ZNKTreeNode] {
+    func insertItem(_ item: ZNKTreeItem, in parent: ZNKTreeItem?, at indexPath: IndexPath? = nil, mode: ZNKTreeItemInsertMode) {
+        if let parent = parent {
+            if let indexPath = indexPath {
+                guard treeNodeArray.count > indexPath.section else { return }
+                let rootNode = treeNodeArray[indexPath.section]
+                if let parentNode = rootNode.treeNodeFromItem(parent) {
+                    switch mode {
+                    case .leading:
+                        insert(item, in: parentNode, at: 0)
+                    case .trailing:
+                        insert(item, in: parentNode, at: parentNode.children.count - 1)
+                    case .leadingFor(let exists):
+                        if parentNode.children.count == 0 {
+                            insert(item, in: parentNode, at: 0)
+                        } else {
+                            if let index = parentNode.children.index(where: {$0.item.identifier == exists.identifier}) {
+                                insert(item, in: parentNode, at: index)
+                            }
+                        }
+                    case .trailingFor(let exists):
+                        if parentNode.children.count == 0 {
+                            insert(item, in: parentNode, at: 0)
+                        } else {
+                            if let index = parentNode.children.index(where: {$0.item.identifier == exists.identifier}) {
+                                insert(item, in: parentNode, at: index + 1)
+                            }
+                        }
+                    }
+                }
+            } else {
+
+            }
+        } else {
+            if let indexPath = indexPath {
+
+            } else {
+
+            }
+        }
+    }
+
+    /// 指定元素节点的所有子节点
+    ///
+    /// - Parameters:
+    ///   - item: 指定元素
+    ///   - indexPath: 地址索引
+    /// - Returns: 子节点
+    func childrenFor(_ item: ZNKTreeItem, at indexPath: IndexPath? = nil) -> [ZNKTreeNode] {
+        if let indexPath = indexPath {
+            guard treeNodeArray.count > indexPath.section else { return [] }
+            let rootNode = treeNodeArray[indexPath.section]
+            return rootNode.treeNodeFromItem(item)?.children ?? []
+        } else {
+
+        }
         return []
     }
 
@@ -484,6 +557,24 @@ fileprivate class ZNKTreeNodeController {
         treeNodeArray.sort { (lhs, rhs) -> Bool in
             return lhs.indexPath.compare(rhs.indexPath) == .orderedAscending
         }
+    }
+
+    /// 插入子节点
+    ///
+    /// - Parameters:
+    ///   - item: 元素
+    ///   - parentNode: 父节点
+    ///   - index: 下标
+    private func insert(_ item: ZNKTreeItem, in parentNode: ZNKTreeNode, at index: Int) {
+        pthread_mutex_lock(&insertMutex)
+        let node = ZNKTreeNode.init(item: item, parent: parentNode)
+        parentNode.children.insert(node, at: index)
+        var index = 1
+        for child in parentNode.children {
+            child.indexPath = IndexPath.init(item: index, section: parentNode.indexPath.section)
+            index += 1
+        }
+        pthread_mutex_lock(&insertMutex)
     }
 
     /// 根结点数
@@ -1044,7 +1135,7 @@ extension ZNKTreeViewDataSourcePrefetching {
 
 //MARK: ************************** ZNKTreeView ***********************
 
-class ZNKTreeView: UIView {
+final class ZNKTreeView: UIView {
 
     //MARK: ******Public*********
 
