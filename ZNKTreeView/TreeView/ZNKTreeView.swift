@@ -470,51 +470,103 @@ fileprivate class ZNKTreeNodeController {
             return rootNode.treeNodeFromItem(item)?.level ?? -1
         } else {
             for rootNode in treeNodeArray {
-                return rootNode.treeNodeFromItem(item)?.level ?? -1
+                if let node = rootNode.treeNodeFromItem(item) {
+                    return node.level
+                }
             }
         }
         return -1
     }
 
-    func insertItem(_ item: ZNKTreeItem, in parent: ZNKTreeItem?, at indexPath: IndexPath? = nil, mode: ZNKTreeItemInsertMode) {
+    /// 插入元素
+    ///
+    /// - Parameters:
+    ///   - item: 元素
+    ///   - parent: 父元素
+    ///   - indexPath: 地址索引
+    ///   - mode: 元素插入模式
+    /// - Returns: 地址索引
+    func insertItem(_ item: ZNKTreeItem, in parent: ZNKTreeItem?, at indexPath: IndexPath? = nil, mode: ZNKTreeItemInsertMode) -> IndexPath {
         if let parent = parent {
             if let indexPath = indexPath {
-                guard treeNodeArray.count > indexPath.section else { return }
+                guard treeNodeArray.count > indexPath.section else { return .init(row: -1, section: -1) }
                 let rootNode = treeNodeArray[indexPath.section]
                 if let parentNode = rootNode.treeNodeFromItem(parent) {
                     switch mode {
                     case .leading:
-                        insert(item, in: parentNode, at: 0)
+                        return insert(item, in: parentNode, at: 0)
                     case .trailing:
-                        insert(item, in: parentNode, at: parentNode.children.count - 1)
+                        return insert(item, in: parentNode, at: parentNode.children.endIndex)
                     case .leadingFor(let exists):
                         if parentNode.children.count == 0 {
-                            insert(item, in: parentNode, at: 0)
+                            return insert(item, in: parentNode, at: 0)
                         } else {
                             if let index = parentNode.children.index(where: {$0.item.identifier == exists.identifier}) {
-                                insert(item, in: parentNode, at: index)
+                                return insert(item, in: parentNode, at: index)
                             }
                         }
                     case .trailingFor(let exists):
                         if parentNode.children.count == 0 {
-                            insert(item, in: parentNode, at: 0)
+                            return insert(item, in: parentNode, at: 0)
                         } else {
                             if let index = parentNode.children.index(where: {$0.item.identifier == exists.identifier}) {
-                                insert(item, in: parentNode, at: index + 1)
+                                return insert(item, in: parentNode, at: index + 1)
                             }
                         }
                     }
                 }
             } else {
-
+                for rootNode in treeNodeArray {
+                    if let parentNode = rootNode.treeNodeFromItem(parent) {
+                        switch mode {
+                        case .leading:
+                            return insert(item, in: parentNode, at: 0)
+                        case .trailing:
+                            return insert(item, in: parentNode, at: parentNode.children.endIndex)
+                        case .leadingFor(let exists):
+                            if parentNode.children.count == 0 {
+                                return insert(item, in: parentNode, at: 0)
+                            } else {
+                                if let index = parentNode.children.index(where: {$0.item.identifier == exists.identifier}) {
+                                    return insert(item, in: parentNode, at: index)
+                                }
+                            }
+                        case .trailingFor(let exists):
+                            if parentNode.children.count == 0 {
+                                return insert(item, in: parentNode, at: 0)
+                            } else {
+                                if let index = parentNode.children.index(where: {$0.item.identifier == exists.identifier}) {
+                                    return insert(item, in: parentNode, at: index + 1)
+                                }
+                            }
+                        }
+                        break
+                    }
+                }
             }
         } else {
-            if let indexPath = indexPath {
-
-            } else {
-
+            let node = ZNKTreeNode.init(item: item, parent: nil)
+            switch mode {
+            case .leading:
+                treeNodeArray.insert(node, at: 0)
+            case .trailing:
+                treeNodeArray.append(node)
+            case .leadingFor(let exists):
+                if let index = treeNodeArray.index(where: {$0.item.identifier == exists.identifier}) {
+                    treeNodeArray.insert(node, at: index)
+                }
+            case .trailingFor(let exists):
+                if let index = treeNodeArray.index(where: {$0.item.identifier == exists.identifier}) {
+                    treeNodeArray.insert(node, at: index + 1)
+                }
+            }
+            var section = 0
+            for treeNode in treeNodeArray {
+                treeNode.indexPath = IndexPath.init(row: 0, section: section)
+                section += 1
             }
         }
+        return .init(row: -1, section: -1)
     }
 
     /// 指定元素节点的所有子节点
@@ -529,7 +581,11 @@ fileprivate class ZNKTreeNodeController {
             let rootNode = treeNodeArray[indexPath.section]
             return rootNode.treeNodeFromItem(item)?.children ?? []
         } else {
-
+            for rootNode in treeNodeArray {
+                if let children = rootNode.treeNodeFromItem(item)?.children {
+                    return children
+                }
+            }
         }
         return []
     }
@@ -565,16 +621,19 @@ fileprivate class ZNKTreeNodeController {
     ///   - item: 元素
     ///   - parentNode: 父节点
     ///   - index: 下标
-    private func insert(_ item: ZNKTreeItem, in parentNode: ZNKTreeNode, at index: Int) {
-        pthread_mutex_lock(&insertMutex)
+    private func insert(_ item: ZNKTreeItem, in parentNode: ZNKTreeNode, at index: Int) -> IndexPath {
         let node = ZNKTreeNode.init(item: item, parent: parentNode)
-        parentNode.children.insert(node, at: index)
-        var index = 1
-        for child in parentNode.children {
-            child.indexPath = IndexPath.init(item: index, section: parentNode.indexPath.section)
-            index += 1
-        }
         pthread_mutex_lock(&insertMutex)
+        parentNode.children.insert(node, at: index)
+        pthread_mutex_lock(&insertMutex)
+        let parentIndexPath = parentNode.indexPath
+        var childIndex = parentIndexPath.row + 1
+        for child in parentNode.children {
+            child.indexPath = IndexPath.init(item: childIndex, section: parentNode.indexPath.section)
+            childIndex += 1
+        }
+
+        return IndexPath.init(row: parentIndexPath.row + 1, section: parentIndexPath.section)
     }
 
     /// 根结点数
@@ -632,6 +691,7 @@ fileprivate class ZNKTreeNodeController {
 
 
 //MARK: ************************** ZNKTreeViewDelete ***********************
+
 protocol ZNKTreeViewDelete {
 
     /// 选择item
@@ -1387,6 +1447,18 @@ final class ZNKTreeView: UIView {
         table.scrollToNearestSelectedRow(at: position.position, animated: animated)
     }
 
+    func insertItems(_ items: [ZNKTreeItem], in parent: ZNKTreeItem?, at indexPath: IndexPath? = nil, mode: ZNKTreeItemInsertMode, animation: ZNKTreeViewRowAnimation) {
+        var indexPaths: [IndexPath] = []
+        for item in items {
+            if let childIndexPath = manager?.insertItem(item, in: parent, at: indexPath, mode: mode) {
+                pthread_mutex_lock(&insertMutex)
+                indexPaths.append(childIndexPath)
+                pthread_mutex_unlock(&insertMutex)
+            }
+        }
+        
+    }
+
     func insertItem(at indexPath: IndexPath, in parent: ZNKTreeItem?, with animation: ZNKTreeViewRowAnimation) {
         guard let table = treeTable else { return }
         if let parent = parent {
@@ -1568,6 +1640,9 @@ final class ZNKTreeView: UIView {
 
     /// 批量处理对象
     private var batchChanges: ZNKBatchChanges?
+
+    /// 插入数据互斥锁
+    private var insertMutex: pthread_mutex_t = .init()
     /// 初始化
     ///
     /// - Parameters:
@@ -1575,6 +1650,7 @@ final class ZNKTreeView: UIView {
     ///   - style: 类型
     init(frame: CGRect, style: ZNKTreeViewStyle) {
         super.init(frame: frame)
+        self.insertMutex = pthread_mutex_t.init()
         self.style = style
         self.commonInit()
     }
@@ -1591,6 +1667,7 @@ final class ZNKTreeView: UIView {
         treeTable = nil
         manager = nil
         batchChanges = nil
+        pthread_mutex_destroy(&insertMutex)
     }
 
     /// 初始化
