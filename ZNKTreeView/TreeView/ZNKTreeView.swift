@@ -486,10 +486,10 @@ fileprivate class ZNKTreeNodeController {
     ///   - indexPath: 地址索引
     ///   - mode: 元素插入模式
     /// - Returns: 地址索引
-    func insertItem(_ item: ZNKTreeItem, in parent: ZNKTreeItem?, at indexPath: IndexPath? = nil, mode: ZNKTreeItemInsertMode) -> IndexPath {
+    func insertItem(_ item: ZNKTreeItem, in parent: ZNKTreeItem?, at indexPath: IndexPath? = nil, mode: ZNKTreeItemInsertMode) -> IndexPath? {
         if let parent = parent {
             if let indexPath = indexPath {
-                guard treeNodeArray.count > indexPath.section else { return .init(row: -1, section: -1) }
+                guard treeNodeArray.count > indexPath.section else { return nil }
                 let rootNode = treeNodeArray[indexPath.section]
                 if let parentNode = rootNode.treeNodeFromItem(parent) {
                     switch mode {
@@ -566,7 +566,7 @@ fileprivate class ZNKTreeNodeController {
                 section += 1
             }
         }
-        return .init(row: -1, section: -1)
+        return nil
     }
 
     /// 指定元素节点的所有子节点
@@ -1447,31 +1447,36 @@ final class ZNKTreeView: UIView {
         table.scrollToNearestSelectedRow(at: position.position, animated: animated)
     }
 
-    func insertItems(_ items: [ZNKTreeItem], in parent: ZNKTreeItem?, at indexPath: IndexPath? = nil, mode: ZNKTreeItemInsertMode, animation: ZNKTreeViewRowAnimation) {
-        var indexPaths: [IndexPath] = []
+    /// 插入元素数组
+    ///
+    /// - Parameters:
+    ///   - items: 元素数组
+    ///   - parent: 父元素
+    ///   - indexPath: 地址索引
+    ///   - mode: 模式
+    ///   - animation: 动画
+    func insertItems(_ items: [ZNKTreeItem], in parent: ZNKTreeItem?, at indexPath: IndexPath? = nil, mode: ZNKTreeItemInsertMode = .leading, animation: ZNKTreeViewRowAnimation = .none) {
+        guard self.treeTable != nil else { return }
         for item in items {
-            if let childIndexPath = manager?.insertItem(item, in: parent, at: indexPath, mode: mode) {
-                pthread_mutex_lock(&insertMutex)
-                indexPaths.append(childIndexPath)
-                pthread_mutex_unlock(&insertMutex)
-            }
-        }
-        
-    }
-
-    func insertItem(at indexPath: IndexPath, in parent: ZNKTreeItem?, with animation: ZNKTreeViewRowAnimation) {
-        guard let table = treeTable else { return }
-        if let parent = parent {
-
+            insertItem(item, in: parent, at: indexPath, mode: mode, animation: animation)
         }
     }
 
-    func insertRootItems(_ index: Int , with animation: ZNKTreeViewRowAnimation) {
-
-    }
-
-    func insertRootItem(_ indexPath: IndexPath, with animation: ZNKTreeViewRowAnimation) {
-
+    /// 插入元素
+    ///
+    /// - Parameters:
+    ///   - item: 元素
+    ///   - parent: 父元素
+    ///   - indexPath: 地址索引
+    ///   - mode: 模式
+    ///   - animation: 动画
+    func insertItem(_ item: ZNKTreeItem, in parent: ZNKTreeItem?, at indexPath: IndexPath? = nil, mode: ZNKTreeItemInsertMode = .leading, animation: ZNKTreeViewRowAnimation = .none) {
+        guard self.treeTable != nil else { return }
+        if let childIndexPath = manager?.insertItem(item, in: parent, at: indexPath, mode: mode) {
+            batchChanges?.insertItem(at: childIndexPath, updates: { [weak self] in
+                self?.treeTable.insertRows(at: [childIndexPath], with: animation.animation)
+            })
+        }
     }
 
 //    open func insertSections(_ sections: IndexSet, with animation: UITableViewRowAnimation)
