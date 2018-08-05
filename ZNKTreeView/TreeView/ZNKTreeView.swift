@@ -253,8 +253,6 @@ fileprivate class ZNKTreeNode {
         }
     }
 
-
-
     /// 互斥锁
     private var mutex: pthread_mutex_t
     /// 初始化
@@ -276,28 +274,12 @@ fileprivate class ZNKTreeNode {
     ///
     /// - Parameter item: ZNKTreeItem
     /// - Returns: ZNKTreeNode
-    func treeNodeFromItem(_ item: ZNKTreeItem) -> ZNKTreeNode? {
+    func treeNodeForItem(_ item: ZNKTreeItem) -> ZNKTreeNode? {
         if self.item.identifier == item.identifier {
             return self
         }
         for child in self.children {
-            if let node = child.treeNodeFromItem(item) {
-                return node
-            }
-        }
-        return nil
-    }
-
-    /// 删除子元素
-    ///
-    /// - Parameter item: 子元素
-    /// - Returns: ZNKTreeNode
-    func deleteTreeNodeForItem(_ item: ZNKTreeItem) -> ZNKTreeNode? {
-        if let index = self.parent?.children.index(where: {$0.item.identifier == item.identifier}) {
-            return self.parent?.children.remove(at: index)
-        }
-        for child in self.children {
-            if let node = child.deleteTreeNodeForItem(item) {
+            if let node = child.treeNodeForItem(item) {
                 return node
             }
         }
@@ -410,19 +392,22 @@ fileprivate class ZNKTreeNodeController {
     private var rootMutex: pthread_mutex_t
     /// 插入数据互斥锁
     private var insertMutex: pthread_mutex_t
+    /// 地址索引互斥锁
+    private var indexPathMutex: pthread_mutex_t
     /// 结点数组
     private var treeNodeArray: [ZNKTreeNode] = []
-    /// 节点字典
-    private var treeNodeDictionary: [String: [ZNKTreeNode]] = [:]
+
     deinit {
         self.delegate = nil
         pthread_mutex_destroy(&rootMutex)
         pthread_mutex_destroy(&insertMutex)
+        pthread_mutex_destroy(&indexPathMutex)
     }
 
     init() {
         rootMutex = pthread_mutex_t.init()
         insertMutex = pthread_mutex_t.init()
+        indexPathMutex = pthread_mutex_t.init()
     }
 
     private var childIndex: Int = 0
@@ -471,20 +456,33 @@ fileprivate class ZNKTreeNodeController {
         return item
     }
 
+    /// 指定元素的根结点
+    ///
+    /// - Parameter item: 指定元素
+    /// - Returns: 根结点
+//    func rootNodeForItem(_ item: ZNKTreeItem) -> ZNKTreeNode? {
+//        for treeNode in treeNodeArray {
+//            if let _ = treeNode.treeNodeForItem(item) {
+//                return treeNode
+//            }
+//        }
+//        return nil
+//    }
+
     /// 根据ZNKTreeItem获取节点的地址索引
     ///
     /// - Parameters:
     ///   - item: ZNKTreeItem
     ///   - indexPath: 地址索引
     /// - Returns: 地址索引
-    func indexPathForItem(_ item: ZNKTreeItem, for indexPath: IndexPath? = nil) -> IndexPath? {
-        if let indexPath = indexPath {
+    func indexPathForItem(_ item: ZNKTreeItem, for rootIndexPath: IndexPath? = nil) -> IndexPath? {
+        if let indexPath = rootIndexPath {
             guard treeNodeArray.count > indexPath.section else { return nil }
             let rootNode = treeNodeArray[indexPath.section]
-            return rootNode.treeNodeFromItem(item)?.indexPath
+            return rootNode.treeNodeForItem(item)?.indexPath
         } else {
             for rootNode in treeNodeArray {
-                return rootNode.treeNodeFromItem(item)?.indexPath
+                return rootNode.treeNodeForItem(item)?.indexPath
             }
         }
         return nil
@@ -496,14 +494,14 @@ fileprivate class ZNKTreeNodeController {
     ///   - item: ZNKTreeItem
     ///   - indexPath: 地址索引
     /// - Returns: 层级
-    func levelfor(_ item: ZNKTreeItem, at indexPath: IndexPath? = nil) -> Int {
-        if let indexPath = indexPath {
+    func levelfor(_ item: ZNKTreeItem, at rootIndexPath: IndexPath? = nil) -> Int {
+        if let indexPath = rootIndexPath {
             guard treeNodeArray.count > indexPath.section else { return -1 }
             let rootNode = treeNodeArray[indexPath.section]
-            return rootNode.treeNodeFromItem(item)?.level ?? -1
+            return rootNode.treeNodeForItem(item)?.level ?? -1
         } else {
             for rootNode in treeNodeArray {
-                if let node = rootNode.treeNodeFromItem(item) {
+                if let node = rootNode.treeNodeForItem(item) {
                     return node.level
                 }
             }
@@ -520,61 +518,31 @@ fileprivate class ZNKTreeNodeController {
     ///   - indexPath: 地址索引
     ///   - mode: 元素插入模式
     /// - Returns: 地址索引
-    func insertItem(_ item: ZNKTreeItem, in parent: ZNKTreeItem?, at parentIndexPath: IndexPath? = nil, mode: ZNKTreeItemInsertMode) -> IndexPath? {
+    func insertItem(_ item: ZNKTreeItem, in parent: ZNKTreeItem?, mode: ZNKTreeItemInsertMode) -> [IndexPath]? {
         if let parent = parent {
-            if let indexPath = parentIndexPath {
-                guard treeNodeArray.count > indexPath.section else { return nil }
-                let rootNode = treeNodeArray[indexPath.section]
-                if let parentNode = rootNode.treeNodeFromItem(parent) {
+            for rootNode in treeNodeArray {
+                if let parentNode = rootNode.treeNodeForItem(parent) {
                     switch mode {
                     case .leading:
-                        return insert(item, in: treeNodeArray[indexPath.section].treeNodeFromItem(parent)!, at: 0)
+                        return insert(item, in: treeNodeArray.filter({$0.item.identifier == rootNode.item.identifier}).first!.treeNodeForItem(parent)!, at: 0)
                     case .trailing:
-                        return insert(item, in: rootNode.treeNodeFromItem(parent)!, at: parentNode.children.endIndex)
+                        return insert(item, in: treeNodeArray.filter({$0.item.identifier == rootNode.item.identifier}).first!.treeNodeForItem(parent)!, at: parentNode.children.endIndex)
                     case .leadingFor(let exists):
                         if parentNode.children.count == 0 {
-                            return insert(item, in: rootNode.treeNodeFromItem(parent)!, at: 0)
+                            return insert(item, in: treeNodeArray.filter({$0.item.identifier == rootNode.item.identifier}).first!.treeNodeForItem(parent)!, at: 0)
                         } else {
                             if let index = parentNode.children.index(where: {$0.item.identifier == exists.identifier}) {
-                                return insert(item, in: rootNode.treeNodeFromItem(parent)!, at: index)
+                                return insert(item, in: treeNodeArray.filter({$0.item.identifier == rootNode.item.identifier}).first!.treeNodeForItem(parent)!, at: index)
                             }
                         }
                     case .trailingFor(let exists):
                         if parentNode.children.count == 0 {
-                            return insert(item, in: rootNode.treeNodeFromItem(parent)!, at: 0)
+                            return insert(item, in: rootNode.treeNodeForItem(parent)!, at: 0)
                         } else {
                             if let index = parentNode.children.index(where: {$0.item.identifier == exists.identifier}) {
-                                return insert(item, in: rootNode.treeNodeFromItem(parent)!, at: index + 1)
+                                return insert(item, in: rootNode.treeNodeForItem(parent)!, at: index + 1)
                             }
                         }
-                    }
-                }
-            } else {
-                for rootNode in treeNodeArray {
-                    if let parentNode = rootNode.treeNodeFromItem(parent) {
-                        switch mode {
-                        case .leading:
-                            return insert(item, in: rootNode.treeNodeFromItem(parent)!, at: 0)
-                        case .trailing:
-                            return insert(item, in: rootNode.treeNodeFromItem(parent)!, at: parentNode.children.endIndex)
-                        case .leadingFor(let exists):
-                            if parentNode.children.count == 0 {
-                                return insert(item, in: rootNode.treeNodeFromItem(parent)!, at: 0)
-                            } else {
-                                if let index = parentNode.children.index(where: {$0.item.identifier == exists.identifier}) {
-                                    return insert(item, in: rootNode.treeNodeFromItem(parent)!, at: index)
-                                }
-                            }
-                        case .trailingFor(let exists):
-                            if parentNode.children.count == 0 {
-                                return insert(item, in: rootNode.treeNodeFromItem(parent)!, at: 0)
-                            } else {
-                                if let index = parentNode.children.index(where: {$0.item.identifier == exists.identifier}) {
-                                    return insert(item, in: rootNode.treeNodeFromItem(parent)!, at: index + 1)
-                                }
-                            }
-                        }
-                        break
                     }
                 }
             }
@@ -599,8 +567,35 @@ fileprivate class ZNKTreeNodeController {
                 treeNode.indexPath = IndexPath.init(row: 0, section: section)
                 section += 1
             }
+            return treeNodeArray.compactMap({$0.indexPath})
         }
         return nil
+    }
+
+    /// 插入子节点
+    ///
+    /// - Parameters:
+    ///   - item: 元素
+    ///   - parentNode: 父节点
+    ///   - index: 下标
+    private func insert(_ item: ZNKTreeItem, in parentNode: ZNKTreeNode, at index: Int) -> [IndexPath] {
+        let node = ZNKTreeNode.init(item: item, parent: parentNode)
+        pthread_mutex_lock(&insertMutex)
+        parentNode.children.insert(node, at: index)
+        pthread_mutex_lock(&insertMutex)
+        let parentIndexPath = parentNode.indexPath
+        var childIndex = parentIndexPath.row + 1
+        var indexPaths: [IndexPath] = []
+        for child in parentNode.children {
+            let indexPath = IndexPath.init(item: childIndex, section: parentNode.indexPath.section)
+            pthread_mutex_lock(&indexPathMutex)
+            indexPaths.append(indexPath)
+            pthread_mutex_unlock(&indexPathMutex)
+            child.indexPath = indexPath
+            childIndex += 1
+        }
+
+        return indexPaths
     }
 
     /// 删除元素
@@ -609,15 +604,58 @@ fileprivate class ZNKTreeNodeController {
     ///   - item: 子元素
     ///   - root: 根源元素
     /// - Returns: 删除子元素对应地址索引
-    func deleteItem(_ item: ZNKTreeItem, in root: ZNKTreeItem? = nil) -> IndexPath? {
-        if let root = root, let index = treeNodeArray.index(where: { $0.item.identifier == root.identifier }) {
-            return treeNodeArray[index].deleteTreeNodeForItem(item)?.indexPath
-        } else {
-            for treeNode in treeNodeArray {
-                return treeNode.deleteTreeNodeForItem(item)?.indexPath
+    func deleteItem(_ item: ZNKTreeItem) -> [IndexPath]? {
+        if let index = treeNodeArray.index(where: {$0.item.identifier == item.identifier}) {
+            treeNodeArray.remove(at: index)
+            return reloadIndexPathsForNodes(treeNodeArray, isRoot: true)
+        }
+        for treeNode in treeNodeArray {
+            if let theNode = treeNode.treeNodeForItem(item), let parent = theNode.parent, let index = parent.children.index(where: {$0.item.identifier == item.identifier}) {
+                treeNodeArray.filter({$0.item.identifier == treeNode.item.identifier}).first?.treeNodeForItem(item)?.parent?.children.remove(at: index)
+                return reloadIndexPathsForNodes(treeNode.treeNodeForItem(item)!.parent!.children)
             }
         }
         return nil
+    }
+
+    /// 更新子节点数组的地址索引
+    ///
+    /// - Parameters:
+    ///   - nodes: 子节点数组
+    ///   - isRoot: 是否为根结点
+    /// - Returns: 地址索引数组
+    func reloadIndexPathsForNodes(_ nodes: [ZNKTreeNode], isRoot: Bool = false) -> [IndexPath] {
+        if isRoot {
+            var i = 0
+            for node in nodes {
+                node.indexPath = IndexPath.init(row: 0, section: i)
+                i += 1
+            }
+        } else {
+            var i = 0
+            for node in nodes {
+                node.indexPath = IndexPath.init(row: i, section: node.indexPath.section)
+                i += 1
+            }
+        }
+        return nodes.compactMap({$0.indexPath})
+    }
+
+    /// 更新元素
+    ///
+    /// - Parameters:
+    ///   - item: 元素
+    ///   - rootIndexPath: 根结点地址索引
+    /// - Returns: 地址索引
+    func reloadItem(_ item: ZNKTreeItem, at rootIndexPath: IndexPath? = nil) -> IndexPath? {
+        if let indexPath = rootIndexPath, treeNodeArray.count > indexPath.section {
+            let rootNode = treeNodeArray[indexPath.section]
+            return rootNode.reloadTreeNodeForItem(item)?.indexPath
+        } else {
+            for treeNode in treeNodeArray {
+                return treeNode.reloadTreeNodeForItem(item)?.indexPath
+            }
+        }
     }
 
     /// 指定元素节点的所有子节点
@@ -626,16 +664,10 @@ fileprivate class ZNKTreeNodeController {
     ///   - item: 指定元素
     ///   - indexPath: 地址索引
     /// - Returns: 子节点
-    func childrenFor(_ item: ZNKTreeItem, at indexPath: IndexPath? = nil) -> [ZNKTreeNode] {
-        if let indexPath = indexPath {
-            guard treeNodeArray.count > indexPath.section else { return [] }
-            let rootNode = treeNodeArray[indexPath.section]
-            return rootNode.treeNodeFromItem(item)?.children ?? []
-        } else {
-            for rootNode in treeNodeArray {
-                if let children = rootNode.treeNodeFromItem(item)?.children {
-                    return children
-                }
+    func childrenFor(_ item: ZNKTreeItem) -> [ZNKTreeNode] {
+        for rootNode in treeNodeArray {
+            if let children = rootNode.treeNodeForItem(item)?.children {
+                return children
             }
         }
         return []
@@ -646,7 +678,6 @@ fileprivate class ZNKTreeNodeController {
     /// - Parameter root: 根结点
     func appendRootNode(_ root: ZNKTreeNode) {
         pthread_mutex_lock(&rootMutex)
-        treeNodeDictionary[root.item.identifier] = [root]
         treeNodeArray.append(root)
         pthread_mutex_unlock(&rootMutex)
     }
@@ -655,7 +686,6 @@ fileprivate class ZNKTreeNodeController {
     ///
     /// - Parameter child: 根节点
     func removeRoot(_ root: ZNKTreeNode) {
-        treeNodeDictionary.removeValue(forKey: root.item.identifier)
         treeNodeArray = treeNodeArray.filter({$0.item.identifier != root.item.identifier})
     }
 
@@ -666,26 +696,7 @@ fileprivate class ZNKTreeNodeController {
         }
     }
 
-    /// 插入子节点
-    ///
-    /// - Parameters:
-    ///   - item: 元素
-    ///   - parentNode: 父节点
-    ///   - index: 下标
-    private func insert(_ item: ZNKTreeItem, in parentNode: ZNKTreeNode, at index: Int) -> IndexPath {
-        let node = ZNKTreeNode.init(item: item, parent: parentNode)
-        pthread_mutex_lock(&insertMutex)
-        parentNode.children.insert(node, at: index)
-        pthread_mutex_lock(&insertMutex)
-        let parentIndexPath = parentNode.indexPath
-        var childIndex = parentIndexPath.row + 1
-        for child in parentNode.children {
-            child.indexPath = IndexPath.init(item: childIndex, section: parentNode.indexPath.section)
-            childIndex += 1
-        }
 
-        return IndexPath.init(row: parentIndexPath.row + 1, section: parentIndexPath.section)
-    }
 
     /// 根结点数
     ///
@@ -1522,14 +1533,14 @@ final class ZNKTreeView: UIView {
     ///   - mode: 模式
     ///   - animation: 动画
     func insertItem(_ item: ZNKTreeItem, in parent: ZNKTreeItem?, at parentIndexPath: IndexPath? = nil, mode: ZNKTreeItemInsertMode = .leading, animation: ZNKTreeViewRowAnimation = .none) {
-        guard let table = self.treeTable, let childIndexPath = manager?.insertItem(item, in: parent, at: parentIndexPath, mode: mode) else { return }
+        guard let table = self.treeTable, let childIndexPaths = manager?.insertItem(item, in: parent, mode: mode) else { return }
         table.beginUpdates()
         if #available(iOS 11, *) {
             table.performBatchUpdates({
-                self.treeTable.insertRows(at: [childIndexPath], with: animation.animation)
+                self.treeTable.insertRows(at: childIndexPaths, with: animation.animation)
             }, completion: nil)
         } else {
-            self.treeTable.insertRows(at: [childIndexPath], with: animation.animation)
+            self.treeTable.insertRows(at: childIndexPaths, with: animation.animation)
         }
         table.endUpdates()
     }
@@ -1541,10 +1552,10 @@ final class ZNKTreeView: UIView {
     ///   - items: 指定元素数组
     ///   - parent: 父元素
     ///   - animation: 动画
-    func deleteItems(_ items: [ZNKTreeItem], in parent: ZNKTreeItem?, animation: ZNKTreeViewRowAnimation = .none)  {
+    func deleteItems(_ items: [ZNKTreeItem], at rootIndexPath: IndexPath?, animation: ZNKTreeViewRowAnimation = .none)  {
         guard self.treeTable != nil else { return }
         for item in items {
-            deleteItem(item, in: parent)
+            deleteItem(item, at: rootIndexPath, animation: animation)
         }
     }
 
@@ -1554,21 +1565,21 @@ final class ZNKTreeView: UIView {
     ///   - item: 指定元素
     ///   - parent: 父元素
     ///   - animation: 动画
-    func deleteItem(_ item: ZNKTreeItem, in parent: ZNKTreeItem?, animation: ZNKTreeViewRowAnimation = .none) {
-        guard let table = self.treeTable, let indexPath = manager?.deleteItem(item, in: parent) else { return }
+    func deleteItem(_ item: ZNKTreeItem, at rootIndexPath: IndexPath?, animation: ZNKTreeViewRowAnimation = .none) {
+        guard let table = self.treeTable, let indexPaths = manager?.deleteItem(item, at: rootIndexPath) else { return }
         table.beginUpdates()
         if #available(iOS 11, *) {
             table.performBatchUpdates({
-                self.treeTable.deleteRows(at: [indexPath], with: animation.animation)
+                self.treeTable.deleteRows(at: indexPaths, with: animation.animation)
             }, completion: nil)
         } else {
-            self.treeTable.deleteRows(at: [indexPath], with: animation.animation)
+            self.treeTable.deleteRows(at: indexPaths, with: animation.animation)
         }
         table.endUpdates()
     }
 
     func reloadItem(_ item: ZNKTreeItem, in parent: ZNKTreeItem?, animation: ZNKTreeViewRowAnimation = .none)  {
-
+        guard let table = self.treeTable, let indexPath = manager?.indexPathForItem(parent) else { return }
     }
 
 
