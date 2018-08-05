@@ -390,8 +390,7 @@ fileprivate class ZNKTreeNodeController {
         let section = indexPath.section
         guard treeNodeArray.count > section else { return nil }
         let node = treeNodeArray[section]
-        let item = node.itemForIndexPath(indexPath)
-        return item
+        return node.itemForIndexPath(indexPath)
     }
 
 
@@ -399,8 +398,16 @@ fileprivate class ZNKTreeNodeController {
     ///
     /// - Parameter item: 指定元素
     /// - Returns: 节点
-    func treeNodeForItem(_ item: ZNKTreeItem) -> ZNKTreeNode? {
-
+    func treeNodeForItem(_ item: ZNKTreeItem, at rootIndex: Int? = nil) -> ZNKTreeNode? {
+        if let index = rootIndex {
+            guard treeNodeArray.count > index else { return nil }
+            return treeNodeArray[index].treeNodeForItem(item)
+        } else {
+            for treeNode in treeNodeArray {
+                return treeNode.treeNodeForItem(item)
+            }
+        }
+        return nil
     }
 
     /// 根据ZNKTreeItem获取节点的地址索引
@@ -409,17 +416,8 @@ fileprivate class ZNKTreeNodeController {
     ///   - item: ZNKTreeItem
     ///   - indexPath: 地址索引
     /// - Returns: 地址索引
-    func indexPathForItem(_ item: ZNKTreeItem, for rootIndexPath: IndexPath? = nil) -> IndexPath? {
-        if let indexPath = rootIndexPath {
-            guard treeNodeArray.count > indexPath.section else { return nil }
-            let rootNode = treeNodeArray[indexPath.section]
-            return rootNode.treeNodeForItem(item)?.indexPath
-        } else {
-            for rootNode in treeNodeArray {
-                return rootNode.treeNodeForItem(item)?.indexPath
-            }
-        }
-        return nil
+    func indexPathForItem(_ item: ZNKTreeItem, at rootIndex: Int? = nil) -> IndexPath? {
+        return treeNodeForItem(item)?.indexPath
     }
 
     /// 获取ZNKTreeItem所处的层级
@@ -1779,11 +1777,41 @@ final class ZNKTreeView: UIView {
         }
     }
 
-    func selectItem(_ item: ZNKTreeItem, animated: Bool, position: ZNKTreeViewScrollPosition) {
-        guard let table = treeTable, let node = manager?.treeItemForIndexPath(<#T##indexPath: IndexPath##IndexPath#>) else { return }
+    /// 选择指定元素,不会触发didSelect或didDeselect代理方法或者对应通知
+    ///
+    /// - Parameters:
+    ///   - item: 指定元素
+    ///   - rootIndex: 根节点下标
+    ///   - animated: 动画
+    ///   - position: 位置
+    func selectItem(_ item: ZNKTreeItem, at rootIndex: Int?, animated: Bool, position: ZNKTreeViewScrollPosition) {
+        guard let table = treeTable, let node = manager?.treeNodeForItem(item, at: rootIndex), node.expanded == true else { return }
 
-        table.selectRow(at: <#T##IndexPath?#>, animated: animated, scrollPosition: position.position)
+        table.selectRow(at: node.indexPath, animated: animated, scrollPosition: position.position)
     }
+
+    /// 取消选择指定元素
+    ///
+    /// - Parameters:
+    ///   - item: 指定元素
+    ///   - rootIndex: 根节点下标
+    ///   - animated: 动画
+    func deselectItem(_ item: ZNKTreeItem, at rootIndex: Int?, animated: Bool) {
+        guard let table = treeTable, let node = manager?.treeNodeForItem(item, at: rootIndex), node.expanded == true else { return }
+        table.deselectRow(at: node.indexPath, animated: animated)
+    }
+
+    func moveItem(_ item: ZNKTreeItem, at sourceRootIndex: Int?, to targetItem: ZNKTreeItem, at targetIndex: Int?, mode: ZNKTreeItemInsertMode) {
+        if async {
+            manager?.deleteItem(item, at: sourceRootIndex, completion: { (indexPaths) in
+                <#code#>
+            })
+        } else {
+            <#statements#>
+        }
+        manager?.deleteItem(<#T##item: ZNKTreeItem##ZNKTreeItem#>, at: <#T##Int?#>, completion: <#T##(([IndexPath]?) -> ())?##(([IndexPath]?) -> ())?##([IndexPath]?) -> ()#>)
+    }
+
 //
 //    @available(iOS 5.0, *)
 //    open func moveRow(at indexPath: IndexPath, to newIndexPath: IndexPath)
@@ -1830,10 +1858,6 @@ final class ZNKTreeView: UIView {
 //    open var indexPathsForSelectedRows: [IndexPath]? { get } // returns nil or a set of index paths representing the sections and rows of the selection.
 //
 //
-//    // Selects and deselects rows. These methods will not call the delegate methods (-tableView:willSelectRowAtIndexPath: or tableView:didSelectRowAtIndexPath:), nor will it send out a notification.
-//    open func selectRow(at indexPath: IndexPath?, animated: Bool, scrollPosition: UITableViewScrollPosition)
-//
-//    open func deselectRow(at indexPath: IndexPath, animated: Bool)
 //
 //
 //    // Appearance
@@ -2351,7 +2375,7 @@ extension ZNKTreeView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         if let delegate = delegate {
             if let item = delegate.treeView(self, willSelect: manager?.treeItemForIndexPath(indexPath)) {
-                return manager?.indexPathForItem(item, for: indexPath)
+                return manager?.indexPathForItem(item, at: indexPath.section)
             }
         }
         return indexPath
@@ -2361,7 +2385,7 @@ extension ZNKTreeView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath? {
         if let delegate = delegate {
             if let item = delegate.treeView(self, willDeselect: manager?.treeItemForIndexPath(indexPath)) {
-                return manager?.indexPathForItem(item, for: indexPath)
+                return manager?.indexPathForItem(item, at: indexPath.section)
             }
         }
         return indexPath
