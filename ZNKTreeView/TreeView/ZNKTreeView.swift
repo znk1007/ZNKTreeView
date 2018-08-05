@@ -145,7 +145,7 @@ fileprivate class ZNKTreeNode {
     ///   - expand: 是否展开
     ///   - alsoChildren: 是否子元素随展开状态
     @discardableResult
-    func updateNodeExpandForItem(_ item: ZNKTreeItem?, expand: Bool, alsoChildren: Bool = false, completion: (([IndexPath]?) -> ())?) -> [IndexPath]? {
+    func updateNodeExpandForItem(_ item: ZNKTreeItem?, expand: Bool, alsoChildren: Bool = false, completion: (([IndexPath]?) -> ())? = nil) -> [IndexPath]? {
         guard let item = item else { return nil }
         if let handler = completion {
             DispatchQueue.global().async {
@@ -392,6 +392,15 @@ fileprivate class ZNKTreeNodeController {
         let node = treeNodeArray[section]
         let item = node.itemForIndexPath(indexPath)
         return item
+    }
+
+
+    /// 指定元素节点
+    ///
+    /// - Parameter item: 指定元素
+    /// - Returns: 节点
+    func treeNodeForItem(_ item: ZNKTreeItem) -> ZNKTreeNode? {
+
     }
 
     /// 根据ZNKTreeItem获取节点的地址索引
@@ -682,7 +691,6 @@ fileprivate class ZNKTreeNodeController {
             return nil
         }
     }
-    @discardableResult
 
     /// 展开指定元素
     ///
@@ -693,7 +701,8 @@ fileprivate class ZNKTreeNodeController {
     ///   - rootIndex: 根结点下标
     ///   - completion: 完成回调
     /// - Returns: 地址索引
-    func expandItem(_ item: ZNKTreeItem, expand: Bool, expandChildren: Bool, at rootIndex: Int? = nil, completion: (([IndexPath]?) -> ())?) -> [IndexPath]? {
+    @discardableResult
+    func updateExpandForItem(_ item: ZNKTreeItem, expand: Bool, expandChildren: Bool, at rootIndex: Int? = nil, completion: (([IndexPath]?) -> ())? = nil) -> [IndexPath]? {
         if let index = rootIndex {
             return treeNodeArray[index].treeNodeForItem(item)?.updateNodeExpandForItem(item, expand: expand, alsoChildren: expandChildren, completion: completion)
         } else {
@@ -1564,7 +1573,7 @@ final class ZNKTreeView: UIView {
     ///   - indexPath: 地址索引
     ///   - mode: 模式
     ///   - animation: 动画
-    func insertItems(_ items: [ZNKTreeItem], in parent: ZNKTreeItem?, at rootIndex: Int? = nil, mode: ZNKTreeItemInsertMode = .leading, animation: ZNKTreeViewRowAnimation = .none) {
+    func insertItems(_ items: [ZNKTreeItem], in parent: ZNKTreeItem?, at rootIndex: Int, mode: ZNKTreeItemInsertMode = .leading, animation: ZNKTreeViewRowAnimation = .none) {
         guard self.treeTable != nil else { return }
         for item in items {
             insertItem(item, in: parent, at: rootIndex, mode: mode, animation: animation)
@@ -1579,7 +1588,7 @@ final class ZNKTreeView: UIView {
     ///   - indexPath: 地址索引
     ///   - mode: 模式
     ///   - animation: 动画
-    func insertItem(_ item: ZNKTreeItem, in parent: ZNKTreeItem?, at rootIndex: Int? = nil, mode: ZNKTreeItemInsertMode = .leading, animation: ZNKTreeViewRowAnimation = .none) {
+    func insertItem(_ item: ZNKTreeItem, in parent: ZNKTreeItem?, at rootIndex: Int, mode: ZNKTreeItemInsertMode = .leading, animation: ZNKTreeViewRowAnimation = .none) {
         guard let table = self.treeTable else { return }
         if async {
             manager?.insertItem(item, in: parent, at: rootIndex, mode: mode, completion: { [weak self](indexPaths) in
@@ -1616,7 +1625,7 @@ final class ZNKTreeView: UIView {
     ///   - items: 指定元素数组
     ///   - parent: 父元素
     ///   - animation: 动画
-    func deleteItems(_ items: [ZNKTreeItem], at rootIndex: Int?, animation: ZNKTreeViewRowAnimation = .none)  {
+    func deleteItems(_ items: [ZNKTreeItem], at rootIndex: Int, animation: ZNKTreeViewRowAnimation = .none)  {
         guard self.treeTable != nil else { return }
         for item in items {
             deleteItem(item, at: rootIndex, animation: animation)
@@ -1629,7 +1638,7 @@ final class ZNKTreeView: UIView {
     ///   - item: 指定元素
     ///   - parent: 父元素
     ///   - animation: 动画
-    func deleteItem(_ item: ZNKTreeItem, at rootIndex: Int?, animation: ZNKTreeViewRowAnimation = .none) {
+    func deleteItem(_ item: ZNKTreeItem, at rootIndex: Int, animation: ZNKTreeViewRowAnimation = .none) {
         guard let table = self.treeTable else { return }
         if async {
             manager?.deleteItem(item, at: rootIndex, completion: { (indexPaths) in
@@ -1665,7 +1674,7 @@ final class ZNKTreeView: UIView {
     ///   - item: 指定
     ///   - rootIndex: 跟节点地址
     ///   - animation: 动画
-    func reloadItem(_ item: ZNKTreeItem, at rootIndex: Int?, animation: ZNKTreeViewRowAnimation = .none)  {
+    func reloadItem(_ item: ZNKTreeItem, at rootIndex: Int, animation: ZNKTreeViewRowAnimation = .none)  {
         guard let table = self.treeTable else { return }
         if async {
             manager?.reloadItem(item, at: rootIndex, completion: { (indexPath) in
@@ -1695,31 +1704,86 @@ final class ZNKTreeView: UIView {
         }
     }
 
-    func expandItem(_ item: ZNKTreeItem, expandChildren: Bool, animtion: ZNKTreeViewRowAnimation) {
+    /// 展开指定元素
+    ///
+    /// - Parameters:
+    ///   - item: 指定元素
+    ///   - expandChildren: 是否展开指定元素的子元素
+    ///   - rootIndex: 根结点数
+    ///   - animation: 动画
+    func expandItem(_ item: ZNKTreeItem, expandChildren: Bool, at rootIndex: Int, animation: ZNKTreeViewRowAnimation) {
+        guard let table = treeTable else { return }
         if item.expand == true {
             return
         }
-//        let theNode = manager?.treeItemForIndexPath(<#T##indexPath: IndexPath##IndexPath#>)
-
+        if async {
+            manager?.updateExpandForItem(item, expand: true, expandChildren: expandChildren, at: rootIndex, completion: { [weak self] (indexPaths) in
+                if let indexPaths = indexPaths {
+                    if #available(iOS 11, *) {
+                        self?.treeTable.performBatchUpdates({
+                            self?.treeTable.insertRows(at: indexPaths, with: animation.animation)
+                        }, completion: nil)
+                    } else {
+                        self?.treeTable.beginUpdates()
+                        self?.treeTable.insertRows(at: indexPaths, with: animation.animation)
+                        self?.treeTable.endUpdates()
+                    }
+                }
+            })
+        } else {
+            if let indexPaths = manager?.updateExpandForItem(item, expand: true, expandChildren: expandChildren, at: rootIndex, completion: nil) {
+                if #available(iOS 11, *) {
+                    table.performBatchUpdates({
+                        table.insertRows(at: indexPaths, with: animation.animation)
+                    }, completion: nil)
+                } else {
+                    table.beginUpdates()
+                    table.insertRows(at: indexPaths, with: animation.animation)
+                    table.endUpdates()
+                }
+            }
+        }
     }
 
-//    open func insertSections(_ sections: IndexSet, with animation: UITableViewRowAnimation)
-//
-//    open func deleteSections(_ sections: IndexSet, with animation: UITableViewRowAnimation)
-//
-//    @available(iOS 3.0, *)
-//    open func reloadSections(_ sections: IndexSet, with animation: UITableViewRowAnimation)
-//
-//    @available(iOS 5.0, *)
-//    open func moveSection(_ section: Int, toSection newSection: Int)
-//
-//
-//    open func insertRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation)
-//
-//    open func deleteRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation)
-//
-//    @available(iOS 3.0, *)
-//    open func reloadRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation)
+    func foldItem(_ item: ZNKTreeItem, foldChildren: Bool, at rootIndex: Int, animation: ZNKTreeViewRowAnimation) {
+        guard let table = treeTable else { return }
+        if item.expand == true {
+            return
+        }
+        if async {
+            manager?.updateExpandForItem(item, expand: false, expandChildren: foldChildren, at: rootIndex, completion: { [weak self] (indexPaths) in
+                if let indexPaths = indexPaths {
+                    if #available(iOS 11, *) {
+                        self?.treeTable.performBatchUpdates({
+                            self?.treeTable.insertRows(at: indexPaths, with: animation.animation)
+                        }, completion: nil)
+                    } else {
+                        self?.treeTable.beginUpdates()
+                        self?.treeTable.insertRows(at: indexPaths, with: animation.animation)
+                        self?.treeTable.endUpdates()
+                    }
+                }
+            })
+        } else {
+            if let indexPaths = manager?.updateExpandForItem(item, expand: false, expandChildren: foldChildren, at: rootIndex, completion: nil) {
+                if #available(iOS 11, *) {
+                    table.performBatchUpdates({
+                        table.insertRows(at: indexPaths, with: animation.animation)
+                    }, completion: nil)
+                } else {
+                    table.beginUpdates()
+                    table.insertRows(at: indexPaths, with: animation.animation)
+                    table.endUpdates()
+                }
+            }
+        }
+    }
+
+    func selectItem(_ item: ZNKTreeItem, animated: Bool, position: ZNKTreeViewScrollPosition) {
+        guard let table = treeTable, let node = manager?.treeItemForIndexPath(<#T##indexPath: IndexPath##IndexPath#>) else { return }
+
+        table.selectRow(at: <#T##IndexPath?#>, animated: animated, scrollPosition: position.position)
+    }
 //
 //    @available(iOS 5.0, *)
 //    open func moveRow(at indexPath: IndexPath, to newIndexPath: IndexPath)
@@ -2112,7 +2176,13 @@ extension ZNKTreeView {
     func reloadData() {
         guard let table = treeTable else { return }
         manager?.rootTreeNodes()
-        table.reloadData()
+        if #available(iOS 11, *) {
+            if !table.hasUncommittedUpdates {
+                table.reloadData()
+            }
+        } else {
+            table.reloadData()
+        }
     }
 
 
