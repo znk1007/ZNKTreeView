@@ -12,7 +12,7 @@ class TreeObject: ZNKTreeItem {
     let name: String
     var children: [TreeObject]
 
-    init(identifier: String, name: String, expand: Bool = true, children: [TreeObject] = []) {
+    init(identifier: String, name: String, expand: Bool = false, children: [TreeObject] = []) {
         self.name = name
         self.children = children
         super.init(identifier: identifier, expand: expand)
@@ -38,7 +38,7 @@ extension TreeObject {
             let grandgrandson4 = TreeObject.init(identifier: "grandgrandson4".randomIdentifier, name: "grandgrandson4".randomIdentifier, children: [grandgrandgrandson1, grandgrandgrandson4, grandgrandgrandson2])
             let grandgrandson5 = TreeObject.init(identifier: "grandgrandson5".randomIdentifier, name: "grandgrandson5".randomIdentifier, children: [grandgrandgrandson5, grandgrandgrandson1, grandgrandgrandson4])
 
-            let grandson1 = TreeObject.init(identifier: "grandson1".randomIdentifier, name: "grandson1".randomIdentifier, children: [grandgrandson1, grandgrandson5, grandgrandson4, grandgrandson2])
+            let grandson1 = TreeObject.init(identifier: "grandson1".randomIdentifier, name: "grandson1".randomIdentifier, children: [/*grandgrandson1, grandgrandson5, grandgrandson4, grandgrandson2*/])
             let grandson2 = TreeObject.init(identifier: "grandson2".randomIdentifier, name: "grandson2".randomIdentifier, children: [grandgrandson2, grandgrandson4, grandgrandson5, grandgrandson3, grandgrandson1])
             let grandson3 = TreeObject.init(identifier: "grandson3".randomIdentifier, name: "grandson3".randomIdentifier, children: [grandgrandson3, grandgrandson4, grandgrandson2])
             let grandson4 = TreeObject.init(identifier: "grandson4".randomIdentifier, name: "grandson4".randomIdentifier, children: [grandgrandson3, grandgrandson5, grandgrandson1])
@@ -46,10 +46,10 @@ extension TreeObject {
 
             let child1 = TreeObject.init(identifier: "child1".randomIdentifier, name: "child1".randomIdentifier, children: [grandson1, grandson2, grandson3, grandson4, grandson5])
             let child2 = TreeObject.init(identifier: "child2".randomIdentifier, name: "child2".randomIdentifier, children: [grandson2, grandson1, grandson5, grandson4, grandson3])
-            let child3 = TreeObject.init(identifier: "child3".randomIdentifier, name: "child3".randomIdentifier, children: [grandson2, grandson1, grandson5, grandson4, grandson3])
-            let child4 = TreeObject.init(identifier: "child4".randomIdentifier, name: "child4".randomIdentifier, children: [grandson5, grandson1, grandson2, grandson4, grandson3])
-            let child5 = TreeObject.init(identifier: "child5".randomIdentifier, name: "child5".randomIdentifier, children: [grandson2, grandson4, grandson3])
-            let child6 = TreeObject.init(identifier: "child6".randomIdentifier, name: "child6".randomIdentifier, children: [grandson2, grandson4, grandson3])
+            let child3 = TreeObject.init(identifier: "child3".randomIdentifier, name: "child3".randomIdentifier, children: [/*grandson2, grandson1, grandson5, grandson4, grandson3*/])
+            let child4 = TreeObject.init(identifier: "child4".randomIdentifier, name: "child4".randomIdentifier, children: [/*grandson5, grandson1, grandson2, grandson4, grandson3*/])
+            let child5 = TreeObject.init(identifier: "child5".randomIdentifier, name: "child5".randomIdentifier, children: [/*grandson2, grandson4, grandson3*/])
+            let child6 = TreeObject.init(identifier: "child6".randomIdentifier, name: "child6".randomIdentifier, children: [/*grandson2, grandson4, grandson3*/])
 
             let root1 = TreeObject.init(identifier: "root1".randomIdentifier, name: "root1".randomIdentifier, children: [child1, child2, child3, child4, child5, child6])
             let root2 = TreeObject.init(identifier: "root2".randomIdentifier, name: "root2".randomIdentifier, children: [child4, child5, child6])
