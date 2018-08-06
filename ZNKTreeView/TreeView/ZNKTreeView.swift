@@ -91,23 +91,18 @@ fileprivate class ZNKTreeNode {
     /// 可见的子节点数
     var numberOfVisibleChildren: Int {
         get {
-            if innerNumberOfVisibleChildren == NSIntegerMax {
-                if self.expanded {
-                    var visibleNumber = self.children.count
-                    for child in self.children {
-                        visibleNumber += child.numberOfVisibleChildren
-                    }
-                    innerNumberOfVisibleChildren = visibleNumber
-                } else {
-                    innerNumberOfVisibleChildren = 0
+            if self.expanded {
+                var visibleNumber = self.children.count
+                for child in self.children {
+                    visibleNumber += child.numberOfVisibleChildren
                 }
+                return visibleNumber
+            } else {
+                return 0
             }
-            return innerNumberOfVisibleChildren
         }
     }
 
-    /// 统计可见节点数
-    private var innerNumberOfVisibleChildren: Int = NSIntegerMax
 
     /// 插入数据互斥锁
     private var insertMutex: pthread_mutex_t
@@ -132,6 +127,29 @@ fileprivate class ZNKTreeNode {
     deinit {
         pthread_mutex_destroy(&insertMutex)
         pthread_mutex_destroy(&expandMutex)
+    }
+
+
+    /// 获取所有可视节点
+    ///
+    /// - Parameters:
+    ///   - index: 下标
+    ///   - nodes: 节点数组
+    func visibleTreeNode(_ index: inout Int, nodes: inout [ZNKTreeNode]) {
+        if self.expanded && self.parent != nil {
+            self.indexPath = IndexPath.init(row: index, section: self.indexPath.section)
+//            index += 1
+            nodes.append(self)
+
+        }
+        for child in self.children {
+            if self.expanded {
+                child.indexPath = IndexPath.init(row: index, section: self.indexPath.section)
+                nodes.append(child)
+                index += 1
+                child.visibleTreeNode(&index, nodes: &nodes)
+            }
+        }
     }
 
     /// 根据ZNKTreeItem获取ZNKTreeNode
@@ -183,7 +201,6 @@ fileprivate class ZNKTreeNode {
     @discardableResult
     func updateNodeExpandForItem(_ item: ZNKTreeItem?, expand: Bool, alsoChildren: Bool = false, completion: (([IndexPath]?) -> ())? = nil) -> [IndexPath]? {
         guard let item = item else { return nil }
-        innerNumberOfVisibleChildren = NSIntegerMax
         if let handler = completion {
             DispatchQueue.global().async {
                 if self.item.identifier == item.identifier {
@@ -450,6 +467,13 @@ fileprivate class ZNKTreeNodeController {
         return node.nodeForIndexPath(indexPath)
     }
 
+    func visibleChildrenForItem(_ item: ZNKTreeItem, at indexPath: IndexPath, index: inout Int, nodes: inout [ZNKTreeNode]) {
+        let section = indexPath.section
+        guard treeNodeArray.count > section else { return }
+        let node = treeNodeArray[section]
+        node.visibleTreeNode(&index, nodes: &nodes)
+    }
+
 
     /// 指定元素节点
     ///
@@ -504,9 +528,9 @@ fileprivate class ZNKTreeNodeController {
                 if let parentNode = treeNodeArray[index].treeNodeForItem(parent) {
                     switch mode {
                     case .leading:
-                        return insert(item, in: treeNodeArray[index].treeNodeForItem(parent)!.treeNodeForItem(parent)!, at: 0, completion: completion)
+                        return insert(item, in: treeNodeArray[index].treeNodeForItem(parent)!, at: 0, completion: completion)
                     case .trailing:
-                        return insert(item, in: treeNodeArray[index].treeNodeForItem(parent)!.treeNodeForItem(parent)!, at: parentNode.children.endIndex, completion: completion)
+                        return insert(item, in: treeNodeArray[index].treeNodeForItem(parent)!, at: parentNode.children.endIndex, completion: completion)
                     case .leadingFor(let exists):
                         if parentNode.children.count == 0 {
                             return insert(item, in: treeNodeArray[index].treeNodeForItem(parent)!.treeNodeForItem(parent)!, at: 0, completion: completion)
@@ -804,21 +828,6 @@ fileprivate class ZNKTreeNodeController {
     }
 
 
-    /// 遍历节点
-    ///
-    /// - Parameter node: 节点
-    var i = 1
-    private func enumeric(_ node: ZNKTreeNode?) {
-        i += 1
-        guard let node = node else { return }
-        print("node item identifier ----> ", node.item.identifier)
-        print("node indexPath ----> ", node.indexPath)
-        print("========================== ")
-        for child in node.children {
-            enumeric(child)
-        }
-    }
-
     /// 某个节点子节点数
     ///
     /// - Parameters:
@@ -839,9 +848,11 @@ fileprivate class ZNKTreeNodeController {
         let childNumber = self.numberOfChildNode(for: node, rootIndex: rootIndex)
         if childNumber == 0 { return }
         for i in 0 ..< childNumber {
-            childIndex += 1
             if let childNode = delegate?.treeNode(at: i, of: node, at: rootIndex) {
-                childNode.indexPath = IndexPath.init(row: childIndex, section: rootIndex)
+                if !childNode.expanded {
+                    childIndex += 1
+                    childNode.indexPath = IndexPath.init(row: childIndex, section: rootIndex)
+                }
                 node.append(childNode)
                 insertChildNode(of: childNode, at: rootIndex, childIndex: &childIndex)
             }
@@ -2493,11 +2504,20 @@ extension ZNKTreeView {
 extension ZNKTreeView: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("did select row indexPath ===> ", indexPath)
         guard let treeNode = manager?.treeNodeForIndexPath(indexPath) else { return }
         if let delegate = delegate {
             delegate.treeView(self, didSelect: treeNode.item)
         }
+        treeNode.expanded = !treeNode.expanded
+        var treeNodes: [ZNKTreeNode] = []
+        var index = indexPath.row + 1
+        manager?.visibleChildrenForItem(treeNode.item, at: indexPath, index: &index, nodes: &treeNodes)
+        print("index ===> ", index)
+        for node in treeNodes {
+            print("indexPath --> ", node.indexPath)
+        }
+        return
+
         if treeNode.expanded {
             if let delegate = delegate {
                 if delegate.treeView(self, canFoldItem: treeNode.item) {

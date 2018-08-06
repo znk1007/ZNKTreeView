@@ -44,7 +44,7 @@ extension TreeObject {
             let grandson4 = TreeObject.init(identifier: "grandson4".randomIdentifier, name: "grandson4".randomIdentifier, children: [grandgrandson3, grandgrandson5, grandgrandson1])
             let grandson5 = TreeObject.init(identifier: "grandson5".randomIdentifier, name: "grandson5".randomIdentifier, children: [grandgrandson2, grandgrandson1, grandgrandson5])
 
-            let child1 = TreeObject.init(identifier: "child1".randomIdentifier, name: "child1".randomIdentifier, children: [grandson1, grandson2, grandson3, grandson4, grandson5])
+            let child1 = TreeObject.init(identifier: "child1".randomIdentifier, name: "child1".randomIdentifier, expand: true, children: [grandson1, grandson2, grandson3, grandson4, grandson5])
             let child2 = TreeObject.init(identifier: "child2".randomIdentifier, name: "child2".randomIdentifier, children: [grandson2, grandson1, grandson5, grandson4, grandson3])
             let child3 = TreeObject.init(identifier: "child3".randomIdentifier, name: "child3".randomIdentifier, children: [/*grandson2, grandson1, grandson5, grandson4, grandson3*/])
             let child4 = TreeObject.init(identifier: "child4".randomIdentifier, name: "child4".randomIdentifier, children: [/*grandson5, grandson1, grandson2, grandson4, grandson3*/])

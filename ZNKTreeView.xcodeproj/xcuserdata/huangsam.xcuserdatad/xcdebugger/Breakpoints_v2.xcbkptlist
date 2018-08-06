@@ -20,43 +20,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ZNKTreeView/TreeView/ZNKTreeView.swift"
-            timestampString = "555253373.135024"
+            timestampString = "555263725.857286"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "100"
-            endingLineNumber = "100"
-            landmarkName = "numberOfVisibleChildren"
-            landmarkType = "24">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "ZNKTreeView/TreeView/ZNKTreeView.swift"
-            timestampString = "555253373.136036"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "96"
-            endingLineNumber = "96"
-            landmarkName = "numberOfVisibleChildren"
-            landmarkType = "24">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "ZNKTreeView/TreeView/ZNKTreeView.swift"
-            timestampString = "555253373.136826"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "212"
-            endingLineNumber = "212"
+            startingLineNumber = "238"
+            endingLineNumber = "238"
             landmarkName = "updateNodeExpandForItem(_:expand:alsoChildren:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -68,12 +36,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ZNKTreeView/TreeView/ZNKTreeView.swift"
-            timestampString = "555253380.318218"
+            timestampString = "555263725.860153"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "215"
-            endingLineNumber = "215"
-            landmarkName = "updateNodeExpandForItem(_:expand:alsoChildren:completion:)"
+            startingLineNumber = "263"
+            endingLineNumber = "263"
+            landmarkName = "updateAndFetchChildrenExpand(_:alsoChildren:index:indexPaths:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -84,12 +52,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ZNKTreeView/TreeView/ZNKTreeView.swift"
-            timestampString = "555253386.486351"
+            timestampString = "555263725.860822"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "221"
-            endingLineNumber = "221"
-            landmarkName = "updateNodeExpandForItem(_:expand:alsoChildren:completion:)"
+            startingLineNumber = "265"
+            endingLineNumber = "265"
+            landmarkName = "updateAndFetchChildrenExpand(_:alsoChildren:index:indexPaths:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
