@@ -46,6 +46,7 @@ extension ViewController: ZNKTreeViewDelete {
         print("select item identifier ---> ", item?.identifier ?? "")
         if let item = item {
             print("level ====> ", treeView.levelFor(item))
+            print("indexPath ---> ", treeView.indexPathFor(item))
         }
     }
 
@@ -71,11 +72,11 @@ extension ViewController: ZNKTreeViewDataSource {
         }
     }
 
-    func treeView(_ treeView: ZNKTreeView, childIndex child: Int, ofItem item: ZNKTreeItem?, atRootIndex root: Int) -> ZNKTreeItem? {
+    func treeView(_ treeView: ZNKTreeView, childIndex child: Int, ofItem item: ZNKTreeItem?, at rootIndex: Int) -> ZNKTreeItem? {
         if let item = item as? TreeObject {
             return item.children[child]
         } else {
-            return dataSource[root]
+            return dataSource[rootIndex]
         }
     }
 
