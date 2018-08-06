@@ -2510,6 +2510,7 @@ extension ZNKTreeView: UITableViewDelegate {
         }
         treeNode.expanded = !treeNode.expanded
         var treeNodes: [ZNKTreeNode] = []
+        print("current select row ", indexPath.row)
         var index = indexPath.row + 1
         manager?.visibleChildrenForItem(treeNode.item, at: indexPath, index: &index, nodes: &treeNodes)
         print("index ===> ", index)
