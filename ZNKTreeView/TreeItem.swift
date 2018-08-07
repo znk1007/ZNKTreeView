@@ -44,20 +44,20 @@ extension TreeObject {
             let grandson4 = TreeObject.init(identifier: "grandson4".randomIdentifier, name: "grandson4".randomIdentifier, children: [grandgrandson3, grandgrandson5, grandgrandson1])
             let grandson5 = TreeObject.init(identifier: "grandson5".randomIdentifier, name: "grandson5".randomIdentifier, children: [grandgrandson2, grandgrandson1, grandgrandson5])
 
-            let child1 = TreeObject.init(identifier: "child1".randomIdentifier, name: "child1".randomIdentifier, children: [grandson1,/* grandson2, grandson3, grandson4, grandson5*/])
-            let child2 = TreeObject.init(identifier: "child2".randomIdentifier, name: "child2".randomIdentifier, children: [/*grandson2, grandson1, grandson5, grandson4, grandson3*/])
-            let child3 = TreeObject.init(identifier: "child3".randomIdentifier, name: "child3".randomIdentifier, children: [/*grandson2, grandson1, grandson5, grandson4, grandson3*/])
-            let child4 = TreeObject.init(identifier: "child4".randomIdentifier, name: "child4".randomIdentifier, children: [/*grandson5, grandson1, grandson2, grandson4, grandson3*/])
-            let child5 = TreeObject.init(identifier: "child5".randomIdentifier, name: "child5".randomIdentifier, children: [/*grandson2, grandson4, grandson3*/])
-            let child6 = TreeObject.init(identifier: "child6".randomIdentifier, name: "child6".randomIdentifier, children: [/*grandson2, grandson4, grandson3*/])
+            let child1 = TreeObject.init(identifier: "child1".randomIdentifier, name: "child1".randomIdentifier, children: [grandson1, grandson2, grandson3, grandson4, grandson5])
+            let child2 = TreeObject.init(identifier: "child2".randomIdentifier, name: "child2".randomIdentifier, children: [grandson2, grandson1, grandson5, grandson4, grandson3])
+            let child3 = TreeObject.init(identifier: "child3".randomIdentifier, name: "child3".randomIdentifier, children: [grandson2, grandson1, grandson5, grandson4, grandson3])
+            let child4 = TreeObject.init(identifier: "child4".randomIdentifier, name: "child4".randomIdentifier, children: [grandson5, grandson1, grandson2, grandson4, grandson3])
+            let child5 = TreeObject.init(identifier: "child5".randomIdentifier, name: "child5".randomIdentifier, children: [grandson2, grandson4, grandson3])
+            let child6 = TreeObject.init(identifier: "child6".randomIdentifier, name: "child6".randomIdentifier, children: [grandson2, grandson4, grandson3])
 
-            let root1 = TreeObject.init(identifier: "root1".randomIdentifier, name: "root1".randomIdentifier, children: [child1,/* child2, child3, child4, child5, child6*/])
+            let root1 = TreeObject.init(identifier: "root1".randomIdentifier, name: "root1".randomIdentifier, children: [child1, child2, child3, child4, child5, child6])
             let root2 = TreeObject.init(identifier: "root2".randomIdentifier, name: "root2".randomIdentifier, children: [child4, child5, child6])
             let root3 = TreeObject.init(identifier: "root3".randomIdentifier, name: "root3".randomIdentifier, children: [child4, child5, child6, child1, child2])
             let root4 = TreeObject.init(identifier: "root4".randomIdentifier, name: "root4".randomIdentifier, children: [child5, child6, child4, child5, child6])
             let root5 = TreeObject.init(identifier: "root5".randomIdentifier, name: "root5".randomIdentifier, children: [child3, child4, child5, child6])
             DispatchQueue.main.async {
-                completion?([root1, root2,/* root3, root4, root5*/])
+                completion?([root1, root2, root3, root4, root5])
             }
         }
     }
