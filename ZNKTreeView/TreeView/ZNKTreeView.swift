@@ -129,8 +129,9 @@ fileprivate class ZNKTreeNode {
     /// - Parameter index: 根结点
     /// - Returns: 可见子节点数
     func numberOfVisibleChildrenForRoot(at index: Int, nodeIndex: inout Int) {
-        if self.expanded {
+        if self.parent == nil || self.parent?.expanded == true {
             self.indexPath = IndexPath.init(row: nodeIndex, section: index)
+            print("numberOfVisibleChildrenForRoot indexPath ---> \(self.indexPath)")
             nodeIndex += 1
             for child in self.children {
                 child.numberOfVisibleChildrenForRoot(at: index, nodeIndex: &nodeIndex)
@@ -143,14 +144,12 @@ fileprivate class ZNKTreeNode {
     /// - Parameters:
     ///   - index: 下标
     ///   - nodes: 节点数组
-    func visibleTreeNode(_ index: inout Int, nodes: inout [ZNKTreeNode]) {
+    func visibleTreeNode(_ nodes: inout [ZNKTreeNode]) {
         if self.expanded == true {
-            if index > 0 {
-                nodes.append(self)
-            }
-            index += 1
             for child in self.children {
-                child.visibleTreeNode(&index, nodes: &nodes)
+                nodes.append(child)
+                print("child item identifier ====> \(child.item.identifier) ===> \(child.indexPath)")
+                child.visibleTreeNode(&nodes)
             }
         }
     }
@@ -374,8 +373,6 @@ fileprivate class ZNKTreeNodeController {
         }
         return treeNodeArray[indexPath.section]
     }
-
-
 
     /// 根据indexPath获取item
     ///
@@ -2391,6 +2388,17 @@ extension ZNKTreeView: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let manager = manager, let treeNode = manager.treeNodeForIndexPath(indexPath) else { return }
+
+        if treeNode.expanded {
+            var nodes: [ZNKTreeNode] = []
+            treeNode.visibleTreeNode(&nodes)
+            let indexPaths = nodes.compactMap({$0.indexPath})
+            treeNode.expanded = false
+            batchUpdates(.deletion, indexPaths: indexPaths)
+        }
+
+
+        return
         if let delegate = delegate {
             delegate.treeView(self, didSelect: treeNode.item)
         }
