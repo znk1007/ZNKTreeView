@@ -460,6 +460,17 @@ fileprivate class ZNKTreeNodeController {
         return 0
     }
 
+    /// 指定地址索引的根结点
+    ///
+    /// - Parameter indexPath: 地址索引
+    /// - Returns: 根结点
+    func rootNodeForIndexPath(_ indexPath: IndexPath) -> ZNKTreeNode? {
+        guard treeNodeArray.count > indexPath.section else {
+            return nil
+        }
+        return treeNodeArray[indexPath.section]
+    }
+
     /// 根据indexPath获取item
     ///
     /// - Parameter indexPath: 地址索引
@@ -480,6 +491,7 @@ fileprivate class ZNKTreeNodeController {
     func visibleChildrenForNode(_ treeNode: ZNKTreeNode, index: inout Int, nodes: inout [ZNKTreeNode]) {
         treeNode.visibleTreeNode(&index, nodes: &nodes)
     }
+
 
     /// 指定元素节点
     ///
@@ -1431,7 +1443,7 @@ final class ZNKTreeView: UIView {
     /// 数据源
     var dataSource: ZNKTreeViewDataSource?
     /// 预取数据源
-//    var prefetchDataSource: ZNKTreeViewDataSourcePrefetching?
+    //    var prefetchDataSource: ZNKTreeViewDataSourcePrefetching?
     /// 预估行高 默认0
     var estimatedRowHeight: CGFloat = 0 {
         didSet {
@@ -2544,7 +2556,7 @@ extension ZNKTreeView {
 extension ZNKTreeView: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let treeNode = manager?.treeNodeForIndexPath(indexPath) else { return }
+        guard let manager = manager, let treeNode = manager.treeNodeForIndexPath(indexPath) else { return }
         if let delegate = delegate {
             delegate.treeView(self, didSelect: treeNode.item)
         }
@@ -2552,17 +2564,26 @@ extension ZNKTreeView: UITableViewDelegate {
             var treeNodes: [ZNKTreeNode] = []
             var index = treeNode.indexPath.row
             print("deletion current index === ", index)
-            manager?.visibleChildrenForNode(treeNode, index: &index, nodes: &treeNodes)
+            manager.visibleChildrenForNode(treeNode, index: &index, nodes: &treeNodes)
             let deletionIndexPaths = treeNodes.compactMap({$0.indexPath})
             print("deletion compactMap indexPath ===> ", deletionIndexPaths)
             treeNode.expanded = false
+            if treeNode.parent != nil {
+                let rootNode = manager.rootNodeForIndexPath(indexPath)
+                var rootIndex: Int = 0
+                var roots: [ZNKTreeNode] = []
+                rootNode?.visibleTreeNode(&rootIndex, nodes: &roots)
+                for root in roots {
+                    print("root ++++++ > ", root.indexPath)
+                }
+            }
             batchUpdates(.deletion, indexPaths: deletionIndexPaths)
         } else {
             var treeNodes: [ZNKTreeNode] = []
             var index = treeNode.indexPath.row
             print("insertion current index === ", index)
             treeNode.expanded = true
-            manager?.visibleChildrenForNode(treeNode, index: &index, nodes: &treeNodes)
+            manager.visibleChildrenForNode(treeNode, index: &index, nodes: &treeNodes)
             let deletionIndexPaths = treeNodes.compactMap({$0.indexPath})
             print("insertion compactMap indexPath ===> ", deletionIndexPaths)
 

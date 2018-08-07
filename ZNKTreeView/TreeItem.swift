@@ -51,7 +51,7 @@ extension TreeObject {
             let child5 = TreeObject.init(identifier: "child5".randomIdentifier, name: "child5".randomIdentifier, children: [/*grandson2, grandson4, grandson3*/])
             let child6 = TreeObject.init(identifier: "child6".randomIdentifier, name: "child6".randomIdentifier, children: [/*grandson2, grandson4, grandson3*/])
 
-            let root1 = TreeObject.init(identifier: "root1".randomIdentifier, name: "root1".randomIdentifier, children: [child1, child2, child3, child4, child5, child6])
+            let root1 = TreeObject.init(identifier: "root1".randomIdentifier, name: "root1".randomIdentifier, children: [child1,/* child2, child3, child4, child5, child6*/])
             let root2 = TreeObject.init(identifier: "root2".randomIdentifier, name: "root2".randomIdentifier, children: [child4, child5, child6])
             let root3 = TreeObject.init(identifier: "root3".randomIdentifier, name: "root3".randomIdentifier, children: [child4, child5, child6, child1, child2])
             let root4 = TreeObject.init(identifier: "root4".randomIdentifier, name: "root4".randomIdentifier, children: [child5, child6, child4, child5, child6])
