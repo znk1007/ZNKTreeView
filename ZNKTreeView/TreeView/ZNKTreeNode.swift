@@ -69,18 +69,16 @@ final class ZNKTreeNode {
     func numberOfVisibleChildrenForRoot(at index: Int, nodeIndex: inout Int) {
         if self.parent == nil || self.parent?.expanded == true {
             self.indexPath = IndexPath.init(row: nodeIndex, section: index)
-            print("visible indexPath ===> \(self.indexPath) identifier ===> \(self.item.identifier) expanded ===> \(self.expanded)")
             nodeIndex += 1
             for child in self.children {
                 child.numberOfVisibleChildrenForRoot(at: index, nodeIndex: &nodeIndex)
             }
         } else {
             self.indexPath = IndexPath.init(row: -1, section: index)
-            print("hidden indexPath ===> \(self.indexPath) identifier ===> \(self.item.identifier) expanded ===> \(self.expanded)")
         }
     }
 
-    /// 可见节点
+    /// 可见节点，仅限展开收缩时使用
     ///
     /// - Parameters:
     ///   - index: 下标

@@ -1022,6 +1022,18 @@ extension ZNKTreeView: UITableViewDelegate {
                 foldItemForTreeNode(treeNode)
             }
         } else {
+            treeNode.expanded = true
+            manager.updateIndexPaths(indexPath.section)
+            var insertionNodes: [ZNKTreeNode] = []
+            treeNode.visibleTreeNode(&insertionNodes)
+            for insertionNode in insertionNodes {
+                print("insertionNode indexPath ===> \(insertionNode.indexPath) ====> identifier \(insertionNode.item.identifier) ===> expanded ===> \(insertionNode.expanded)")
+            }
+            let insertionIndexPaths = insertionNodes.compactMap({$0.indexPath})
+
+            batchUpdates(.insertion, indexPaths: insertionIndexPaths)
+
+            return
             if let delegate = delegate {
                 if delegate.treeView(self, canExpandItem: treeNode.item) {
                     expandItemForTreeNode(treeNode)

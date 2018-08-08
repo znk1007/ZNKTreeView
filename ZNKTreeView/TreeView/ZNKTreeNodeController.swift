@@ -19,8 +19,6 @@ final class ZNKTreeNodeController {
     private var indexPathMutex: pthread_mutex_t
     /// 结点数组
     private var treeNodeArray: [ZNKTreeNode] = []
-    /// 节点数组副本
-    private var treeNodeArrayCopy: [ZNKTreeNode] = []
     deinit {
         self.delegate = nil
         pthread_mutex_destroy(&rootMutex)
@@ -34,7 +32,16 @@ final class ZNKTreeNodeController {
         indexPathMutex = pthread_mutex_t.init()
     }
 
-
+    /// 更新所有节点地址索引
+    ///
+    /// - Parameter index: 根结点下标
+    func updateIndexPaths(_ index: Int) {
+        guard treeNodeArray.count > index else {
+            return
+        }
+        var nodeIndex: Int = 0
+        treeNodeArray[index].numberOfVisibleChildrenForRoot(at: index, nodeIndex: &nodeIndex)
+    }
 
 
 
@@ -367,7 +374,6 @@ final class ZNKTreeNodeController {
     func appendRootNode(_ root: ZNKTreeNode) {
         pthread_mutex_lock(&rootMutex)
         treeNodeArray.append(root)
-        treeNodeArrayCopy.append(root)
         pthread_mutex_unlock(&rootMutex)
     }
 
@@ -387,7 +393,6 @@ extension ZNKTreeNodeController {
     /// - Returns: 根结点数组
     func rootTreeNodes() {
         let rootNumber = numberOfRoot()
-        treeNodeArrayCopy = []
         if rootNumber == 0 {
             treeNodeArray = []
         }
@@ -401,8 +406,6 @@ extension ZNKTreeNodeController {
                 }
             }
         }
-        // 拷贝副本
-        treeNodeArrayCopy.append(contentsOf: treeNodeArray)
     }
 
     /// 可见节点数
