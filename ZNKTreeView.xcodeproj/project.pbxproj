@@ -15,6 +15,13 @@
 		278ABFC22100C81900DFFE26 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 278ABFC02100C81900DFFE26 /* Main.storyboard */; };
 		278ABFC42100C81A00DFFE26 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 278ABFC32100C81A00DFFE26 /* Assets.xcassets */; };
 		278ABFC72100C81A00DFFE26 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 278ABFC52100C81A00DFFE26 /* LaunchScreen.storyboard */; };
+		278EE804211AC88B00599006 /* ZNKTreeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278EE803211AC88B00599006 /* ZNKTreeNode.swift */; };
+		278EE806211AC8F300599006 /* ZNKTreeNodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278EE805211AC8F300599006 /* ZNKTreeNodeController.swift */; };
+		278EE808211AC95000599006 /* ZNKTreeNodeControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278EE807211AC95000599006 /* ZNKTreeNodeControllerDelegate.swift */; };
+		278EE80A211AC97600599006 /* ZNKTreeViewDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278EE809211AC97500599006 /* ZNKTreeViewDelete.swift */; };
+		278EE80C211AC9A700599006 /* ZNKTreeViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278EE80B211AC9A700599006 /* ZNKTreeViewDataSource.swift */; };
+		278EE80E211AD1F300599006 /* ZNKTreeViewEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278EE80D211AD1F300599006 /* ZNKTreeViewEnums.swift */; };
+		278EE810211AD22500599006 /* ZNKTreeItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278EE80F211AD22500599006 /* ZNKTreeItem.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +35,13 @@
 		278ABFC32100C81A00DFFE26 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		278ABFC62100C81A00DFFE26 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		278ABFC82100C81A00DFFE26 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		278EE803211AC88B00599006 /* ZNKTreeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeNode.swift; sourceTree = "<group>"; };
+		278EE805211AC8F300599006 /* ZNKTreeNodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeNodeController.swift; sourceTree = "<group>"; };
+		278EE807211AC95000599006 /* ZNKTreeNodeControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeNodeControllerDelegate.swift; sourceTree = "<group>"; };
+		278EE809211AC97500599006 /* ZNKTreeViewDelete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeViewDelete.swift; sourceTree = "<group>"; };
+		278EE80B211AC9A700599006 /* ZNKTreeViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeViewDataSource.swift; sourceTree = "<group>"; };
+		278EE80D211AD1F300599006 /* ZNKTreeViewEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeViewEnums.swift; sourceTree = "<group>"; };
+		278EE80F211AD22500599006 /* ZNKTreeItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeItem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,7 +90,14 @@
 		278ABFCE2100C82800DFFE26 /* TreeView */ = {
 			isa = PBXGroup;
 			children = (
+				278EE80F211AD22500599006 /* ZNKTreeItem.swift */,
 				27768C882101690D00FD9774 /* ZNKTreeView.swift */,
+				278EE803211AC88B00599006 /* ZNKTreeNode.swift */,
+				278EE805211AC8F300599006 /* ZNKTreeNodeController.swift */,
+				278EE807211AC95000599006 /* ZNKTreeNodeControllerDelegate.swift */,
+				278EE809211AC97500599006 /* ZNKTreeViewDelete.swift */,
+				278EE80B211AC9A700599006 /* ZNKTreeViewDataSource.swift */,
+				278EE80D211AD1F300599006 /* ZNKTreeViewEnums.swift */,
 			);
 			path = TreeView;
 			sourceTree = "<group>";
@@ -154,8 +175,15 @@
 			files = (
 				270133F42104181A00A4C846 /* TreeItem.swift in Sources */,
 				278ABFBF2100C81900DFFE26 /* ViewController.swift in Sources */,
+				278EE806211AC8F300599006 /* ZNKTreeNodeController.swift in Sources */,
 				2779225321057548002E013F /* TreeViewCell.swift in Sources */,
+				278EE80A211AC97600599006 /* ZNKTreeViewDelete.swift in Sources */,
+				278EE804211AC88B00599006 /* ZNKTreeNode.swift in Sources */,
+				278EE810211AD22500599006 /* ZNKTreeItem.swift in Sources */,
 				27768C892101690D00FD9774 /* ZNKTreeView.swift in Sources */,
+				278EE80C211AC9A700599006 /* ZNKTreeViewDataSource.swift in Sources */,
+				278EE808211AC95000599006 /* ZNKTreeNodeControllerDelegate.swift in Sources */,
+				278EE80E211AD1F300599006 /* ZNKTreeViewEnums.swift in Sources */,
 				278ABFBD2100C81900DFFE26 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
