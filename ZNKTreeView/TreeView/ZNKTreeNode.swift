@@ -66,12 +66,18 @@ final class ZNKTreeNode {
     ///
     /// - Parameter index: 根结点
     /// - Returns: 可见子节点数
-    func numberOfVisibleChildrenForRoot(at index: Int, nodeIndex: inout Int) {
+    func numberOfVisibleChildrenForRoot(at index: Int, specilaNode: ZNKTreeNode?, nodeIndex: inout Int) {
         if self.parent == nil || self.parent?.expanded == true {
+            if let special = specilaNode, self.item.identifier == specilaNode?.item.identifier {
+                for child in special.children {
+                    
+                }
+                return
+            }
             self.indexPath = IndexPath.init(row: nodeIndex, section: index)
             nodeIndex += 1
             for child in self.children {
-                child.numberOfVisibleChildrenForRoot(at: index, nodeIndex: &nodeIndex)
+                child.numberOfVisibleChildrenForRoot(at: index, specilaNode: specilaNode, nodeIndex: &nodeIndex)
             }
         } else {
             self.indexPath = IndexPath.init(row: -1, section: index)

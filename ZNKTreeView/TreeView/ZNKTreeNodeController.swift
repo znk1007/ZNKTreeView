@@ -35,12 +35,12 @@ final class ZNKTreeNodeController {
     /// 更新所有节点地址索引
     ///
     /// - Parameter index: 根结点下标
-    func updateIndexPaths(_ index: Int) {
+    func updateIndexPaths(_ index: Int, specilaNode: ZNKTreeNode?) {
         guard treeNodeArray.count > index else {
             return
         }
         var nodeIndex: Int = 0
-        treeNodeArray[index].numberOfVisibleChildrenForRoot(at: index, nodeIndex: &nodeIndex)
+        treeNodeArray[index].numberOfVisibleChildrenForRoot(at: index, specilaNode: specilaNode, nodeIndex: &nodeIndex)
     }
 
 
@@ -412,11 +412,11 @@ extension ZNKTreeNodeController {
     ///
     /// - Parameter index: 根结点下标
     /// - Returns: 可见节点数
-    func numberOfVisibleNodeAtIndex(_ index: Int) -> Int {
+    func numberOfVisibleNodeAtIndex(_ index: Int, specilaNode: ZNKTreeNode?) -> Int {
         guard treeNodeArray.count > index else { return 0 }
         let node = treeNodeArray[index]
         var nodeIndex: Int = 0
-        node.numberOfVisibleChildrenForRoot(at: index, nodeIndex: &nodeIndex)
+        node.numberOfVisibleChildrenForRoot(at: index, specilaNode: specilaNode, nodeIndex: &nodeIndex)
         return nodeIndex
     }
 

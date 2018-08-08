@@ -307,6 +307,8 @@ final class ZNKTreeView: UIView {
     /// 显示类型
     private var style: ZNKTreeViewStyle = .plain
 
+    /// 收缩展开点击的节点
+    private var specilaNode: ZNKTreeNode? = nil
     /// 节点管理
     private var manager: ZNKTreeNodeController?
 
@@ -1023,7 +1025,8 @@ extension ZNKTreeView: UITableViewDelegate {
             }
         } else {
             treeNode.expanded = true
-            manager.updateIndexPaths(indexPath.section)
+            self.specilaNode = treeNode
+            manager.updateIndexPaths(indexPath.section, specilaNode: specilaNode)
             var insertionNodes: [ZNKTreeNode] = []
             treeNode.visibleTreeNode(&insertionNodes)
             for insertionNode in insertionNodes {
@@ -1032,7 +1035,7 @@ extension ZNKTreeView: UITableViewDelegate {
             let insertionIndexPaths = insertionNodes.compactMap({$0.indexPath})
 
             batchUpdates(.insertion, indexPaths: insertionIndexPaths)
-
+            self.specilaNode = nil
             return
             if let delegate = delegate {
                 if delegate.treeView(self, canExpandItem: treeNode.item) {
@@ -1358,7 +1361,7 @@ extension ZNKTreeView: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return manager?.numberOfVisibleNodeAtIndex(section) ?? 0
+        return manager?.numberOfVisibleNodeAtIndex(section, specilaNode: self.specilaNode) ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

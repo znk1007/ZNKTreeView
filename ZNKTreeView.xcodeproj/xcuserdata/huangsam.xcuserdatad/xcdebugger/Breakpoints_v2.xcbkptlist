@@ -40,13 +40,45 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "ZNKTreeView/TreeView/ZNKTreeView.swift"
-            timestampString = "555415008.0978889"
+            filePath = "ZNKTreeView/TreeView/ZNKTreeNode.swift"
+            timestampString = "555431308.9230061"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1034"
-            endingLineNumber = "1034"
+            startingLineNumber = "78"
+            endingLineNumber = "78"
+            landmarkName = "numberOfVisibleChildrenForRoot(at:specilaNode:nodeIndex:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ZNKTreeView/TreeView/ZNKTreeView.swift"
+            timestampString = "555431308.923088"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1038"
+            endingLineNumber = "1038"
             landmarkName = "tableView(_:didSelectRowAt:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ZNKTreeView/TreeView/ZNKTreeNode.swift"
+            timestampString = "555431315.0465"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "72"
+            endingLineNumber = "72"
+            landmarkName = "numberOfVisibleChildrenForRoot(at:specilaNode:nodeIndex:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
