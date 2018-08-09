@@ -68,11 +68,8 @@ final class ZNKTreeNode {
     /// - Returns: 可见子节点数
     func numberOfVisibleChildrenForRoot(at index: Int, specilaNode: ZNKTreeNode?, nodeIndex: inout Int) {
         if self.parent == nil || self.parent?.expanded == true {
-            if let special = specilaNode, self.item.identifier == specilaNode?.item.identifier {
-                for child in special.children {
-                    
-                }
-                return
+            if let specialNode = specilaNode {
+
             }
             self.indexPath = IndexPath.init(row: nodeIndex, section: index)
             nodeIndex += 1
@@ -84,16 +81,29 @@ final class ZNKTreeNode {
         }
     }
 
+    func updateChildrenIndexPath(_ index: Int)  {
+        
+    }
+
     /// 可见节点，仅限展开收缩时使用
     ///
     /// - Parameters:
     ///   - index: 下标
     ///   - nodes: 节点数组
-    func visibleTreeNode(_ nodes: inout [ZNKTreeNode]) {
+    func visibleTreeNode(_ nodeIndex: inout Int, nodes: inout [ZNKTreeNode]) {
         if self.expanded == true {
+            if let parent = self.parent {
+                nodeIndex = self.indexPath.row
+//                nodeIndex += 1
+                print("child parent index 1 ===> ", nodeIndex)
+                self.indexPath = IndexPath.init(row: nodeIndex, section: self.indexPath.section)
+            }
             for child in self.children {
+                nodeIndex += 1
+                print("child parent index 2 ===> ", nodeIndex)
+                child.indexPath = IndexPath.init(row: nodeIndex, section: child.indexPath.section)
                 nodes.append(child)
-                child.visibleTreeNode(&nodes)
+                child.visibleTreeNode(&nodeIndex, nodes: &nodes)
             }
         }
     }

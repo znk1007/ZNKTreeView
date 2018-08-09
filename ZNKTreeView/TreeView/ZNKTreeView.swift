@@ -1012,7 +1012,7 @@ extension ZNKTreeView: UITableViewDelegate {
         if let delegate = delegate {
             delegate.treeView(self, didSelect: treeNode.item, at: indexPath)
         }
-        guard treeNode.children.count > 0 else {
+        guard treeNode.children.count > 0, treeNode.level < 3 else {
             return
         }
         if treeNode.expanded {
@@ -1026,9 +1026,12 @@ extension ZNKTreeView: UITableViewDelegate {
         } else {
             treeNode.expanded = true
             self.specilaNode = treeNode
-            manager.updateIndexPaths(indexPath.section, specilaNode: specilaNode)
+//            manager.updateIndexPaths(indexPath.section, specilaNode: specilaNode)
             var insertionNodes: [ZNKTreeNode] = []
-            treeNode.visibleTreeNode(&insertionNodes)
+            var startIndex = treeNode.indexPath.row
+            print("start index 1 ===> ", startIndex)
+            treeNode.visibleTreeNode(&startIndex, nodes: &insertionNodes)
+            print("start index 2 ===> ", startIndex)
             for insertionNode in insertionNodes {
                 print("insertionNode indexPath ===> \(insertionNode.indexPath) ====> identifier \(insertionNode.item.identifier) ===> expanded ===> \(insertionNode.expanded)")
             }
