@@ -19,6 +19,8 @@ final class ZNKTreeNodeController {
     private var indexPathMutex: pthread_mutex_t
     /// 结点数组
     private var treeNodeArray: [ZNKTreeNode] = []
+    /// 节点数组副本集
+    private var treeNodeArrayCopy: [ZNKTreeNode] = []
     deinit {
         self.delegate = nil
         pthread_mutex_destroy(&rootMutex)
