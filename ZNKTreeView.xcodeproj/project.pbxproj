@@ -7,45 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		270133F42104181A00A4C846 /* TreeItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270133F32104181A00A4C846 /* TreeItem.swift */; };
-		27768C892101690D00FD9774 /* ZNKTreeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27768C882101690D00FD9774 /* ZNKTreeView.swift */; };
-		2779225321057548002E013F /* TreeViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2779225221057548002E013F /* TreeViewCell.swift */; };
-		278ABFBD2100C81900DFFE26 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278ABFBC2100C81900DFFE26 /* AppDelegate.swift */; };
-		278ABFBF2100C81900DFFE26 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278ABFBE2100C81900DFFE26 /* ViewController.swift */; };
-		278ABFC22100C81900DFFE26 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 278ABFC02100C81900DFFE26 /* Main.storyboard */; };
-		278ABFC42100C81A00DFFE26 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 278ABFC32100C81A00DFFE26 /* Assets.xcassets */; };
-		278ABFC72100C81A00DFFE26 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 278ABFC52100C81A00DFFE26 /* LaunchScreen.storyboard */; };
-		278EE804211AC88B00599006 /* ZNKTreeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278EE803211AC88B00599006 /* ZNKTreeNode.swift */; };
-		278EE806211AC8F300599006 /* ZNKTreeNodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278EE805211AC8F300599006 /* ZNKTreeNodeController.swift */; };
-		278EE808211AC95000599006 /* ZNKTreeNodeControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278EE807211AC95000599006 /* ZNKTreeNodeControllerDelegate.swift */; };
-		278EE80A211AC97600599006 /* ZNKTreeViewDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278EE809211AC97500599006 /* ZNKTreeViewDelete.swift */; };
-		278EE80C211AC9A700599006 /* ZNKTreeViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278EE80B211AC9A700599006 /* ZNKTreeViewDataSource.swift */; };
-		278EE80E211AD1F300599006 /* ZNKTreeViewEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278EE80D211AD1F300599006 /* ZNKTreeViewEnums.swift */; };
-		278EE810211AD22500599006 /* ZNKTreeItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278EE80F211AD22500599006 /* ZNKTreeItem.swift */; };
+		274BD6F9211F9F5B0014ECFC /* TreeNodeControllerDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274BD6F8211F9F5B0014ECFC /* TreeNodeControllerDataSource.swift */; };
+		274BD6FB211FA6B40014ECFC /* TreeNodeEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274BD6FA211FA6B40014ECFC /* TreeNodeEnum.swift */; };
+		27F4F09E211F2A140028B2EF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F4F09D211F2A140028B2EF /* AppDelegate.swift */; };
+		27F4F0A0211F2A140028B2EF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F4F09F211F2A140028B2EF /* ViewController.swift */; };
+		27F4F0A3211F2A140028B2EF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27F4F0A1211F2A140028B2EF /* Main.storyboard */; };
+		27F4F0A5211F2A150028B2EF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 27F4F0A4211F2A150028B2EF /* Assets.xcassets */; };
+		27F4F0A8211F2A150028B2EF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27F4F0A6211F2A150028B2EF /* LaunchScreen.storyboard */; };
+		27F4F0B3211F2B170028B2EF /* TreeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F4F0B2211F2B170028B2EF /* TreeView.swift */; };
+		27F4F0B7211F2BE80028B2EF /* TreeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F4F0B6211F2BE80028B2EF /* TreeNode.swift */; };
+		27F4F0B9211F2C410028B2EF /* TreeNodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F4F0B8211F2C410028B2EF /* TreeNodeController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		270133F32104181A00A4C846 /* TreeItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeItem.swift; sourceTree = "<group>"; };
-		27768C882101690D00FD9774 /* ZNKTreeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeView.swift; sourceTree = "<group>"; };
-		2779225221057548002E013F /* TreeViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeViewCell.swift; sourceTree = "<group>"; };
-		278ABFB92100C81900DFFE26 /* ZNKTreeView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZNKTreeView.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		278ABFBC2100C81900DFFE26 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		278ABFBE2100C81900DFFE26 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		278ABFC12100C81900DFFE26 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		278ABFC32100C81A00DFFE26 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		278ABFC62100C81A00DFFE26 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		278ABFC82100C81A00DFFE26 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		278EE803211AC88B00599006 /* ZNKTreeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeNode.swift; sourceTree = "<group>"; };
-		278EE805211AC8F300599006 /* ZNKTreeNodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeNodeController.swift; sourceTree = "<group>"; };
-		278EE807211AC95000599006 /* ZNKTreeNodeControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeNodeControllerDelegate.swift; sourceTree = "<group>"; };
-		278EE809211AC97500599006 /* ZNKTreeViewDelete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeViewDelete.swift; sourceTree = "<group>"; };
-		278EE80B211AC9A700599006 /* ZNKTreeViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeViewDataSource.swift; sourceTree = "<group>"; };
-		278EE80D211AD1F300599006 /* ZNKTreeViewEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeViewEnums.swift; sourceTree = "<group>"; };
-		278EE80F211AD22500599006 /* ZNKTreeItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZNKTreeItem.swift; sourceTree = "<group>"; };
+		274BD6F8211F9F5B0014ECFC /* TreeNodeControllerDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeNodeControllerDataSource.swift; sourceTree = "<group>"; };
+		274BD6FA211FA6B40014ECFC /* TreeNodeEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeNodeEnum.swift; sourceTree = "<group>"; };
+		27F4F09A211F2A140028B2EF /* ZNKTreeView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZNKTreeView.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		27F4F09D211F2A140028B2EF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		27F4F09F211F2A140028B2EF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		27F4F0A2211F2A140028B2EF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		27F4F0A4211F2A150028B2EF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		27F4F0A7211F2A150028B2EF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		27F4F0A9211F2A150028B2EF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		27F4F0B2211F2B170028B2EF /* TreeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeView.swift; sourceTree = "<group>"; };
+		27F4F0B6211F2BE80028B2EF /* TreeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeNode.swift; sourceTree = "<group>"; };
+		27F4F0B8211F2C410028B2EF /* TreeNodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeNodeController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		278ABFB62100C81900DFFE26 /* Frameworks */ = {
+		27F4F097211F2A140028B2EF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -55,49 +45,44 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		278ABFB02100C81900DFFE26 = {
+		27F4F091211F2A140028B2EF = {
 			isa = PBXGroup;
 			children = (
-				278ABFBB2100C81900DFFE26 /* ZNKTreeView */,
-				278ABFBA2100C81900DFFE26 /* Products */,
+				27F4F09C211F2A140028B2EF /* ZNKTreeView */,
+				27F4F09B211F2A140028B2EF /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		278ABFBA2100C81900DFFE26 /* Products */ = {
+		27F4F09B211F2A140028B2EF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				278ABFB92100C81900DFFE26 /* ZNKTreeView.app */,
+				27F4F09A211F2A140028B2EF /* ZNKTreeView.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		278ABFBB2100C81900DFFE26 /* ZNKTreeView */ = {
+		27F4F09C211F2A140028B2EF /* ZNKTreeView */ = {
 			isa = PBXGroup;
 			children = (
-				278ABFCE2100C82800DFFE26 /* TreeView */,
-				278ABFBC2100C81900DFFE26 /* AppDelegate.swift */,
-				278ABFBE2100C81900DFFE26 /* ViewController.swift */,
-				270133F32104181A00A4C846 /* TreeItem.swift */,
-				2779225221057548002E013F /* TreeViewCell.swift */,
-				278ABFC02100C81900DFFE26 /* Main.storyboard */,
-				278ABFC32100C81A00DFFE26 /* Assets.xcassets */,
-				278ABFC52100C81A00DFFE26 /* LaunchScreen.storyboard */,
-				278ABFC82100C81A00DFFE26 /* Info.plist */,
+				27F4F0AF211F2A440028B2EF /* TreeView */,
+				27F4F09D211F2A140028B2EF /* AppDelegate.swift */,
+				27F4F09F211F2A140028B2EF /* ViewController.swift */,
+				27F4F0A1211F2A140028B2EF /* Main.storyboard */,
+				27F4F0A4211F2A150028B2EF /* Assets.xcassets */,
+				27F4F0A6211F2A150028B2EF /* LaunchScreen.storyboard */,
+				27F4F0A9211F2A150028B2EF /* Info.plist */,
 			);
 			path = ZNKTreeView;
 			sourceTree = "<group>";
 		};
-		278ABFCE2100C82800DFFE26 /* TreeView */ = {
+		27F4F0AF211F2A440028B2EF /* TreeView */ = {
 			isa = PBXGroup;
 			children = (
-				278EE80F211AD22500599006 /* ZNKTreeItem.swift */,
-				27768C882101690D00FD9774 /* ZNKTreeView.swift */,
-				278EE803211AC88B00599006 /* ZNKTreeNode.swift */,
-				278EE805211AC8F300599006 /* ZNKTreeNodeController.swift */,
-				278EE807211AC95000599006 /* ZNKTreeNodeControllerDelegate.swift */,
-				278EE809211AC97500599006 /* ZNKTreeViewDelete.swift */,
-				278EE80B211AC9A700599006 /* ZNKTreeViewDataSource.swift */,
-				278EE80D211AD1F300599006 /* ZNKTreeViewEnums.swift */,
+				27F4F0B2211F2B170028B2EF /* TreeView.swift */,
+				27F4F0B6211F2BE80028B2EF /* TreeNode.swift */,
+				27F4F0B8211F2C410028B2EF /* TreeNodeController.swift */,
+				274BD6F8211F9F5B0014ECFC /* TreeNodeControllerDataSource.swift */,
+				274BD6FA211FA6B40014ECFC /* TreeNodeEnum.swift */,
 			);
 			path = TreeView;
 			sourceTree = "<group>";
@@ -105,13 +90,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		278ABFB82100C81900DFFE26 /* ZNKTreeView */ = {
+		27F4F099211F2A140028B2EF /* ZNKTreeView */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 278ABFCB2100C81A00DFFE26 /* Build configuration list for PBXNativeTarget "ZNKTreeView" */;
+			buildConfigurationList = 27F4F0AC211F2A150028B2EF /* Build configuration list for PBXNativeTarget "ZNKTreeView" */;
 			buildPhases = (
-				278ABFB52100C81900DFFE26 /* Sources */,
-				278ABFB62100C81900DFFE26 /* Frameworks */,
-				278ABFB72100C81900DFFE26 /* Resources */,
+				27F4F096211F2A140028B2EF /* Sources */,
+				27F4F097211F2A140028B2EF /* Frameworks */,
+				27F4F098211F2A140028B2EF /* Resources */,
 			);
 			buildRules = (
 			);
@@ -119,25 +104,25 @@
 			);
 			name = ZNKTreeView;
 			productName = ZNKTreeView;
-			productReference = 278ABFB92100C81900DFFE26 /* ZNKTreeView.app */;
+			productReference = 27F4F09A211F2A140028B2EF /* ZNKTreeView.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		278ABFB12100C81900DFFE26 /* Project object */ = {
+		27F4F092211F2A140028B2EF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0940;
 				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = SunEee;
 				TargetAttributes = {
-					278ABFB82100C81900DFFE26 = {
+					27F4F099211F2A140028B2EF = {
 						CreatedOnToolsVersion = 9.4.1;
 					};
 				};
 			};
-			buildConfigurationList = 278ABFB42100C81900DFFE26 /* Build configuration list for PBXProject "ZNKTreeView" */;
+			buildConfigurationList = 27F4F095211F2A140028B2EF /* Build configuration list for PBXProject "ZNKTreeView" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -145,64 +130,59 @@
 				en,
 				Base,
 			);
-			mainGroup = 278ABFB02100C81900DFFE26;
-			productRefGroup = 278ABFBA2100C81900DFFE26 /* Products */;
+			mainGroup = 27F4F091211F2A140028B2EF;
+			productRefGroup = 27F4F09B211F2A140028B2EF /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				278ABFB82100C81900DFFE26 /* ZNKTreeView */,
+				27F4F099211F2A140028B2EF /* ZNKTreeView */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		278ABFB72100C81900DFFE26 /* Resources */ = {
+		27F4F098211F2A140028B2EF /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				278ABFC72100C81A00DFFE26 /* LaunchScreen.storyboard in Resources */,
-				278ABFC42100C81A00DFFE26 /* Assets.xcassets in Resources */,
-				278ABFC22100C81900DFFE26 /* Main.storyboard in Resources */,
+				27F4F0A8211F2A150028B2EF /* LaunchScreen.storyboard in Resources */,
+				27F4F0A5211F2A150028B2EF /* Assets.xcassets in Resources */,
+				27F4F0A3211F2A140028B2EF /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		278ABFB52100C81900DFFE26 /* Sources */ = {
+		27F4F096211F2A140028B2EF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				270133F42104181A00A4C846 /* TreeItem.swift in Sources */,
-				278ABFBF2100C81900DFFE26 /* ViewController.swift in Sources */,
-				278EE806211AC8F300599006 /* ZNKTreeNodeController.swift in Sources */,
-				2779225321057548002E013F /* TreeViewCell.swift in Sources */,
-				278EE80A211AC97600599006 /* ZNKTreeViewDelete.swift in Sources */,
-				278EE804211AC88B00599006 /* ZNKTreeNode.swift in Sources */,
-				278EE810211AD22500599006 /* ZNKTreeItem.swift in Sources */,
-				27768C892101690D00FD9774 /* ZNKTreeView.swift in Sources */,
-				278EE80C211AC9A700599006 /* ZNKTreeViewDataSource.swift in Sources */,
-				278EE808211AC95000599006 /* ZNKTreeNodeControllerDelegate.swift in Sources */,
-				278EE80E211AD1F300599006 /* ZNKTreeViewEnums.swift in Sources */,
-				278ABFBD2100C81900DFFE26 /* AppDelegate.swift in Sources */,
+				274BD6FB211FA6B40014ECFC /* TreeNodeEnum.swift in Sources */,
+				27F4F0B3211F2B170028B2EF /* TreeView.swift in Sources */,
+				27F4F0A0211F2A140028B2EF /* ViewController.swift in Sources */,
+				274BD6F9211F9F5B0014ECFC /* TreeNodeControllerDataSource.swift in Sources */,
+				27F4F0B9211F2C410028B2EF /* TreeNodeController.swift in Sources */,
+				27F4F0B7211F2BE80028B2EF /* TreeNode.swift in Sources */,
+				27F4F09E211F2A140028B2EF /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		278ABFC02100C81900DFFE26 /* Main.storyboard */ = {
+		27F4F0A1211F2A140028B2EF /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				278ABFC12100C81900DFFE26 /* Base */,
+				27F4F0A2211F2A140028B2EF /* Base */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
-		278ABFC52100C81A00DFFE26 /* LaunchScreen.storyboard */ = {
+		27F4F0A6211F2A150028B2EF /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				278ABFC62100C81A00DFFE26 /* Base */,
+				27F4F0A7211F2A150028B2EF /* Base */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -210,7 +190,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		278ABFC92100C81A00DFFE26 /* Debug */ = {
+		27F4F0AA211F2A150028B2EF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -270,7 +250,7 @@
 			};
 			name = Debug;
 		};
-		278ABFCA2100C81A00DFFE26 /* Release */ = {
+		27F4F0AB211F2A150028B2EF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -324,14 +304,13 @@
 			};
 			name = Release;
 		};
-		278ABFCC2100C81A00DFFE26 /* Debug */ = {
+		27F4F0AD211F2A150028B2EF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MA75X9QV5V;
 				INFOPLIST_FILE = ZNKTreeView/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -343,14 +322,13 @@
 			};
 			name = Debug;
 		};
-		278ABFCD2100C81A00DFFE26 /* Release */ = {
+		27F4F0AE211F2A150028B2EF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MA75X9QV5V;
 				INFOPLIST_FILE = ZNKTreeView/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -365,25 +343,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		278ABFB42100C81900DFFE26 /* Build configuration list for PBXProject "ZNKTreeView" */ = {
+		27F4F095211F2A140028B2EF /* Build configuration list for PBXProject "ZNKTreeView" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				278ABFC92100C81A00DFFE26 /* Debug */,
-				278ABFCA2100C81A00DFFE26 /* Release */,
+				27F4F0AA211F2A150028B2EF /* Debug */,
+				27F4F0AB211F2A150028B2EF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		278ABFCB2100C81A00DFFE26 /* Build configuration list for PBXNativeTarget "ZNKTreeView" */ = {
+		27F4F0AC211F2A150028B2EF /* Build configuration list for PBXNativeTarget "ZNKTreeView" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				278ABFCC2100C81A00DFFE26 /* Debug */,
-				278ABFCD2100C81A00DFFE26 /* Release */,
+				27F4F0AD211F2A150028B2EF /* Debug */,
+				27F4F0AE211F2A150028B2EF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 278ABFB12100C81900DFFE26 /* Project object */;
+	rootObject = 27F4F092211F2A140028B2EF /* Project object */;
 }
