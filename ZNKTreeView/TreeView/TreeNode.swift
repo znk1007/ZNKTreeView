@@ -39,6 +39,7 @@ final class TreeNode {
         self.isExpand = isExpand
         self.object = object
         self.children = children
+        appendMutex = .init()
     }
 
     /// 指定根节点下可见子节点数
@@ -67,11 +68,18 @@ final class TreeNode {
     ///
     /// - Parameter node: 子节点
     func append(_ node: TreeNode) {
-
+        pthread_mutex_lock(&appendMutex)
+        self.children.append(node)
+        pthread_mutex_unlock(&appendMutex)
     }
 
-    func remove(<#parameters#>) -> <#return type#> {
-        <#function body#>
+    /// 删除子节点
+    ///
+    /// - Parameter node: 子节点
+    func remove(_ node: TreeNode) {
+        if let index = self.children.index(where: {$0.identifier == node.identifier}) {
+            self.children.remove(at: index)
+        }
     }
 
 }
