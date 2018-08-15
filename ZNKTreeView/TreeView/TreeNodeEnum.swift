@@ -20,3 +20,20 @@ enum TreeNodeInsertMode {
     case leadingFor(TreeNode)
     case trailingFor(TreeNode)
 }
+
+/// 树形图风格
+///
+/// - grouped: 分组
+/// - plain: 平铺
+enum TreeViewStyle {
+    case grouped
+    case plain
+    var style: UITableViewStyle {
+        switch self {
+        case .grouped:
+            return .grouped
+        case .plain:
+            return .plain
+        }
+    }
+}
