@@ -34,13 +34,39 @@ final class TreeNodeController {
         }
         if rootNodes.count == 0 || rootNodes.count != rootNumber {
             for i in 0 ..< numberOfRoot() {
-                if let node = dataSource?.treeNode(at: 0, of: nil, in: i) {
-                    var childIndex = 0
-                    self.insertNode(of: node, in: i, childIndex: &childIndex)
+                if let node = dataSource?.treeNode(at: -1, of: nil, in: i) {
                     self.append(node)
+                    self.insertNode(of: node, in: i)
+                    enumericRootNode(node)
                 }
             }
         }
+    }
+
+    func enumericRootNode(_ node: TreeNode?) {
+        guard let node = node else { return }
+        print("++++++++++++++++")
+        print("node identifier ---> ", node.identifier)
+        print("node isExpand ---> ", node.isExpand)
+        print("node level ---> ", node.level)
+        print("----------------")
+        for child in node.children {
+            enumericRootNode(child)
+        }
+    }
+
+    /// 指定根节点下标可见子节点数
+    ///
+    /// - Parameter rootIndex: 指定根节点
+    /// - Returns: 可见子节点数
+    func numberOfVisibleNodeIn(_ rootIndex: Int) -> Int {
+        guard rootNodes.count > rootIndex else {
+            return 0
+        }
+        let node = rootNodes[rootIndex]
+        var nodeIndex: Int = 0
+        node.numberOfVisibleNodeInRootIndex(rootIndex, nodeIndex: &nodeIndex)
+        return nodeIndex
     }
 
     /// 插入指定节点的子节点
@@ -49,15 +75,18 @@ final class TreeNodeController {
     ///   - node: 指定节点
     ///   - rootIndex: 根节点下标
     ///   - childIndex: 子节点
-    private func insertNode(of node: TreeNode?, in rootIndex: Int, childIndex: inout Int) {
-        let childNumber = numberOfChildNode(for: node, in: rootIndex)
+    private func insertNode(of node: TreeNode?, in rootIndex: Int) {
+
         guard let node = node else { return }
+
+        let childNumber = numberOfChildNode(for: node, in: rootIndex)
         guard childNumber != 0 else {
             return
         }
         for i in 0 ..< childNumber {
-            if let childNode = dataSource?.treeNode(at: i, of: node, in: rootIndex) {
-                
+            if let theNode = dataSource?.treeNode(at: i, of: node, in: rootIndex) {
+                node.append(theNode)
+                insertNode(of: theNode, in: rootIndex)
             }
         }
     }

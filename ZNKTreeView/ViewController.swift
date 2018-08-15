@@ -13,6 +13,7 @@ class ViewController: UIViewController {
     /// 树形图视图
     private lazy var treeView: TreeView = {
         $0.dataSource = self
+        $0.register(TreeViewCell.self, forCellReuseIdentifier: TreeViewCell.Setting.identifier)
         return $0
     }(TreeView.init(frame: self.view.bounds, style: .grouped))
 
@@ -56,9 +57,13 @@ extension ViewController: TreeViewDataSource {
         }
     }
 
-    func treeView(_ treeView: TreeView, childIndex: Int, for identifier: String?) -> Any? {
-        if let identifier = identifier {
-            <#statements#>
+    func treeView(_ treeView: TreeView, childIndex: Int, for item: Any?, in rootIndex: Int) -> (Any?, String?) {
+        if let item = item as? TreeItem {
+            let childItem = item.children[childIndex]
+            return (childItem, childItem.identifier)
+        } else {
+            let childItem = treeItems[rootIndex]
+            return (childItem, childItem.identifier)
         }
     }
 

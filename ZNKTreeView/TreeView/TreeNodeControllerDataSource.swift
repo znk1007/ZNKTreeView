@@ -30,12 +30,5 @@ protocol TreeNodeControllerDataSource {
     func treeNode(at childIndex: Int, of node: TreeNode?, in rootIndex: Int) -> TreeNode?
 
     
-}
-
-extension TreeNodeControllerDataSource {
-    var numberOfRootNode: Int {
-        get { return 0 }
-    }
-
 
 }

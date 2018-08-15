@@ -17,6 +17,18 @@ final class TreeNode {
     let object: Any
     /// 父节点
     let parent: TreeNode?
+
+    /// 节点层级
+    var level: Int {
+        get {
+            if let parent = parent {
+                return parent.level + 1
+            } else {
+                return 0
+            }
+        }
+    }
+
     /// 子节点数组
     var children: [TreeNode] = []
     /// 地址索引
@@ -33,7 +45,7 @@ final class TreeNode {
     ///   - object: 任意数据
     ///   - parent: 父节点
     ///   - children: 子节点数组
-    init(identifier: String, isExpand: Bool, object: Any, parent: TreeNode? = nil, children: [TreeNode] = []) {
+    init(identifier: String, isExpand: Bool, object: Any, parent: TreeNode?, children: [TreeNode] = []) {
         self.identifier = identifier
         self.parent = parent
         self.isExpand = isExpand
