@@ -43,6 +43,17 @@ final class TreeNodeController {
         }
     }
 
+    /// 根据指定根结点下标获取根结点
+    ///
+    /// - Parameter index: 根结点下标
+    /// - Returns: 根结点
+    func rootNodeFor(_ index: Int) -> TreeNode? {
+        guard rootNodes.count > index else {
+            return nil
+        }
+        return rootNodes[index]
+    }
+
     func enumericRootNode(_ node: TreeNode?) {
         guard let node = node else { return }
         print("++++++++++++++++")
@@ -66,6 +77,7 @@ final class TreeNodeController {
         let node = rootNodes[rootIndex]
         var nodeIndex: Int = 0
         node.numberOfVisibleNodeInRootIndex(rootIndex, nodeIndex: &nodeIndex)
+        print("node index ---> ", nodeIndex)
         return nodeIndex
     }
 
@@ -85,8 +97,8 @@ final class TreeNodeController {
         }
         for i in 0 ..< childNumber {
             if let theNode = dataSource?.treeNode(at: i, of: node, in: rootIndex) {
-                node.append(theNode)
                 insertNode(of: theNode, in: rootIndex)
+                node.append(theNode)
             }
         }
     }

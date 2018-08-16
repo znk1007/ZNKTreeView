@@ -14,6 +14,7 @@ class ViewController: UIViewController {
     private lazy var treeView: TreeView = {
         $0.dataSource = self
         $0.register(TreeViewCell.self, forCellReuseIdentifier: TreeViewCell.Setting.identifier)
+        $0.register(TreeViewHeaderView.self, forHeaderFooterViewReuseIdentifier: TreeViewHeaderView.Setting.identifier)
         return $0
     }(TreeView.init(frame: self.view.bounds, style: .grouped))
 
@@ -45,6 +46,15 @@ class ViewController: UIViewController {
 
 
 extension ViewController: TreeViewDataSource {
+
+    func treeView(_ treeView: TreeView, viewForHeaderForRoot root: Any) -> UIView? {
+        return nil
+    }
+
+    func treeView(_ treeView: TreeView, cellFor item: Any, at indexPath: IndexPath) -> UITableViewCell {
+        return .init()
+    }
+
     func numberOfRootItem(in treeView: TreeView) -> Int {
         return treeItems.count
     }

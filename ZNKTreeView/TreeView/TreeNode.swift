@@ -73,7 +73,7 @@ final class TreeNode {
                 numberOfVisibleNode = nodeIndex
             }
         }
-        nodeIndex = numberOfVisibleNode
+        nodeIndex = numberOfVisibleNode == -1 ? 0 : numberOfVisibleNode
     }
 
     /// 添加子节点

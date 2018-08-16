@@ -152,6 +152,25 @@ extension TreeView: UITableViewDataSource {
     }
 }
 
+
+// MARK: - 表格视图代理
+extension TreeView: UITableViewDelegate {
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let rootNode = controller?.rootNodeFor(section) else { return nil }
+        return dataSource?.treeView(self, viewForHeaderForRoot: rootNode)
+    }
+
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        guard let rootNode = controller?.rootNodeFor(section) else { return nil }
+        return dataSource?.treeView(self, viewForFooterForRoot: rootNode)
+    }
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 45
+    }
+}
+
 // MARK: - 管理器数据源代理
 extension TreeView: TreeNodeControllerDataSource {
     var numberOfRootNode: Int {

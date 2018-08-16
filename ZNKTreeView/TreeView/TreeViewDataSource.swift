@@ -42,10 +42,35 @@ protocol TreeViewDataSource {
     ///   - indexPath: 指定地址索引
     /// - Returns: 单元格
     func treeView(_ treeView: TreeView, cellFor item: Any, at indexPath: IndexPath) -> UITableViewCell
+
+    /// 指定树形图下指定根元素的段头视图
+    ///
+    /// - Parameters:
+    ///   - treeView: 指定树形图
+    ///   - rootIndex: 指定根元素
+    /// - Returns: 段头视图
+    func treeView(_ treeView: TreeView, viewForHeaderForRoot root: Any) -> UIView?
+
+    /// 指定树形图下指定根元素的段尾视图
+    ///
+    /// - Parameters:
+    ///   - treeView: 指定树形图
+    ///   - index: 指定根元素
+    /// - Returns: 段尾视图
+    func treeView(_ treeView: TreeView, viewForFooterForRoot root: Any) -> UIView?
 }
 
 extension TreeViewDataSource {
     func numberOfRootItem(in treeView: TreeView) -> Int {
         return 0
     }
+
+    func treeView(_ treeView: TreeView, viewForHeaderForRoot root: Any) -> UIView? {
+        return nil
+    }
+
+    func treeView(_ treeView: TreeView, viewForFooterForRoot root: Any) -> UIView? {
+        return nil
+    }
+
 }
