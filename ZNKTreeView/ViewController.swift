@@ -48,10 +48,17 @@ class ViewController: UIViewController {
 extension ViewController: TreeViewDataSource {
 
     func treeView(_ treeView: TreeView, viewForHeaderForRoot root: Any) -> UIView? {
+        if let item = root as? TreeItem {
+            var headerView = treeView.dequeueReusableHeaderFooterView(TreeViewHeaderView.Setting.identifier) as? TreeViewHeaderView
+            if headerView == nil {
+                headerView = .init()
+            }
+            headerView?.updateHeader(item.name)
+        }
         return nil
     }
 
-    func treeView(_ treeView: TreeView, cellFor item: Any, at indexPath: IndexPath) -> UITableViewCell {
+    func treeView(_ treeView: TreeView, cellFor item: Any, withIdentifier identifier: String, at indexPath: IndexPath) -> UITableViewCell {
         return .init()
     }
 

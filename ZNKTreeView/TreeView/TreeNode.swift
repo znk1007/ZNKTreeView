@@ -75,6 +75,22 @@ final class TreeNode {
         }
     }
 
+    /// 根据地址索引获取节点
+    ///
+    /// - Parameter indexPath: 地址索引
+    /// - Returns: 节点
+    func treeNodeFor(_ indexPath: IndexPath) -> TreeNode? {
+        if self.indexPath.compare(indexPath) == .orderedSame {
+            return self
+        }
+        for child in self.children {
+            if let node = child.treeNodeFor(indexPath) {
+                return node
+            }
+        }
+        return nil
+    }
+
     /// 根据唯一标识获取指定节点
     ///
     /// - Parameter identifier: 唯一标识

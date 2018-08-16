@@ -138,6 +138,36 @@ extension TreeView {
         guard let table = tableView else { return }
         table.register(nib, forHeaderFooterViewReuseIdentifier: identifier)
     }
+
+    /// 复用单元格
+    ///
+    /// - Parameter identifier: 唯一标识
+    func dequeueReusableCell(_ identifier: String) -> UITableViewCell {
+        guard let table = tableView else { return .init() }
+        return table.dequeueReusableCell(withIdentifier: identifier) ?? .init()
+    }
+
+    /// 复用单元格
+    ///
+    /// - Parameters:
+    ///   - cellIdentifier: 单元格唯一标识
+    ///   - item: 元素
+    ///   - identifier: 元素唯一标识
+    ///   - indexPath: 地址索引
+    func dequeueReusableCell(_ cellIdentifier: String, for item: Any, withItemIdentifier identifier: String, at indexPath: IndexPath) -> UITableViewCell {
+        guard let table = tableView, let node = controller?.treeNodeFor(indexPath, identifier: identifier) else { return .init() }
+        return table.dequeueReusableCell(withIdentifier: cellIdentifier, for: node.indexPath)
+    }
+
+    /// 复用段头段尾视图
+    ///
+    /// - Parameter identifier: 唯一标识
+    /// - Returns: 段头段尾视图
+    func dequeueReusableHeaderFooterView(_ identifier: String) -> UITableViewHeaderFooterView? {
+        guard let table = tableView else { return nil }
+        return table.dequeueReusableHeaderFooterView(withIdentifier: identifier)
+    }
+
 }
 
 // MARK: - 表格数据源代理
@@ -151,6 +181,9 @@ extension TreeView: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if let node = controller?.treeNodeFor(indexPath, identifier: nil), let cell = dataSource?.treeView(self, cellFor: node.object, withIdentifier: node.identifier, at: indexPath) {
+            return cell
+        }
         return .init()
     }
 }
