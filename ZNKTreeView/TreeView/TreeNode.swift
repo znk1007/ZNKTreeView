@@ -13,11 +13,6 @@ final class TreeNode {
     let identifier: String
     /// 是否展开
     var isExpand: Bool
-    /// 任意数据
-    let object: Any
-    /// 父节点
-    let parent: TreeNode?
-
     /// 节点层级
     var level: Int {
         get {
@@ -28,7 +23,10 @@ final class TreeNode {
             }
         }
     }
-
+    /// 任意数据
+    let object: Any
+    /// 父节点
+    let parent: TreeNode?
     /// 子节点数组
     var children: [TreeNode] = []
     /// 地址索引
@@ -72,8 +70,25 @@ final class TreeNode {
                 }
                 numberOfVisibleNode = nodeIndex
             }
+        } else {
+            nodeIndex = numberOfVisibleNode
         }
-        nodeIndex = numberOfVisibleNode == -1 ? 0 : numberOfVisibleNode
+    }
+
+    /// 根据唯一标识获取指定节点
+    ///
+    /// - Parameter identifier: 唯一标识
+    /// - Returns: 指定节点
+    func treeNodeFor(_ identifier: String) -> TreeNode? {
+        if self.identifier == identifier {
+            return self
+        }
+        for child in self.children {
+            if let node = child.treeNodeFor(identifier) {
+                return node
+            }
+        }
+        return nil
     }
 
     /// 添加子节点

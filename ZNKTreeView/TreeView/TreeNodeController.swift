@@ -81,6 +81,18 @@ final class TreeNodeController {
         return nodeIndex
     }
 
+    /// 根据指定地址索引获取节点
+    ///
+    /// - Parameter indexPath: 地址索引
+    /// - Returns: 节点
+    func treeNodeFor(_ indexPath: IndexPath, identifier: String) -> TreeNode? {
+        guard rootNodes.count > indexPath.section else {
+            return nil
+        }
+        let rootNode = rootNodes[indexPath.section]
+        return rootNode.treeNodeFor(identifier)
+    }
+
     /// 插入指定节点的子节点
     ///
     /// - Parameters:

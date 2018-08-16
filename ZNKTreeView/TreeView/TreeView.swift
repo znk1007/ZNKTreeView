@@ -13,6 +13,9 @@ class TreeView: UIView {
     /// 树形图数据源代理
     var dataSource: TreeViewDataSource?
 
+    /// 树形图代理
+    var delegate: TreeViewDelegate?
+
     /// 是否展开所有元素
     var expandAll: Bool = false
 
@@ -167,7 +170,7 @@ extension TreeView: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 45
+        return delegate?.treeView(self, heightFor: nil) ?? 44
     }
 }
 
