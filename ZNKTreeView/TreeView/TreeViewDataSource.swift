@@ -41,7 +41,7 @@ protocol TreeViewDataSource {
     ///   - item: 指定元素
     ///   - indexPath: 指定地址索引
     /// - Returns: 单元格
-    func treeView(_ treeView: TreeView, cellFor item: Any, withIdentifier identifier: String, at indexPath: IndexPath) -> UITableViewCell
+    func treeView(_ treeView: TreeView, cellFor item: Any) -> UITableViewCell
 
     /// 指定树形图下指定根元素的段头视图
     ///

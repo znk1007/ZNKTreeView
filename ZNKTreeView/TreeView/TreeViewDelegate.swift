@@ -17,10 +17,34 @@ protocol TreeViewDelegate {
     ///   - item: 指定元素
     /// - Returns: 高度
     func treeView(_ treeView: TreeView, heightFor item: Any?) -> CGFloat
+
+    /// 指定树形图段头高度
+    ///
+    /// - Parameters:
+    ///   - treeView: 指定树形图
+    ///   - rootIndex: 根元素下标
+    /// - Returns: 高度
+    func treeView(_ treeView: TreeView, heightForHeaderIn rootIndex: Int) -> CGFloat
+
+    /// 指定树形图段尾高度
+    ///
+    /// - Parameters:
+    ///   - treeView: 指定树形图
+    ///   - rootIndex: 根元素下标
+    /// - Returns: 高度
+    func treeView(_ treeView: TreeView, heightForFooterIn rootIndex: Int) -> CGFloat
+
 }
 
 extension TreeViewDelegate {
     func treeView(_ treeView: TreeView, heightFor item: Any?) -> CGFloat {
-        return 44
+        return 50
+    }
+    func treeView(_ treeView: TreeView, heightForHeaderIn rootIndex: Int) -> CGFloat {
+        return 50
+    }
+
+    func treeView(_ treeView: TreeView, heightForFooterIn rootIndex: Int) -> CGFloat {
+        return 50
     }
 }

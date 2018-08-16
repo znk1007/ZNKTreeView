@@ -96,6 +96,7 @@ final class TreeNode {
     /// - Parameter identifier: 唯一标识
     /// - Returns: 指定节点
     func treeNodeFor(_ identifier: String) -> TreeNode? {
+
         if self.identifier == identifier {
             return self
         }

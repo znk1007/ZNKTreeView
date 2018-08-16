@@ -12,7 +12,9 @@ class ViewController: UIViewController {
 
     /// 树形图视图
     private lazy var treeView: TreeView = {
+        $0.delegate = self
         $0.dataSource = self
+        $0.expandAll = true
         $0.register(TreeViewCell.self, forCellReuseIdentifier: TreeViewCell.Setting.identifier)
         $0.register(TreeViewHeaderView.self, forHeaderFooterViewReuseIdentifier: TreeViewHeaderView.Setting.identifier)
         return $0
@@ -44,6 +46,21 @@ class ViewController: UIViewController {
 
 }
 
+extension ViewController: TreeViewDelegate {
+
+    func treeView(_ treeView: TreeView, heightFor item: Any?) -> CGFloat {
+        return 48
+    }
+
+    func treeView(_ treeView: TreeView, heightForHeaderIn rootIndex: Int) -> CGFloat {
+        return 48
+    }
+
+    func treeView(_ treeView: TreeView, heightForFooterIn rootIndex: Int) -> CGFloat {
+        return 0.001
+    }
+    
+}
 
 extension ViewController: TreeViewDataSource {
 
@@ -53,12 +70,17 @@ extension ViewController: TreeViewDataSource {
             if headerView == nil {
                 headerView = .init()
             }
-            headerView?.updateHeader(item.name)
+            headerView?.updateHeader(item.name, completion: { [weak self] (expand) in
+                print("is expand ---> ", expand)
+            })
+            return headerView
         }
         return nil
     }
 
-    func treeView(_ treeView: TreeView, cellFor item: Any, withIdentifier identifier: String, at indexPath: IndexPath) -> UITableViewCell {
+    func treeView(_ treeView: TreeView, cellFor item: Any) -> UITableViewCell {
+        var cell = treeView.dequeueReusableCell(<#T##cellIdentifier: String##String#>, forItemIdentifier: <#T##String#>, at: <#T##IndexPath#>)
+
         return .init()
     }
 

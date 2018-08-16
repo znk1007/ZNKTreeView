@@ -74,6 +74,8 @@ class TreeView: UIView {
     private func initSubview() {
         tableView = UITableView.init(frame: .zero, style: tableViewStyle)
         tableView?.dataSource = self
+        tableView?.delegate = self
+        addSubview(tableView!)
     }
 
     /// 初始化管理器
@@ -154,7 +156,7 @@ extension TreeView {
     ///   - item: 元素
     ///   - identifier: 元素唯一标识
     ///   - indexPath: 地址索引
-    func dequeueReusableCell(_ cellIdentifier: String, for item: Any, withItemIdentifier identifier: String, at indexPath: IndexPath) -> UITableViewCell {
+    func dequeueReusableCell(_ cellIdentifier: String, forItemIdentifier identifier: String, at indexPath: IndexPath) -> UITableViewCell {
         guard let table = tableView, let node = controller?.treeNodeFor(indexPath, identifier: identifier) else { return .init() }
         return table.dequeueReusableCell(withIdentifier: cellIdentifier, for: node.indexPath)
     }
@@ -181,7 +183,7 @@ extension TreeView: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let node = controller?.treeNodeFor(indexPath, identifier: nil), let cell = dataSource?.treeView(self, cellFor: node.object, withIdentifier: node.identifier, at: indexPath) {
+        if let node = controller?.treeNodeFor(indexPath, identifier: nil), let cell = dataSource?.treeView(self, cellFor: node.object) {
             return cell
         }
         return .init()
@@ -194,16 +196,24 @@ extension TreeView: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let rootNode = controller?.rootNodeFor(section) else { return nil }
-        return dataSource?.treeView(self, viewForHeaderForRoot: rootNode)
+        return dataSource?.treeView(self, viewForHeaderForRoot: rootNode.object)
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         guard let rootNode = controller?.rootNodeFor(section) else { return nil }
-        return dataSource?.treeView(self, viewForFooterForRoot: rootNode)
+        return dataSource?.treeView(self, viewForFooterForRoot: rootNode.object)
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return delegate?.treeView(self, heightFor: nil) ?? 44
+        return delegate?.treeView(self, heightFor: nil) ?? 50
+    }
+
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return delegate?.treeView(self, heightForHeaderIn: section) ?? 50
+    }
+
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return delegate?.treeView(self, heightForFooterIn: section) ?? 50
     }
 }
 
