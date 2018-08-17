@@ -143,7 +143,12 @@ extension TreeNodeController {
         return rootNode.treeNodeFor(indexPath)
     }
 
-    func expandTreeNode(_ node: TreeNode, expandChildren: Bool) -> <#return type#> {
-        <#function body#>
+    /// 展开指定节点的树形图单元
+    ///
+    /// - Parameters:
+    ///   - node: 指定节点
+    ///   - expandChildren: 是否展开子节点
+    func expandTreeNode(_ node: TreeNode, expandChildren: Bool) {
+        
     }
 }
