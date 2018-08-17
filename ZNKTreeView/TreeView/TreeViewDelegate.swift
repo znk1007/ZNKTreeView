@@ -34,6 +34,42 @@ protocol TreeViewDelegate {
     /// - Returns: 高度
     func treeView(_ treeView: TreeView, heightForFooterIn rootIndex: Int) -> CGFloat
 
+    /// 选择指定元素
+    ///
+    /// - Parameters:
+    ///   - treeView: 树形图
+    ///   - item: 指定元素
+    func treeView(_ treeView: TreeView, didSelect item: Any)
+
+    /// 将要展开指定元素
+    ///
+    /// - Parameters:
+    ///   - treeView: 树形图
+    ///   - item: 指定元素
+    func treeView(_ treeView: TreeView, willExpandItem item: Any)
+
+    /// 已展开指定元素
+    ///
+    /// - Parameters:
+    ///   - treeView: 树形图
+    ///   - item: 指定元素
+    func treeView(_ treeView: TreeView, didExpand item: Any)
+
+    /// 将要收缩指定元素
+    ///
+    /// - Parameters:
+    ///   - treeView: 树形图
+    ///   - item: 指定元素
+    func treeView(_ treeView: TreeView, willShrink item: Any)
+
+    /// 已收缩指定元素
+    ///
+    /// - Parameters:
+    ///   - treeView: 树形图
+    ///   - item: 指定元素
+    func treeView(_ treeView: TreeView, didShrink item: Any)
+
+
 }
 
 extension TreeViewDelegate {
@@ -47,4 +83,16 @@ extension TreeViewDelegate {
     func treeView(_ treeView: TreeView, heightForFooterIn rootIndex: Int) -> CGFloat {
         return 50
     }
+
+    func treeView(_ treeView: TreeView, didSelect item: Any) {}
+
+    func treeView(_ treeView: TreeView, willExpand item: Any) {}
+
+    func treeView(_ treeView: TreeView, didExpand item: Any) {}
+
+    func treeView(_ treeView: TreeView, willShrink item: Any) {}
+
+    func treeView(_ treeView: TreeView, didShrink item: Any) {}
 }
+
+

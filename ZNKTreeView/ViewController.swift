@@ -60,7 +60,14 @@ extension ViewController: TreeViewDelegate {
     func treeView(_ treeView: TreeView, heightForFooterIn rootIndex: Int) -> CGFloat {
         return 0.001
     }
-    
+
+
+    func treeView(_ treeView: TreeView, didSelect item: Any) {
+        if let item = item as? TreeItem {
+            print("item name ==> ", item.name)
+        }
+    }
+
 }
 
 extension ViewController: TreeViewDataSource {

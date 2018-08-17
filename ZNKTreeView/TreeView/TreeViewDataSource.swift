@@ -58,6 +58,14 @@ protocol TreeViewDataSource {
     ///   - index: 指定根元素
     /// - Returns: 段尾视图
     func treeView(_ treeView: TreeView, viewForFooterForRoot root: Any) -> UIView?
+
+    /// 是否可以展开指定元素
+    ///
+    /// - Parameters:
+    ///   - treeView: 树形图
+    ///   - item: 指定元素
+    /// - Returns: Bool
+    func treeView(_ treeView: TreeView, canExpand item: Any) -> Bool
 }
 
 extension TreeViewDataSource {
@@ -73,4 +81,7 @@ extension TreeViewDataSource {
         return nil
     }
 
+    func treeView(_ treeView: TreeView, canExpand item: Any) -> Bool {
+        return true
+    }
 }

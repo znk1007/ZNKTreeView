@@ -1,6 +1,6 @@
 //
 //  TreeView.swift
-//  ZNKTreeView
+//  TreeView
 //
 //  Created by 黄漫 on 2018/8/11.
 //  Copyright © 2018年 SunEee. All rights reserved.
@@ -69,6 +69,236 @@ class TreeView: UIView {
         }
     }
 
+    /// 分割风格
+    var separatorStyle: TreeViewCellSeperatorStyle = .none {
+        didSet {
+            guard let table = tableView else { return }
+            table.separatorStyle = separatorStyle.style
+        }
+    }
+
+    /// 分割颜色
+    var separatorColor: UIColor? = nil {
+        didSet {
+            guard let table = tableView else { return }
+            table.separatorColor = separatorColor
+        }
+    }
+
+    /// 调整右侧像素
+    var cellLayoutMarginsFollowReadableWidth: Bool = false {
+        didSet {
+            guard let table = tableView else { return }
+            table.cellLayoutMarginsFollowReadableWidth = cellLayoutMarginsFollowReadableWidth
+        }
+    }
+
+    /// 分割效果
+    var seperatorEffect: UIVisualEffect? {
+        didSet {
+            guard let table = tableView else { return }
+            table.separatorEffect = seperatorEffect
+        }
+    }
+    // 段头高度 默认 UITableViewAutomaticDimension
+    var sectionHeaderHeight: CGFloat = UITableViewAutomaticDimension {
+        didSet {
+            guard let table = tableView else { return }
+            table.sectionHeaderHeight = sectionHeaderHeight
+        }
+    }
+    // 段尾高度 默认 UITableViewAutomaticDimension
+    var sectionFooterHeight: CGFloat = UITableViewAutomaticDimension{
+        didSet {
+            guard let table = tableView else { return }
+            table.sectionFooterHeight = sectionFooterHeight
+        }
+    }
+
+    /// 元素是否在编辑状态
+    var isItemEditing: Bool {
+        set {
+            guard let table = tableView else { return }
+            table.isEditing = newValue
+        }
+        get {
+            guard let table = tableView else { return false }
+            return table.isEditing
+        }
+    }
+
+    /// 非编辑状态下是否可选
+    var allowsItemSelection: Bool {
+        set {
+            guard let table = tableView else { return }
+            table.allowsSelection = allowsItemSelection
+        }
+        get {
+            guard let table = tableView else { return false }
+            return table.allowsSelection
+        }
+    }
+
+    /// 编辑状态下是否可选
+    var allowsItemSelectionDuringEditing: Bool {
+        set {
+            guard let table = tableView else { return }
+            table.allowsSelectionDuringEditing = allowsItemSelectionDuringEditing
+        }
+        get {
+            guard let table = tableView else { return false }
+            return table.allowsSelectionDuringEditing
+        }
+    }
+
+
+    /// 是否允许多选
+    var allowsMultipleItemSelection: Bool {
+        set {
+            guard let table = tableView else { return }
+            table.allowsMultipleSelection = allowsMultipleItemSelection
+        }
+        get {
+            guard let table = tableView else { return false }
+            return table.allowsMultipleSelection
+        }
+    }
+
+    /// 编辑状态下是否可以多选
+    var allowsMultipleItemSelectionDuringEditing: Bool {
+        get {
+            guard let table = tableView else { return false }
+            return table.allowsMultipleSelectionDuringEditing
+        }
+        set {
+            guard let table = tableView else { return }
+            table.allowsMultipleSelectionDuringEditing = allowsMultipleItemSelectionDuringEditing
+        }
+    }
+
+    /// 选中元素的地址索引
+    var indexPathForSelectedItem: IndexPath? {
+        guard let table = tableView else { return nil }
+        return table.indexPathForSelectedRow
+    }
+    /// 选中元素的地址索引数组
+    var indexPathsForSelectedItems: [IndexPath]? {
+        guard let table = tableView else { return nil }
+        return table.indexPathsForVisibleRows
+
+    }
+
+    /// 每段最少显示元素数
+    var sectionIndexMinimumDisplayItemCount: Int = 0 {
+        didSet {
+            guard let table = tableView else { return }
+            table.sectionIndexMinimumDisplayRowCount = sectionIndexMinimumDisplayItemCount
+        }
+    }
+
+    /// 段下标颜色
+    var sectionIndexColor: UIColor? = nil {
+        didSet {
+            guard let table = tableView else { return }
+            table.sectionIndexColor = sectionIndexColor
+        }
+    }
+
+    /// 段下标背景颜色
+    var sectionIndexBackgroundColor: UIColor? = nil {
+        didSet {
+            guard let table = tableView else { return }
+            table.sectionIndexBackgroundColor = sectionIndexBackgroundColor
+        }
+    }
+
+    /// /// 段下标轨迹背景颜色
+    var sectionIndexTrackingBackgroundColor: UIColor? = nil {
+        didSet {
+            guard let table = tableView else { return }
+            table.sectionIndexTrackingBackgroundColor = sectionIndexTrackingBackgroundColor
+        }
+    }
+
+    /// 内容视图嵌入安全域
+    var insetsContentViewsToSafeArea: Bool = true {
+        didSet {
+            guard let table = tableView else { return }
+            if #available(iOS 11.0, *) {
+                table.insetsContentViewsToSafeArea = insetsContentViewsToSafeArea
+            } else {
+                // Fallback on earlier versions
+            }
+        }
+    }
+
+    /// 树形图头部视图
+    var treeHeaderView: UIView? = nil {
+        didSet {
+            guard let table = tableView else { return }
+            table.tableHeaderView = treeHeaderView
+        }
+    }
+
+    /// 树形图尾部视图
+    var treeFooterView: UIView? = nil {
+        didSet {
+            guard let table = tableView else { return }
+            table.tableFooterView = treeFooterView
+        }
+    }
+
+    /// 记住最后选中的元素
+    var remembersLastFocusedItem: Bool = false {
+        didSet {
+            guard let table = tableView else { return }
+            table.remembersLastFocusedIndexPath = remembersLastFocusedItem
+        }
+    }
+
+    /// 是否允许拖拽
+    var dragInteractionEnabled: Bool = false {
+        didSet {
+            guard let table = tableView else { return }
+            if #available(iOS 11.0, *) {
+                table.dragInteractionEnabled = dragInteractionEnabled
+            } else {
+                // Fallback on earlier versions
+            }
+        }
+    }
+
+    /// 是否激活拖拽
+    var hasActiveDrag: Bool {
+        get {
+            guard let table = tableView else { return false }
+            if #available(iOS 11.0, *) {
+                return table.hasActiveDrag
+            } else {
+                // Fallback on earlier versions
+                return false
+            }
+        }
+    }
+
+    /// 根元素数
+    var numberOfRootItems: Int {
+        guard let table = tableView else { return 0 }
+        return table.numberOfSections
+    }
+
+    /// 展开元素时，是否同时展开所有子元素，默认false
+    var expandChildrenWhenItemExpand: Bool = false
+
+    /// 展开元素动画模式 默认none
+    var expandAnimation: TreeViewRowAnimation = .none
+
+    /// 收缩元素时，是否同时收缩所有子元素，默认false
+    var foldChildrenWhenItemFold: Bool = false
+
+    /// 收缩动画模式，默认none
+    var foldAnimation: TreeViewRowAnimation = .none
+
     /// 表格视图风格
     private var tableViewStyle: UITableViewStyle
     /// 表格
@@ -94,6 +324,15 @@ class TreeView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        tableView?.frame = self.bounds
+    }
+}
+
+
+// MARK: - 私有方法
+extension TreeView {
     /// 子视图
     private func initSubview() {
         tableView = UITableView.init(frame: .zero, style: tableViewStyle)
@@ -115,9 +354,40 @@ class TreeView: UIView {
         estimatedSectionFooterHeight = 0
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        tableView?.frame = self.bounds
+    private func expandItem(_ node: TreeNode, expandChildrenWhileExpand: Bool) {
+
+    }
+
+    /// 批量更新
+    ///
+    /// - Parameters:
+    ///   - type: 更新类型
+    ///   - indexPaths: 地址索引数组
+    private func batchUpdates(_ type: BatchUpdates, indexPaths: [IndexPath], animation: TreeViewRowAnimation = .none) {
+        guard let table = tableView, indexPaths.count > 0 else { return }
+        if #available(iOS 11.0, *) {
+            table.performBatchUpdates({
+                switch type {
+                case .insertion:
+                    table.insertRows(at: indexPaths, with: animation.animation)
+                case .deletion:
+                    table.deleteRows(at: indexPaths, with: animation.animation)
+                case .update:
+                    table.reloadRows(at: indexPaths, with: animation.animation)
+                }
+            }, completion: nil)
+        } else {
+            table.beginUpdates()
+            switch type {
+            case .insertion:
+                table.insertRows(at: indexPaths, with: animation.animation)
+            case .deletion:
+                table.deleteRows(at: indexPaths, with: animation.animation)
+            case .update:
+                table.reloadRows(at: indexPaths, with: animation.animation)
+            }
+            table.endUpdates()
+        }
     }
 }
 
@@ -250,6 +520,13 @@ extension TreeView: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return delegate?.treeView(self, heightForFooterIn: section) ?? 50
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let node = controller?.treeNodeFor(indexPath), let delegate = delegate {
+            delegate.treeView(self, didSelect: node.object)
+        }
+
     }
 }
 
