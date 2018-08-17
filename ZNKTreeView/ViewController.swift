@@ -15,6 +15,7 @@ class ViewController: UIViewController {
         $0.delegate = self
         $0.dataSource = self
         $0.expandAll = true
+        $0.separatorInset = .zero
         $0.register(TreeViewCell.self, forCellReuseIdentifier: TreeViewCell.Setting.identifier)
         $0.register(TreeViewHeaderView.self, forHeaderFooterViewReuseIdentifier: TreeViewHeaderView.Setting.identifier)
         return $0

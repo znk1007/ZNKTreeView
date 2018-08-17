@@ -1,8 +1,8 @@
 //
-//  TreeNodeEnum.swift
+//  TreeViewEnum.swift
 //  ZNKTreeView
 //
-//  Created by 黄漫 on 2018/8/12.
+//  Created by 黄漫 on 2018/8/17.
 //  Copyright © 2018年 SunEee. All rights reserved.
 //
 

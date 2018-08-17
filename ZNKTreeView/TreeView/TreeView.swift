@@ -45,6 +45,30 @@ class TreeView: UIView {
         }
     }
 
+    /// 分割线内嵌
+    var separatorInset: UIEdgeInsets = .zero {
+        didSet {
+            guard let table = tableView else { return }
+            table.separatorInset = separatorInset
+        }
+    }
+
+    /// 背景视图
+    var backgroundView: UIView? = nil {
+        didSet {
+            guard let table = tableView else { return }
+            table.backgroundView = backgroundView
+        }
+    }
+
+    /// 树形图行高
+    var rowHeight: CGFloat = UITableViewAutomaticDimension {
+        didSet {
+            guard let table = tableView else { return }
+            table.rowHeight = rowHeight
+        }
+    }
+
     /// 表格视图风格
     private var tableViewStyle: UITableViewStyle
     /// 表格

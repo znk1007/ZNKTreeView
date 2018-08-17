@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2729C047212703BE00DA7EBD /* TreeViewEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2729C046212703BE00DA7EBD /* TreeViewEnum.swift */; };
 		273553242123A5EB00E189C4 /* TreeItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273553232123A5EB00E189C4 /* TreeItem.swift */; };
 		273553272123B0B800E189C4 /* TreeViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273553262123B0B800E189C4 /* TreeViewDataSource.swift */; };
 		273553292123B0C400E189C4 /* TreeViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273553282123B0C400E189C4 /* TreeViewDelegate.swift */; };
 		274BD6F9211F9F5B0014ECFC /* TreeNodeControllerDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274BD6F8211F9F5B0014ECFC /* TreeNodeControllerDataSource.swift */; };
-		274BD6FB211FA6B40014ECFC /* TreeNodeEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274BD6FA211FA6B40014ECFC /* TreeNodeEnum.swift */; };
 		27CA7CFE2124FC920060CFC1 /* TreeViewHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CA7CFD2124FC920060CFC1 /* TreeViewHeaderView.swift */; };
 		27CAA53D2124723C00CAE622 /* TreeViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CAA53C2124723C00CAE622 /* TreeViewCell.swift */; };
 		27F4F09E211F2A140028B2EF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F4F09D211F2A140028B2EF /* AppDelegate.swift */; };
@@ -25,11 +25,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2729C046212703BE00DA7EBD /* TreeViewEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeViewEnum.swift; sourceTree = "<group>"; };
 		273553232123A5EB00E189C4 /* TreeItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeItem.swift; sourceTree = "<group>"; };
 		273553262123B0B800E189C4 /* TreeViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeViewDataSource.swift; sourceTree = "<group>"; };
 		273553282123B0C400E189C4 /* TreeViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeViewDelegate.swift; sourceTree = "<group>"; };
 		274BD6F8211F9F5B0014ECFC /* TreeNodeControllerDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeNodeControllerDataSource.swift; sourceTree = "<group>"; };
-		274BD6FA211FA6B40014ECFC /* TreeNodeEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeNodeEnum.swift; sourceTree = "<group>"; };
 		27CA7CFD2124FC920060CFC1 /* TreeViewHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeViewHeaderView.swift; sourceTree = "<group>"; };
 		27CAA53C2124723C00CAE622 /* TreeViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeViewCell.swift; sourceTree = "<group>"; };
 		27F4F09A211F2A140028B2EF /* ZNKTreeView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZNKTreeView.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -95,7 +95,7 @@
 				27F4F0B6211F2BE80028B2EF /* TreeNode.swift */,
 				27F4F0B8211F2C410028B2EF /* TreeNodeController.swift */,
 				274BD6F8211F9F5B0014ECFC /* TreeNodeControllerDataSource.swift */,
-				274BD6FA211FA6B40014ECFC /* TreeNodeEnum.swift */,
+				2729C046212703BE00DA7EBD /* TreeViewEnum.swift */,
 				273553262123B0B800E189C4 /* TreeViewDataSource.swift */,
 				273553282123B0C400E189C4 /* TreeViewDelegate.swift */,
 			);
@@ -174,7 +174,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				273553242123A5EB00E189C4 /* TreeItem.swift in Sources */,
-				274BD6FB211FA6B40014ECFC /* TreeNodeEnum.swift in Sources */,
 				27F4F0B3211F2B170028B2EF /* TreeView.swift in Sources */,
 				27F4F0A0211F2A140028B2EF /* ViewController.swift in Sources */,
 				274BD6F9211F9F5B0014ECFC /* TreeNodeControllerDataSource.swift in Sources */,
@@ -185,6 +184,7 @@
 				27F4F09E211F2A140028B2EF /* AppDelegate.swift in Sources */,
 				27CA7CFE2124FC920060CFC1 /* TreeViewHeaderView.swift in Sources */,
 				273553272123B0B800E189C4 /* TreeViewDataSource.swift in Sources */,
+				2729C047212703BE00DA7EBD /* TreeViewEnum.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
