@@ -66,6 +66,14 @@ protocol TreeViewDataSource {
     ///   - item: 指定元素
     /// - Returns: Bool
     func treeView(_ treeView: TreeView, canExpand item: Any) -> Bool
+
+    /// 是否可以收缩指定元素
+    ///
+    /// - Parameters:
+    ///   - treeView: 树形图
+    ///   - item: 指定元素
+    /// - Returns: Bool
+    func treeView(_ treeView: TreeView, canShrink item: Any) -> Bool
 }
 
 extension TreeViewDataSource {
@@ -82,6 +90,10 @@ extension TreeViewDataSource {
     }
 
     func treeView(_ treeView: TreeView, canExpand item: Any) -> Bool {
+        return true
+    }
+
+    func treeView(_ treeView: TreeView, canShrink item: Any) -> Bool {
         return true
     }
 }
