@@ -26,77 +26,6 @@ final class TreeNodeController {
     /// 添加根节点互斥锁
     private var appendMutex: pthread_mutex_t = .init()
 
-    /// 加载数据源
-    func loadTreeNodes() {
-        let rootNumber = numberOfRoot()
-        if rootNumber == 0 {
-            rootNodes = []
-        }
-        if rootNodes.count == 0 || rootNodes.count != rootNumber {
-            for i in 0 ..< numberOfRoot() {
-                if let node = dataSource?.treeNode(at: -1, of: nil, in: i) {
-                    self.append(node)
-                    self.insertNode(of: node, in: i)
-                    enumericRootNode(node)
-                }
-            }
-        }
-    }
-
-    /// 根据指定根结点下标获取根结点
-    ///
-    /// - Parameter index: 根结点下标
-    /// - Returns: 根结点
-    func rootNodeFor(_ index: Int) -> TreeNode? {
-        guard rootNodes.count > index else {
-            return nil
-        }
-        return rootNodes[index]
-    }
-
-    func enumericRootNode(_ node: TreeNode?) {
-        guard let node = node else { return }
-        print("++++++++++++++++")
-        print("node identifier ---> ", node.identifier)
-        print("node isExpand ---> ", node.isExpand)
-        print("node level ---> ", node.level)
-        print("----------------")
-        for child in node.children {
-            enumericRootNode(child)
-        }
-    }
-
-    /// 指定根节点下标可见子节点数
-    ///
-    /// - Parameter rootIndex: 指定根节点
-    /// - Returns: 可见子节点数
-    func numberOfVisibleNodeIn(_ rootIndex: Int) -> Int {
-        guard rootNodes.count > rootIndex else {
-            return 0
-        }
-        let node = rootNodes[rootIndex]
-        var nodeIndex: Int = 0
-        node.numberOfVisibleNodeInRootIndex(rootIndex, nodeIndex: &nodeIndex)
-        print("node index ---> ", nodeIndex)
-        return nodeIndex
-    }
-
-    /// 根据指定地址索引获取节点
-    ///
-    /// - Parameter indexPath: 地址索引
-    /// - Returns: 节点
-    func treeNodeFor(_ indexPath: IndexPath, identifier: String?) -> TreeNode? {
-        guard rootNodes.count > indexPath.section else {
-            return nil
-        }
-        let rootNode = rootNodes[indexPath.section]
-        if let identifier = identifier {
-            return rootNode.treeNodeFor(identifier)
-        } else {
-            return rootNode.treeNodeFor(indexPath)
-        }
-    }
-
     /// 插入指定节点的子节点
     ///
     /// - Parameters:
@@ -145,4 +74,76 @@ final class TreeNodeController {
         return dataSource?.numberOfChildren(for: node, in: rootIndex) ?? 0
     }
 
+}
+
+// MARK: - 公共方法
+extension TreeNodeController {
+    /// 加载数据源
+    func loadTreeNodes() {
+        let rootNumber = numberOfRoot()
+        if rootNumber == 0 {
+            rootNodes = []
+        }
+        if rootNodes.count == 0 || rootNodes.count != rootNumber {
+            for i in 0 ..< numberOfRoot() {
+                if let node = dataSource?.treeNode(at: -1, of: nil, in: i) {
+                    self.append(node)
+                    self.insertNode(of: node, in: i)
+                    //                    enumericRootNode(node)
+                }
+            }
+        }
+    }
+
+    /// 根据指定根结点下标获取根结点
+    ///
+    /// - Parameter index: 根结点下标
+    /// - Returns: 根结点
+    func rootNodeFor(_ index: Int) -> TreeNode? {
+        guard rootNodes.count > index else {
+            return nil
+        }
+        return rootNodes[index]
+    }
+
+    func enumericRootNode(_ node: TreeNode?) {
+        guard let node = node else { return }
+        print("++++++++++++++++")
+        print("node isExpand ---> ", node.isExpand)
+        print("node level ---> ", node.level)
+        print("----------------")
+        for child in node.children {
+            enumericRootNode(child)
+        }
+    }
+
+    /// 指定根节点下标可见子节点数
+    ///
+    /// - Parameter rootIndex: 指定根节点
+    /// - Returns: 可见子节点数
+    func numberOfVisibleNodeIn(_ rootIndex: Int) -> Int {
+        guard rootNodes.count > rootIndex else {
+            return 0
+        }
+        let node = rootNodes[rootIndex]
+        var nodeIndex: Int = 0
+        node.numberOfVisibleNodeInRootIndex(rootIndex, nodeIndex: &nodeIndex)
+        return nodeIndex
+    }
+
+    /// 根据指定地址索引获取节点
+    ///
+    /// - Parameter indexPath: 地址索引
+    /// - Returns: 节点
+    func treeNodeFor(_ indexPath: IndexPath) -> TreeNode? {
+        guard rootNodes.count > indexPath.section else {
+            return nil
+        }
+        let rootNode = rootNodes[indexPath.section]
+        return rootNode.treeNodeFor(indexPath)
+    }
+
+    func expandTreeNode(_ node: TreeNode, expandChildren: Bool) -> <#return type#> {
+        <#function body#>
+    }
 }

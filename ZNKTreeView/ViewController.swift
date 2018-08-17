@@ -78,10 +78,14 @@ extension ViewController: TreeViewDataSource {
         return nil
     }
 
-    func treeView(_ treeView: TreeView, cellFor item: Any) -> UITableViewCell {
-        var cell = treeView.dequeueReusableCell(<#T##cellIdentifier: String##String#>, forItemIdentifier: <#T##String#>, at: <#T##IndexPath#>)
-
-        return .init()
+    func treeView(_ treeView: TreeView, cellFor item: Any, at indexPath: IndexPath) -> UITableViewCell {
+        var cell = treeView.dequeueReusableCell(TreeViewCell.Setting.identifier) as? TreeViewCell
+        if cell == nil {
+            cell = TreeViewCell.init(style: .default, reuseIdentifier: TreeViewCell.Setting.identifier)
+        }
+        guard let c = cell, let item = item as? TreeItem else { return .init() }
+        c.updateCell(item.name, level: treeView.levelFor(indexPath))
+        return c
     }
 
     func numberOfRootItem(in treeView: TreeView) -> Int {
@@ -96,13 +100,11 @@ extension ViewController: TreeViewDataSource {
         }
     }
 
-    func treeView(_ treeView: TreeView, childIndex: Int, for item: Any?, in rootIndex: Int) -> (Any?, String?) {
+    func treeView(_ treeView: TreeView, childIndex: Int, for item: Any?, in rootIndex: Int) -> Any? {
         if let item = item as? TreeItem {
-            let childItem = item.children[childIndex]
-            return (childItem, childItem.identifier)
+            return item.children[childIndex]
         } else {
-            let childItem = treeItems[rootIndex]
-            return (childItem, childItem.identifier)
+            return treeItems[rootIndex]
         }
     }
 

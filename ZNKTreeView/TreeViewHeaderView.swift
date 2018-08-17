@@ -35,9 +35,7 @@ class TreeViewHeaderView: UITableViewHeaderFooterView {
     private func initSubview() {
         label = UILabel.init()
         label?.textColor = .green
-        label?.textAlignment = .center
         contentView.addSubview(label!)
-        contentView.backgroundColor = .yellow
 
         button = UIButton.init(type: .custom)
         button?.addTarget(self, action: #selector(headerAction(_:)), for: .touchUpInside)

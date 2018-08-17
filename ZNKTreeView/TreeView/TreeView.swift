@@ -18,6 +18,8 @@ class TreeView: UIView {
 
     /// 是否展开所有元素
     var expandAll: Bool = false
+    /// 是否记录单元格展开状态
+    var holdExpandState: Bool = false
 
     /// 预计行高
     var estimatedRowHeight: CGFloat = 0 {
@@ -42,8 +44,6 @@ class TreeView: UIView {
             table.estimatedSectionHeaderHeight = estimatedSectionHeaderHeight
         }
     }
-
-
 
     /// 表格视图风格
     private var tableViewStyle: UITableViewStyle
@@ -156,8 +156,8 @@ extension TreeView {
     ///   - item: 元素
     ///   - identifier: 元素唯一标识
     ///   - indexPath: 地址索引
-    func dequeueReusableCell(_ cellIdentifier: String, forItemIdentifier identifier: String, at indexPath: IndexPath) -> UITableViewCell {
-        guard let table = tableView, let node = controller?.treeNodeFor(indexPath, identifier: identifier) else { return .init() }
+    func dequeueReusableCell(_ cellIdentifier: String, at indexPath: IndexPath) -> UITableViewCell {
+        guard let table = tableView, let node = controller?.treeNodeFor(indexPath) else { return .init() }
         return table.dequeueReusableCell(withIdentifier: cellIdentifier, for: node.indexPath)
     }
 
@@ -168,6 +168,15 @@ extension TreeView {
     func dequeueReusableHeaderFooterView(_ identifier: String) -> UITableViewHeaderFooterView? {
         guard let table = tableView else { return nil }
         return table.dequeueReusableHeaderFooterView(withIdentifier: identifier)
+    }
+
+    /// 指定地址索引的层级
+    ///
+    /// - Parameter indexPath: 地址索引
+    /// - Returns: 层级
+    func levelFor(_ indexPath: IndexPath) -> Int {
+        guard let node = controller?.treeNodeFor(indexPath) else { return -1 }
+        return node.level
     }
 
 }
@@ -183,7 +192,7 @@ extension TreeView: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let node = controller?.treeNodeFor(indexPath, identifier: nil), let cell = dataSource?.treeView(self, cellFor: node.object) {
+        if let node = controller?.treeNodeFor(indexPath), let cell = dataSource?.treeView(self, cellFor: node.object, at: indexPath) {
             return cell
         }
         return .init()
@@ -205,7 +214,10 @@ extension TreeView: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return delegate?.treeView(self, heightFor: nil) ?? 50
+        if let node = controller?.treeNodeFor(indexPath) {
+            return delegate?.treeView(self, heightFor: node.object, at: indexPath) ?? 50
+        }
+        return 50
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -228,8 +240,8 @@ extension TreeView: TreeNodeControllerDataSource {
     }
 
     func treeNode(at childIndex: Int, of node: TreeNode?, in rootIndex: Int) -> TreeNode? {
-        if let (item, identifier) = dataSource?.treeView(self, childIndex: childIndex, for: node?.object, in: rootIndex), let id = identifier, let it = item {
-            return TreeNode.init(identifier: id, isExpand: expandAll, object: it, parent: node)
+        if let item = dataSource?.treeView(self, childIndex: childIndex, for: node?.object, in: rootIndex) {
+            return TreeNode.init(object: item, isExpand: expandAll, parent: node)
         }
         return nil
     }

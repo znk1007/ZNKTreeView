@@ -32,7 +32,7 @@ protocol TreeViewDataSource {
     ///   - childIndex: 子节点下标
     ///   - identifier: 唯一标识
     /// - Returns: 子节点数据
-    func treeView(_ treeView: TreeView, childIndex: Int, for item: Any?, in rootIndex: Int) -> (Any?, String?)
+    func treeView(_ treeView: TreeView, childIndex: Int, for item: Any?, in rootIndex: Int) -> Any?
 
     /// 根据指定树形图的元素和地址索引，返回指定的单元格
     ///
@@ -41,7 +41,7 @@ protocol TreeViewDataSource {
     ///   - item: 指定元素
     ///   - indexPath: 指定地址索引
     /// - Returns: 单元格
-    func treeView(_ treeView: TreeView, cellFor item: Any) -> UITableViewCell
+    func treeView(_ treeView: TreeView, cellFor item: Any, at indexPath: IndexPath) -> UITableViewCell
 
     /// 指定树形图下指定根元素的段头视图
     ///

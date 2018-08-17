@@ -16,6 +16,8 @@ class TreeViewCell: UITableViewCell {
 
     /// 标签
     private var label: UILabel?
+    /// 当前层级
+    private var currentLevel: Int = 0
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -41,19 +43,20 @@ class TreeViewCell: UITableViewCell {
     private func initSubview() {
         label = UILabel.init()
         label?.textColor = .green
-        label?.textAlignment = .center
         contentView.addSubview(label!)
-        contentView.backgroundColor = .yellow
 
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        label?.frame = contentView.bounds
+        let marginLeft = CGFloat.init(currentLevel * 25)
+        label?.frame = CGRect.init(x: marginLeft, y: 0, width: contentView.frame.width - marginLeft, height: contentView.frame.height)
+
     }
 
-    func updateCell(_ text: String)  {
+    func updateCell(_ text: String, level: Int)  {
         guard let label = label else { return }
+        currentLevel = level
         label.text = text
     }
 

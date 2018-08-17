@@ -9,8 +9,6 @@
 import UIKit
 
 final class TreeNode {
-    /// 唯一标识
-    let identifier: String
     /// 是否展开
     var isExpand: Bool
     /// 节点层级
@@ -43,8 +41,7 @@ final class TreeNode {
     ///   - object: 任意数据
     ///   - parent: 父节点
     ///   - children: 子节点数组
-    init(identifier: String, isExpand: Bool, object: Any, parent: TreeNode?, children: [TreeNode] = []) {
-        self.identifier = identifier
+    init(object: Any, isExpand: Bool, parent: TreeNode?, children: [TreeNode] = []) {
         self.parent = parent
         self.isExpand = isExpand
         self.object = object
@@ -60,12 +57,10 @@ final class TreeNode {
     func numberOfVisibleNodeInRootIndex(_ rootIndex: Int, nodeIndex: inout Int)  {
         if numberOfVisibleNode == -1 {
             if self.isExpand {
-                let number = self.children.count
-                for _ in 0 ..< number {
-                    nodeIndex += 1
-                    self.indexPath = IndexPath.init(row: nodeIndex, section: rootIndex)
-                }
                 for child in self.children {
+                    child.indexPath = IndexPath.init(row: nodeIndex, section: rootIndex)
+                    nodeIndex += 1
+                    print("self indexPath ---> ", child.indexPath)
                     child.numberOfVisibleNodeInRootIndex(rootIndex, nodeIndex: &nodeIndex)
                 }
                 numberOfVisibleNode = nodeIndex
@@ -91,23 +86,6 @@ final class TreeNode {
         return nil
     }
 
-    /// 根据唯一标识获取指定节点
-    ///
-    /// - Parameter identifier: 唯一标识
-    /// - Returns: 指定节点
-    func treeNodeFor(_ identifier: String) -> TreeNode? {
-
-        if self.identifier == identifier {
-            return self
-        }
-        for child in self.children {
-            if let node = child.treeNodeFor(identifier) {
-                return node
-            }
-        }
-        return nil
-    }
-
     /// 添加子节点
     ///
     /// - Parameter node: 子节点
@@ -121,9 +99,11 @@ final class TreeNode {
     ///
     /// - Parameter node: 子节点
     func remove(_ node: TreeNode) {
-        if let index = self.children.index(where: {$0.identifier == node.identifier}) {
-            self.children.remove(at: index)
+        for child in self.children {
+            if let index = self.children.index(where: {$0.indexPath.compare(node.indexPath) == .orderedSame}) {
+                self.children.remove(at: index)
+            }
+            child.remove(node)
         }
     }
-
 }
