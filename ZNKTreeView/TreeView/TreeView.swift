@@ -360,20 +360,29 @@ extension TreeView {
     ///   - node: 指定节点
     ///   - expand: 是否展开所有子节点
     private func expandNode(_ node: TreeNode) {
-        if node.isExpand == true {
-            return
-        }
+        guard let controller = controller, let rootNode = controller.rootNodeFor(node.indexPath.section) else { return }
+
         if let dataSource = dataSource, dataSource.treeView(self, canExpand: node.object) == false {
             return
         }
-        node.isExpand = true
+
+        if node.isExpand == true {
+            return
+        }
+
         if let delegate = delegate {
             delegate.treeView(self, willExpand: node.object)
         }
 
+        node.isExpand = true
+        var nodeIndex = node.indexPath.row
+        var indexPaths: [IndexPath] = []
+        node.expandVisibleChildIndexPath(&nodeIndex, indexPaths: &indexPaths)
+        let _ = indexPaths.map({print("expand indexPaths --> \($0)")})
         if expandChildrenWhenItemExpand {
             node.updateExpand(true)
         }
+        rootNode.resetAllIndexPath()
 
         CATransaction.begin()
         CATransaction.setCompletionBlock {
@@ -391,20 +400,24 @@ extension TreeView {
     ///   - node: 指定节点
     ///   - shrink: 是否折叠所有子节点
     private func shrinkNode(_ node: TreeNode) {
-        if node.isExpand == false {
-            return
-        }
+        guard let controller = controller, let rootNode = controller.rootNodeFor(node.indexPath.section) else { return }
 
         if let dataSource = dataSource, dataSource.treeView(self, canShrink: node.object) == false {
             return
         }
+
+        if node.isExpand == false {
+            return
+        }
+
         var indexPaths: [IndexPath] = []
-        node.visibleChildIndexPath(&indexPaths)
+        node.shrinkVisibleChildIndexPath(&indexPaths)
+        rootNode.resetAllIndexPath()
         node.isExpand = false
         if shrinkChildrenWhenItemShrink {
             node.updateExpand(false)
         }
-        let _ = indexPaths.map({print("children indexPaths --> \($0)")})
+        let _ = indexPaths.map({print("shrink indexPaths --> \($0)")})
         CATransaction.begin()
         CATransaction.setCompletionBlock {
             DispatchQueue.main.async {
@@ -530,6 +543,16 @@ extension TreeView {
         return node.level
     }
 
+    /// 展开指定地址索引的元素
+    ///
+    /// - Parameters:
+    ///   - indexPath: 地址索引
+    ///   - expandChildren: 是否展开子元素
+    ///   - animation: 展开动画
+    func expandItem(at indexPath: IndexPath? = nil, expandChildren: Bool, animation: TreeViewRowAnimation)  {
+
+    }
+
 }
 
 // MARK: - 表格数据源代理
@@ -556,12 +579,12 @@ extension TreeView: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let rootNode = controller?.rootNodeFor(section) else { return nil }
-        return dataSource?.treeView(self, viewForHeaderForRoot: rootNode.object)
+        return dataSource?.treeView(self, viewForHeaderForRoot: rootNode.object, in: section)
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         guard let rootNode = controller?.rootNodeFor(section) else { return nil }
-        return dataSource?.treeView(self, viewForFooterForRoot: rootNode.object)
+        return dataSource?.treeView(self, viewForFooterForRoot: rootNode.object, in: section)
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

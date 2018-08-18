@@ -100,7 +100,7 @@ extension TreeNodeController {
     /// - Parameter index: 根结点下标
     /// - Returns: 根结点
     func rootNodeFor(_ index: Int) -> TreeNode? {
-        guard rootNodes.count > index else {
+        guard rootNodes.count > index && index >= 0 else {
             return nil
         }
         return rootNodes[index]

@@ -49,7 +49,7 @@ protocol TreeViewDataSource {
     ///   - treeView: 指定树形图
     ///   - rootIndex: 指定根元素
     /// - Returns: 段头视图
-    func treeView(_ treeView: TreeView, viewForHeaderForRoot root: Any) -> UIView?
+    func treeView(_ treeView: TreeView, viewForHeaderForRoot root: Any, in rootIndex: Int) -> UIView?
 
     /// 指定树形图下指定根元素的段尾视图
     ///
@@ -57,7 +57,7 @@ protocol TreeViewDataSource {
     ///   - treeView: 指定树形图
     ///   - index: 指定根元素
     /// - Returns: 段尾视图
-    func treeView(_ treeView: TreeView, viewForFooterForRoot root: Any) -> UIView?
+    func treeView(_ treeView: TreeView, viewForFooterForRoot root: Any, in rootIndex: Int) -> UIView?
 
     /// 是否可以展开指定元素
     ///
@@ -81,11 +81,11 @@ extension TreeViewDataSource {
         return 0
     }
 
-    func treeView(_ treeView: TreeView, viewForHeaderForRoot root: Any) -> UIView? {
+    func treeView(_ treeView: TreeView, viewForHeaderForRoot root: Any, in rootIndex: Int) -> UIView? {
         return nil
     }
 
-    func treeView(_ treeView: TreeView, viewForFooterForRoot root: Any) -> UIView? {
+    func treeView(_ treeView: TreeView, viewForFooterForRoot root: Any, in rootIndex: Int) -> UIView? {
         return nil
     }
 

@@ -14,7 +14,7 @@ class ViewController: UIViewController {
     private lazy var treeView: TreeView = {
         $0.delegate = self
         $0.dataSource = self
-        $0.expandAll = true
+        $0.expandAll = false
         $0.separatorInset = .zero
         $0.register(TreeViewCell.self, forCellReuseIdentifier: TreeViewCell.Setting.identifier)
         $0.register(TreeViewHeaderView.self, forHeaderFooterViewReuseIdentifier: TreeViewHeaderView.Setting.identifier)
@@ -72,7 +72,7 @@ extension ViewController: TreeViewDelegate {
 
 extension ViewController: TreeViewDataSource {
 
-    func treeView(_ treeView: TreeView, viewForHeaderForRoot root: Any) -> UIView? {
+    func treeView(_ treeView: TreeView, viewForHeaderForRoot root: Any, in rootIndex: Int) -> UIView? {
         if let item = root as? TreeItem {
             var headerView = treeView.dequeueReusableHeaderFooterView(TreeViewHeaderView.Setting.identifier) as? TreeViewHeaderView
             if headerView == nil {
