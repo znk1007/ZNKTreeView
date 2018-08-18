@@ -294,10 +294,10 @@ class TreeView: UIView {
     var expandAnimation: TreeViewRowAnimation = .none
 
     /// 收缩元素时，是否同时收缩所有子元素，默认false
-    var foldChildrenWhenItemFold: Bool = false
+    var shrinkChildrenWhenItemShrink: Bool = false
 
     /// 收缩动画模式，默认none
-    var foldAnimation: TreeViewRowAnimation = .none
+    var shrinkAnimation: TreeViewRowAnimation = .none
 
     /// 表格视图风格
     private var tableViewStyle: UITableViewStyle
@@ -354,8 +354,65 @@ extension TreeView {
         estimatedSectionFooterHeight = 0
     }
 
-    private func expandItem(_ node: TreeNode, expandChildrenWhileExpand: Bool) {
+    /// 展开指定节点
+    ///
+    /// - Parameters:
+    ///   - node: 指定节点
+    ///   - expand: 是否展开所有子节点
+    private func expandNode(_ node: TreeNode) {
+        if node.isExpand == true {
+            return
+        }
+        if let dataSource = dataSource, dataSource.treeView(self, canExpand: node.object) == false {
+            return
+        }
+        node.isExpand = true
+        if let delegate = delegate {
+            delegate.treeView(self, willExpand: node.object)
+        }
 
+        if expandChildrenWhenItemExpand {
+            node.updateExpand(true)
+        }
+
+        CATransaction.begin()
+        CATransaction.setCompletionBlock {
+            DispatchQueue.main.async {
+                self.delegate?.treeView(self, didExpand: node.object)
+            }
+        }
+        //batchUpdates(.deletion, indexPaths: <#T##[IndexPath]#>, animation: <#T##TreeViewRowAnimation#>)
+        CATransaction.commit()
+    }
+
+    /// 收缩折叠指定节点
+    ///
+    /// - Parameters:
+    ///   - node: 指定节点
+    ///   - shrink: 是否折叠所有子节点
+    private func shrinkNode(_ node: TreeNode) {
+        if node.isExpand == false {
+            return
+        }
+
+        if let dataSource = dataSource, dataSource.treeView(self, canShrink: node.object) == false {
+            return
+        }
+        var indexPaths: [IndexPath] = []
+        node.visibleChildIndexPath(&indexPaths)
+        node.isExpand = false
+        if shrinkChildrenWhenItemShrink {
+            node.updateExpand(false)
+        }
+        let _ = indexPaths.map({print("children indexPaths --> \($0)")})
+        CATransaction.begin()
+        CATransaction.setCompletionBlock {
+            DispatchQueue.main.async {
+                self.delegate?.treeView(self, didShrink: node.object)
+            }
+        }
+        batchUpdates(.deletion, indexPaths: indexPaths, animation: shrinkAnimation)
+        CATransaction.commit()
     }
 
     /// 批量更新
@@ -523,10 +580,16 @@ extension TreeView: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let node = controller?.treeNodeFor(indexPath), let delegate = delegate {
+        guard let node = controller?.treeNodeFor(indexPath) else { return }
+        if let delegate = delegate {
             delegate.treeView(self, didSelect: node.object)
         }
-
+        print("did select indexPath ---> ", indexPath)
+        if node.isExpand {
+            shrinkNode(node)
+        } else {
+            expandNode(node)
+        }
     }
 }
 

@@ -46,7 +46,7 @@ protocol TreeViewDelegate {
     /// - Parameters:
     ///   - treeView: 树形图
     ///   - item: 指定元素
-    func treeView(_ treeView: TreeView, willExpandItem item: Any)
+    func treeView(_ treeView: TreeView, willExpand item: Any)
 
     /// 已展开指定元素
     ///

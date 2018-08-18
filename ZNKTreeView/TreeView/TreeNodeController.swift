@@ -128,6 +128,7 @@ extension TreeNodeController {
         let node = rootNodes[rootIndex]
         var nodeIndex: Int = 0
         node.numberOfVisibleNodeInRootIndex(rootIndex, nodeIndex: &nodeIndex)
+        print("node index ==> ", nodeIndex)
         return nodeIndex
     }
 
@@ -142,6 +143,8 @@ extension TreeNodeController {
         let rootNode = rootNodes[indexPath.section]
         return rootNode.treeNodeFor(indexPath)
     }
+
+    
 
     /// 展开指定节点的树形图单元
     ///

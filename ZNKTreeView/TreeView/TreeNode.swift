@@ -29,10 +29,16 @@ final class TreeNode {
     var children: [TreeNode] = []
     /// 地址索引
     var indexPath: IndexPath = .init(row: -1, section: -1)
-    /// 控制刷新指定节点下所有可见子节点
-    var numberOfVisibleNode: Int = -1
     /// 添加子节点互斥锁
     private var appendMutex: pthread_mutex_t = .init()
+    /// 添加地址索引互斥锁
+    private var indexPathsMutex: pthread_mutex_t = .init()
+
+    deinit {
+        pthread_mutex_destroy(&appendMutex)
+        pthread_mutex_destroy(&indexPathsMutex)
+    }
+
     /// 初始化
     ///
     /// - Parameters:
@@ -47,6 +53,7 @@ final class TreeNode {
         self.object = object
         self.children = children
         appendMutex = .init()
+        indexPathsMutex = .init()
     }
 
     /// 指定根节点下可见子节点数
@@ -55,18 +62,20 @@ final class TreeNode {
     ///   - rootIndex: 指定根节点
     ///   - nodeIndex: 可见子节点数
     func numberOfVisibleNodeInRootIndex(_ rootIndex: Int, nodeIndex: inout Int)  {
-        if numberOfVisibleNode == -1 {
-            if self.isExpand {
-                for child in self.children {
-                    child.indexPath = IndexPath.init(row: nodeIndex, section: rootIndex)
-                    nodeIndex += 1
-                    print("self indexPath ---> ", child.indexPath)
-                    child.numberOfVisibleNodeInRootIndex(rootIndex, nodeIndex: &nodeIndex)
-                }
-                numberOfVisibleNode = nodeIndex
+        if self.isExpand {
+            for child in self.children {
+                child.indexPath = IndexPath.init(row: nodeIndex, section: rootIndex)
+                nodeIndex += 1
+                child.numberOfVisibleNodeInRootIndex(rootIndex, nodeIndex: &nodeIndex)
             }
-        } else {
-            nodeIndex = numberOfVisibleNode
+        }
+    }
+
+    /// 重置所有子节点的地址索引
+    func resetAllIndexPath() {
+        for child in self.children {
+            child.indexPath = IndexPath.init(row: -1, section: self.indexPath.section)
+            child.resetAllIndexPath()
         }
     }
 
@@ -84,6 +93,22 @@ final class TreeNode {
             }
         }
         return nil
+    }
+
+    /// 所有可见子节点的地址索引
+    ///
+    /// - Parameter indexPaths: 地址索引数组
+    func visibleChildIndexPath(_ indexPaths: inout [IndexPath]) {
+        if self.isExpand {
+            for child in self.children {
+                if child.isExpand {
+                    pthread_mutex_lock(&indexPathsMutex)
+                    indexPaths.append(child.indexPath)
+                    pthread_mutex_unlock(&indexPathsMutex)
+                }
+                child.visibleChildIndexPath(&indexPaths)
+            }
+        }
     }
 
     /// 添加子节点
@@ -104,6 +129,28 @@ final class TreeNode {
                 self.children.remove(at: index)
             }
             child.remove(node)
+        }
+    }
+
+    /// 删除指定地址索引节点
+    ///
+    /// - Parameter indexPath: 地址索引
+    func remove(_ indexPath: IndexPath) {
+        for child in self.children {
+            if let index = self.children.index(where: {$0.indexPath.compare(indexPath) == .orderedSame}) {
+                self.children.remove(at: index)
+            }
+            child.remove(indexPath)
+        }
+    }
+
+    /// 更新子节点展开状态
+    ///
+    /// - Parameter expand: 是否展开
+    func updateExpand(_ expand: Bool) {
+        for child in self.children {
+            child.isExpand = expand
+            child.updateExpand(expand)
         }
     }
 }
