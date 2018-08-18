@@ -549,9 +549,44 @@ extension TreeView {
     ///   - indexPath: 地址索引
     ///   - expandChildren: 是否展开子元素
     ///   - animation: 展开动画
-    func expandItem(at indexPath: IndexPath? = nil, expandChildren: Bool, animation: TreeViewRowAnimation)  {
-
+    func expandItem(at indexPath: IndexPath, expandChildren: Bool, animation: TreeViewRowAnimation)  {
+        guard let _ = tableView, let controller = controller else { return }
+        expandChildrenWhenItemExpand = expandChildren
+        expandAnimation = animation
+        if indexPath.row < 0 {
+            /// 根节点
+            if let rootNode = controller.rootNodeFor(indexPath.section) {
+                expandNode(rootNode)
+            }
+        } else {
+            if let node = controller.treeNodeFor(indexPath) {
+                expandNode(node)
+            }
+        }
     }
+
+    /// 展开指定地址索引的元素
+    ///
+    /// - Parameters:
+    ///   - indexPath: 地址索引
+    ///   - expandChildren: 是否展开子元素
+    ///   - animation: 展开动画
+    func shrinkItem(at indexPath: IndexPath, shrinkChildren: Bool, animation: TreeViewRowAnimation)  {
+        guard let _ = tableView, let controller = controller else { return }
+        shrinkChildrenWhenItemShrink = shrinkChildren
+        shrinkAnimation = animation
+        if indexPath.row < 0 {
+            /// 根节点
+            if let rootNode = controller.rootNodeFor(indexPath.section) {
+                shrinkNode(rootNode)
+            }
+        } else {
+            if let node = controller.treeNodeFor(indexPath) {
+                shrinkNode(node)
+            }
+        }
+    }
+
 
 }
 
