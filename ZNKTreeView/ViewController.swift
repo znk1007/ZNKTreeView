@@ -68,6 +68,30 @@ extension ViewController: TreeViewDelegate {
         }
     }
 
+    func treeView(_ treeView: TreeView, willExpand item: Any, at indexPath: IndexPath) {
+        if let item = item as? TreeItem {
+            print("will expand item name ==> ", item.name)
+        }
+    }
+
+    func treeView(_ treeView: TreeView, didExpand item: Any, at indexPath: IndexPath) {
+        if let item = item as? TreeItem {
+            print("did expand item name ==> ", item.name)
+        }
+    }
+
+    func treeView(_ treeView: TreeView, willShrink item: Any, at indexPath: IndexPath) {
+        if let item = item as? TreeItem {
+            print("will shrink item name ==> ", item.name)
+        }
+    }
+
+    func treeView(_ treeView: TreeView, didShrink item: Any, at indexPath: IndexPath) {
+        if let item = item as? TreeItem {
+            print("did shrink item name ==> ", item.name)
+        }
+    }
+
 }
 
 extension ViewController: TreeViewDataSource {
@@ -78,8 +102,12 @@ extension ViewController: TreeViewDataSource {
             if headerView == nil {
                 headerView = .init()
             }
+            let indexPath = IndexPath.init(row: -1, section: rootIndex)
+
             headerView?.updateHeader(item.name, completion: { [weak self] (expand) in
                 print("is expand ---> ", expand)
+                treeView.updateExpandShrink(at: indexPath)
+
             })
             return headerView
         }

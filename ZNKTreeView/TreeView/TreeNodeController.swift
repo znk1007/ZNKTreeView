@@ -87,6 +87,7 @@ extension TreeNodeController {
         if rootNodes.count == 0 || rootNodes.count != rootNumber {
             for i in 0 ..< numberOfRoot() {
                 if let node = dataSource?.treeNode(at: -1, of: nil, in: i) {
+                    node.indexPath = IndexPath.init(row: -1, section: i)
                     self.append(node)
                     self.insertNode(of: node, in: i)
                     //                    enumericRootNode(node)
@@ -128,7 +129,6 @@ extension TreeNodeController {
         let node = rootNodes[rootIndex]
         var nodeIndex: Int = 0
         node.numberOfVisibleNodeInRootIndex(rootIndex, nodeIndex: &nodeIndex)
-        print("node index ==> ", nodeIndex)
         return nodeIndex
     }
 

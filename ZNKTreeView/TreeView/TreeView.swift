@@ -379,12 +379,9 @@ extension TreeView {
         var indexPaths: [IndexPath] = []
         node.expandVisibleChildIndexPath(&nodeIndex, indexPaths: &indexPaths)
         rootNode.resetAllIndexPath()
-        let _ = indexPaths.map({print("expand indexPaths --> \($0)")})
         if expandChildrenWhenItemExpand {
             node.updateExpand(true)
         }
-
-
         CATransaction.begin()
         CATransaction.setCompletionBlock {
             DispatchQueue.main.async {
@@ -420,7 +417,6 @@ extension TreeView {
         if shrinkChildrenWhenItemShrink {
             node.updateExpand(false)
         }
-        let _ = indexPaths.map({print("shrink indexPaths --> \($0)")})
         CATransaction.begin()
         CATransaction.setCompletionBlock {
             DispatchQueue.main.async {
@@ -548,6 +544,34 @@ extension TreeView {
         return node.level
     }
 
+    /// 更新元素的展开收缩状态
+    ///
+    /// - Parameters:
+    ///   - indexPath: 地址索引，注：如IndexPath的row < 0, 则表示section所指的根元素
+    ///   - es: 是否同时更新子元素
+    ///   - animation: 动画
+    func updateExpandShrink(at indexPath: IndexPath, expandOrShrinkChildren es: Bool = false, animation: TreeViewRowAnimation = .none) {
+        guard let _ = tableView, let controller = controller else { return }
+        if indexPath.row < 0 {
+            /// 根节点
+            if let rootNode = controller.rootNodeFor(indexPath.section) {
+                if rootNode.isExpand == true {
+                    shrinkItem(at: indexPath, shrinkChildren: es, animation: animation)
+                } else {
+                    expandItem(at: indexPath, expandChildren: es, animation: animation)
+                }
+            }
+        } else {
+            if let node = controller.treeNodeFor(indexPath) {
+                if node.isExpand == true {
+                    shrinkItem(at: indexPath, shrinkChildren: es, animation: animation)
+                } else {
+                    expandItem(at: indexPath, expandChildren: es, animation: animation)
+                }
+            }
+        }
+    }
+
     /// 展开指定地址索引的元素
     ///
     /// - Parameters:
@@ -591,9 +615,54 @@ extension TreeView {
             }
         }
     }
-    
 
+    /// 选中指定地址索引的元素
+    ///
+    /// - Parameters:
+    ///   - indexPath: 地址索引
+    ///   - animated: 动画
+    ///   - position: 滚动位置
+    func selectItem(at indexPath: IndexPath, animated: Bool, scrollPosition position: TreeViewScrollPosition) {
+        guard let table = tableView else { return }
+        table.selectRow(at: indexPath, animated: animated, scrollPosition: position.position)
+    }
 
+    /// 取消选择指定地址索引的元素
+    ///
+    /// - Parameters:
+    ///   - indexPath: 地址索引
+    ///   - animated: 动画
+    func deselectItem(at indexPath: IndexPath, animated: Bool) {
+        guard let table = tableView else { return }
+        table.deselectRow(at: indexPath, animated: animated)
+    }
+
+    /// 指定地址索引元素的单元格
+    ///
+    /// - Parameter indexPath: 地址索引
+    /// - Returns: 单元格
+    func cellForItem(at indexPath: IndexPath) -> UITableViewCell? {
+        guard let table = tableView else { return nil }
+        return table.cellForRow(at: indexPath)
+    }
+
+    /// 指定单元格的元素
+    ///
+    /// - Parameter cell: 单元格
+    /// - Returns: 元素
+    func itemForCell(_ cell: UITableViewCell) -> Any? {
+        guard let table = tableView, let controller = controller, let indexPath = table.indexPath(for: cell), let node = controller.treeNodeFor(indexPath) else { return nil }
+        return node.object
+    }
+
+    /// 指定根元素下标子元素数
+    ///
+    /// - Parameter index: 根元素下标
+    /// - Returns: 子元素数
+    func numberOfItems(inRoot index: Int) -> Int {
+        guard let table = tableView else { return 0 }
+        return table.numberOfRows(inSection: index)
+    }
 }
 
 // MARK: - 表格数据源代理
