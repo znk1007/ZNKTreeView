@@ -62,7 +62,7 @@ extension ViewController: TreeViewDelegate {
     }
 
 
-    func treeView(_ treeView: TreeView, didSelect item: Any) {
+    func treeView(_ treeView: TreeView, didSelect item: Any, at indexPath: IndexPath) {
         if let item = item as? TreeItem {
             print("item name ==> ", item.name)
         }
@@ -108,13 +108,11 @@ extension ViewController: TreeViewDataSource {
         }
     }
 
-    func treeView(_ treeView: TreeView, childIndex: Int, for item: Any?, in rootIndex: Int) -> (Any?, String?) {
+    func treeView(_ treeView: TreeView, childIndex: Int, for item: Any?, in rootIndex: Int) -> Any? {
         if let item = item as? TreeItem {
-            let child = item.children[childIndex]
-            return (child, child.identifier)
+            return item.children[childIndex]
         } else {
-            let child = treeItems[rootIndex]
-            return (child, child.identifier)
+            return treeItems[rootIndex]
         }
     }
 

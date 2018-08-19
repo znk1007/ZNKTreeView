@@ -39,35 +39,35 @@ protocol TreeViewDelegate {
     /// - Parameters:
     ///   - treeView: 树形图
     ///   - item: 指定元素
-    func treeView(_ treeView: TreeView, didSelect item: Any)
+    func treeView(_ treeView: TreeView, didSelect item: Any, at indexPath: IndexPath)
 
     /// 将要展开指定元素
     ///
     /// - Parameters:
     ///   - treeView: 树形图
     ///   - item: 指定元素
-    func treeView(_ treeView: TreeView, willExpand item: Any)
+    func treeView(_ treeView: TreeView, willExpand item: Any, at indexPath: IndexPath)
 
     /// 已展开指定元素
     ///
     /// - Parameters:
     ///   - treeView: 树形图
     ///   - item: 指定元素
-    func treeView(_ treeView: TreeView, didExpand item: Any)
+    func treeView(_ treeView: TreeView, didExpand item: Any, at indexPath: IndexPath)
 
     /// 将要收缩指定元素
     ///
     /// - Parameters:
     ///   - treeView: 树形图
     ///   - item: 指定元素
-    func treeView(_ treeView: TreeView, willShrink item: Any)
+    func treeView(_ treeView: TreeView, willShrink item: Any, at indexPath: IndexPath)
 
     /// 已收缩指定元素
     ///
     /// - Parameters:
     ///   - treeView: 树形图
     ///   - item: 指定元素
-    func treeView(_ treeView: TreeView, didShrink item: Any)
+    func treeView(_ treeView: TreeView, didShrink item: Any, at indexPath: IndexPath)
 
 
 }
@@ -84,15 +84,15 @@ extension TreeViewDelegate {
         return 50
     }
 
-    func treeView(_ treeView: TreeView, didSelect item: Any) {}
+    func treeView(_ treeView: TreeView, didSelect item: Any, at indexPath: IndexPath) {}
 
-    func treeView(_ treeView: TreeView, willExpand item: Any) {}
+    func treeView(_ treeView: TreeView, willExpand item: Any, at indexPath: IndexPath) {}
 
-    func treeView(_ treeView: TreeView, didExpand item: Any) {}
+    func treeView(_ treeView: TreeView, didExpand item: Any, at indexPath: IndexPath) {}
 
-    func treeView(_ treeView: TreeView, willShrink item: Any) {}
+    func treeView(_ treeView: TreeView, willShrink item: Any, at indexPath: IndexPath) {}
 
-    func treeView(_ treeView: TreeView, didShrink item: Any) {}
+    func treeView(_ treeView: TreeView, didShrink item: Any, at indexPath: IndexPath) {}
 }
 
 

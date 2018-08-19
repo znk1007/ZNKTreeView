@@ -53,11 +53,12 @@ extension TreeItem {
         let grandgrandChild2 = TreeItem.init(identifier: "grandgrandChild2", name: "grandgrandChild2", children: [grandgrandgrandChild3, grandgrandgrandChild4])
         let grandgrandChild3 = TreeItem.init(identifier: "grandgrandChild3", name: "grandgrandChild3")
         let grandgrandChild4 = TreeItem.init(identifier: "grandgrandChild4", name: "grandgrandChild4")
+        let grandgrandChild5 = TreeItem.init(identifier: "grandgrandChild5", name: "grandgrandChild5")
 
         let grandChild1 = TreeItem.init(identifier: "grandChild1", name: "grandChild1", children: [grandgrandChild1, grandgrandChild2, grandgrandChild3,grandgrandChild4])
         let grandChild2 = TreeItem.init(identifier: "grandChild2", name: "grandChild2", children: [grandgrandChild2])
         let grandChild3 = TreeItem.init(identifier: "grandChild3", name: "grandChild3", children: [grandgrandChild3])
-        let grandChild4 = TreeItem.init(identifier: "grandChild4", name: "grandChild4", children: [grandgrandChild1, grandgrandChild2, grandgrandChild3,grandgrandChild4])
+        let grandChild4 = TreeItem.init(identifier: "grandChild4", name: "grandChild4", children: [grandgrandChild1, grandgrandChild2, grandgrandChild3,grandgrandChild5])
         let grandChild5 = TreeItem.init(identifier: "grandChild5", name: "grandChild5", children: [grandgrandChild2])
         let grandChild6 = TreeItem.init(identifier: "grandChild6", name: "grandChild6", children: [grandgrandChild3])
 

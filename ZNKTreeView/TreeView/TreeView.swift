@@ -359,7 +359,7 @@ extension TreeView {
     /// - Parameters:
     ///   - node: 指定节点
     ///   - expand: 是否展开所有子节点
-    private func expandNode(_ node: TreeNode) {
+    private func expandNode(_ node: TreeNode, indexPath: IndexPath) {
         guard let controller = controller, let rootNode = controller.rootNodeFor(node.indexPath.section) else { return }
 
         if let dataSource = dataSource, dataSource.treeView(self, canExpand: node.object) == false {
@@ -371,7 +371,7 @@ extension TreeView {
         }
 
         if let delegate = delegate {
-            delegate.treeView(self, willExpand: node.object)
+            delegate.treeView(self, willExpand: node.object, at: indexPath)
         }
 
         node.isExpand = true
@@ -388,7 +388,7 @@ extension TreeView {
         CATransaction.begin()
         CATransaction.setCompletionBlock {
             DispatchQueue.main.async {
-                self.delegate?.treeView(self, didExpand: node.object)
+                self.delegate?.treeView(self, didExpand: node.object, at: indexPath)
             }
         }
         batchUpdates(.insertion, indexPaths: indexPaths, animation: expandAnimation)
@@ -400,7 +400,7 @@ extension TreeView {
     /// - Parameters:
     ///   - node: 指定节点
     ///   - shrink: 是否折叠所有子节点
-    private func shrinkNode(_ node: TreeNode) {
+    private func shrinkNode(_ node: TreeNode, indexPath: IndexPath) {
         guard let controller = controller, let rootNode = controller.rootNodeFor(node.indexPath.section) else { return }
 
         if let dataSource = dataSource, dataSource.treeView(self, canShrink: node.object) == false {
@@ -410,7 +410,9 @@ extension TreeView {
         if node.isExpand == false || node.children.count == 0{
             return
         }
-
+        if let delegate = delegate {
+            delegate.treeView(self, willShrink: node.object, at: indexPath)
+        }
         var indexPaths: [IndexPath] = []
         node.shrinkVisibleChildIndexPath(&indexPaths)
         rootNode.resetAllIndexPath()
@@ -422,7 +424,9 @@ extension TreeView {
         CATransaction.begin()
         CATransaction.setCompletionBlock {
             DispatchQueue.main.async {
-                self.delegate?.treeView(self, didShrink: node.object)
+                if let delegate = self.delegate {
+                    delegate.treeView(self, didShrink: node.object, at: indexPath)
+                }
             }
         }
         batchUpdates(.deletion, indexPaths: indexPaths, animation: shrinkAnimation)
@@ -557,11 +561,11 @@ extension TreeView {
         if indexPath.row < 0 {
             /// 根节点
             if let rootNode = controller.rootNodeFor(indexPath.section) {
-                expandNode(rootNode)
+                expandNode(rootNode, indexPath: indexPath)
             }
         } else {
             if let node = controller.treeNodeFor(indexPath) {
-                expandNode(node)
+                expandNode(node, indexPath: indexPath)
             }
         }
     }
@@ -579,11 +583,11 @@ extension TreeView {
         if indexPath.row < 0 {
             /// 根节点
             if let rootNode = controller.rootNodeFor(indexPath.section) {
-                shrinkNode(rootNode)
+                shrinkNode(rootNode, indexPath: indexPath)
             }
         } else {
             if let node = controller.treeNodeFor(indexPath) {
-                shrinkNode(node)
+                shrinkNode(node, indexPath: indexPath)
             }
         }
     }
@@ -642,15 +646,15 @@ extension TreeView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let node = controller?.treeNodeFor(indexPath) else { return }
         if let delegate = delegate {
-            delegate.treeView(self, didSelect: node.object)
+            delegate.treeView(self, didSelect: node.object, at: indexPath)
         }
         if node.children.count == 0 {
             return
         }
         if node.isExpand {
-            shrinkNode(node)
+            shrinkNode(node, indexPath: indexPath)
         } else {
-            expandNode(node)
+            expandNode(node, indexPath: indexPath)
         }
     }
 }
@@ -666,8 +670,8 @@ extension TreeView: TreeNodeControllerDataSource {
     }
 
     func treeNode(at childIndex: Int, of node: TreeNode?, in rootIndex: Int) -> TreeNode? {
-        if let (item, identifier) = dataSource?.treeView(self, childIndex: childIndex, for: node?.object, in: rootIndex), let nodeId = identifier, let object = item {
-            return TreeNode.init(identifier: nodeId, object: object, isExpand: expandAll, parent: node)
+        if let item = dataSource?.treeView(self, childIndex: childIndex, for: node?.object, in: rootIndex) {
+            return TreeNode.init(object: item, isExpand: expandAll, parent: node)
         }
         return nil
     }
