@@ -9,6 +9,9 @@
 import UIKit
 
 final class TreeNode {
+
+    /// 唯一标识
+    let identifier: String
     /// 是否展开
     var isExpand: Bool
     /// 节点层级
@@ -52,7 +55,8 @@ final class TreeNode {
     ///   - object: 任意数据
     ///   - parent: 父节点
     ///   - children: 子节点数组
-    init(object: Any, isExpand: Bool, parent: TreeNode?, children: [TreeNode] = []) {
+    init(identifier: String, object: Any, isExpand: Bool, parent: TreeNode?, children: [TreeNode] = []) {
+        self.identifier = identifier
         self.parent = parent
         self.isExpand = isExpand
         self.object = object
