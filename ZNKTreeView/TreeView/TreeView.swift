@@ -390,7 +390,7 @@ extension TreeView {
                 self.delegate?.treeView(self, didExpand: node.object)
             }
         }
-        //batchUpdates(.deletion, indexPaths: <#T##[IndexPath]#>, animation: <#T##TreeViewRowAnimation#>)
+        batchUpdates(.insertion, indexPaths: indexPaths, animation: expandAnimation)
         CATransaction.commit()
     }
 
