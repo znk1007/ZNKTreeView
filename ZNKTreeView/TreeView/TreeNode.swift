@@ -178,7 +178,9 @@ final class TreeNode {
     /// - Parameter expand: 是否展开
     func updateExpand(_ expand: Bool) {
         for child in self.children {
-            child.isExpand = expand
+            if child.children.count > 0 {
+                child.isExpand = expand
+            }
             child.updateExpand(expand)
         }
     }

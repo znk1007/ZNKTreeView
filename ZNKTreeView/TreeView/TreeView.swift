@@ -375,13 +375,13 @@ extension TreeView {
         }
 
         node.isExpand = true
+        if expandChildrenWhenItemExpand {
+            node.updateExpand(true)
+        }
         var nodeIndex = node.indexPath.row
         var indexPaths: [IndexPath] = []
         node.expandVisibleChildIndexPath(&nodeIndex, indexPaths: &indexPaths)
         rootNode.resetAllIndexPath()
-        if expandChildrenWhenItemExpand {
-            node.updateExpand(true)
-        }
         CATransaction.begin()
         CATransaction.setCompletionBlock {
             DispatchQueue.main.async {
@@ -481,6 +481,11 @@ extension TreeView {
         table.register(cellClass, forCellReuseIdentifier: identifier)
     }
 
+    /// UINib注册复用单元格
+    ///
+    /// - Parameters:
+    ///   - nib: UINib类
+    ///   - identifier: 唯一标识
     func register(_ nib: UINib?, forCellReuseIdentifier identifier: String) {
         guard let table = tableView else { return }
         table.register(nib, forCellReuseIdentifier: identifier)
@@ -509,9 +514,9 @@ extension TreeView {
     /// 复用单元格
     ///
     /// - Parameter identifier: 唯一标识
-    func dequeueReusableCell(_ identifier: String) -> UITableViewCell {
-        guard let table = tableView else { return .init() }
-        return table.dequeueReusableCell(withIdentifier: identifier) ?? .init()
+    func dequeueReusableCell(_ identifier: String) -> UITableViewCell? {
+        guard let table = tableView else { return nil }
+        return table.dequeueReusableCell(withIdentifier: identifier)
     }
 
     /// 复用单元格
@@ -521,8 +526,8 @@ extension TreeView {
     ///   - item: 元素
     ///   - identifier: 元素唯一标识
     ///   - indexPath: 地址索引
-    func dequeueReusableCell(_ cellIdentifier: String, at indexPath: IndexPath) -> UITableViewCell {
-        guard let table = tableView, let node = controller?.treeNodeFor(indexPath) else { return .init() }
+    func dequeueReusableCell(_ cellIdentifier: String, at indexPath: IndexPath) -> UITableViewCell? {
+        guard let table = tableView, let node = controller?.treeNodeFor(indexPath) else { return nil }
         return table.dequeueReusableCell(withIdentifier: cellIdentifier, for: node.indexPath)
     }
 
