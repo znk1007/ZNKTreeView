@@ -549,6 +549,15 @@ extension TreeView {
         return node.level
     }
 
+    /// 指定单元格的层级
+    ///
+    /// - Parameter cell: 单元格
+    /// - Returns: 层级
+    func levelFor(_ cell: UITableViewCell) -> Int {
+        guard let table = tableView, let indexPath = table.indexPath(for: cell), let node = controller?.treeNodeFor(indexPath) else { return -1 }
+        return node.level
+    }
+
     /// 更新元素的展开收缩状态
     ///
     /// - Parameters:
@@ -731,6 +740,188 @@ extension TreeView: UITableViewDelegate {
             expandNode(node, indexPath: indexPath)
         }
     }
+
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
+            delegate.treeView(self, willDisplay: node.object, at: indexPath)
+        }
+    }
+
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        if let delegate = delegate {
+            delegate.treeView(self, willDisplayHeaderView: view, forRoot: section)
+        }
+    }
+
+    func tableView(_ tableView: UITableView, willDisplayFooterView view: UIView, forSection section: Int) {
+        if let delegate = delegate {
+            delegate.treeView(self, willDisplayFooterView: view, forRoot: section)
+        }
+    }
+
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
+            delegate.treeView(self, didEndDisplaying: node.object, at: indexPath)
+        }
+    }
+
+    func tableView(_ tableView: UITableView, didEndDisplayingHeaderView view: UIView, forSection section: Int) {
+        if let delegate = delegate {
+            delegate.treeView(self, didEndDisplayingHeaderView: view, inRoot: section)
+        }
+    }
+
+    func tableView(_ tableView: UITableView, didEndDisplayingFooterView view: UIView, forSection section: Int) {
+        if let delegate = delegate {
+            delegate.treeView(self, didEndDisplayingFooterView: view, inRoot: section)
+        }
+    }
+
+
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
+            return delegate.treeView(self, estimatedHeightFor: node.object, at: indexPath)
+        }
+        return 0
+    }
+
+    func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
+        if let delegate = delegate {
+            return delegate.treeView(self, estimatedHeightForHeaderInRoot: section)
+        }
+        return 0
+    }
+
+    func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {
+        if let delegate = delegate {
+            return delegate.treeView(self, estimatedHeightForFooterInRoot: section)
+        }
+        return 0
+    }
+
+
+    func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
+        if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
+            delegate.treeView(self, accessoryButtonTappedFor: node.object, at: indexPath)
+        }
+    }
+
+
+    // Selection
+
+    // -tableView:shouldHighlightRowAtIndexPath: is called when a touch comes down on a row.
+    // Returning NO to that message halts the selection process and does not cause the currently selected row to lose its selected look while the touch is down.
+    @available(iOS 6.0, *)
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool
+
+    @available(iOS 6.0, *)
+    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath)
+
+    @available(iOS 6.0, *)
+    func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath)
+
+
+    // Called before the user changes the selection. Return a new indexPath, or nil, to change the proposed selection.
+    @available(iOS 2.0, *)
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath?
+
+    @available(iOS 3.0, *)
+    func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath?
+
+    // Called after the user changes the selection.
+    @available(iOS 2.0, *)
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+
+    @available(iOS 3.0, *)
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath)
+
+
+    // Editing
+
+    // Allows customization of the editingStyle for a particular cell located at 'indexPath'. If not implemented, all editable cells will have UITableViewCellEditingStyleDelete set for them when the table has editing property set to YES.
+    @available(iOS 2.0, *)
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle
+
+    @available(iOS 3.0, *)
+    func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String?
+
+
+    // Use -tableView:trailingSwipeActionsConfigurationForRowAtIndexPath: instead of this method, which will be deprecated in a future release.
+    // This method supersedes -tableView:titleForDeleteConfirmationButtonForRowAtIndexPath: if return value is non-nil
+    @available(iOS 8.0, *)
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]?
+
+
+    // Swipe actions
+    // These methods supersede -editActionsForRowAtIndexPath: if implemented
+    // return nil to get the default swipe actions
+    @available(iOS 11.0, *)
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
+
+    @available(iOS 11.0, *)
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
+
+
+    // Controls whether the background is indented while editing.  If not implemented, the default is YES.  This is unrelated to the indentation level below.  This method only applies to grouped style table views.
+    @available(iOS 2.0, *)
+    func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool
+
+
+    // The willBegin/didEnd methods are called whenever the 'editing' property is automatically changed by the table (allowing insert/delete/move). This is done by a swipe activating a single row
+    @available(iOS 2.0, *)
+    func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath)
+
+    @available(iOS 2.0, *)
+    func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?)
+
+
+    // Moving/reordering
+
+    // Allows customization of the target row for a particular row as it is being moved/reordered
+    @available(iOS 2.0, *)
+    func tableView(_ tableView: UITableView, targetIndexPathForMoveFromRowAt sourceIndexPath: IndexPath, toProposedIndexPath proposedDestinationIndexPath: IndexPath) -> IndexPath
+
+
+    // Indentation
+
+    @available(iOS 2.0, *)
+    func tableView(_ tableView: UITableView, indentationLevelForRowAt indexPath: IndexPath) -> Int // return 'depth' of row for hierarchies
+
+
+    // Copy/Paste.  All three methods must be implemented by the delegate.
+
+    @available(iOS 5.0, *)
+    func tableView(_ tableView: UITableView, shouldShowMenuForRowAt indexPath: IndexPath) -> Bool
+
+    @available(iOS 5.0, *)
+    func tableView(_ tableView: UITableView, canPerformAction action: Selector, forRowAt indexPath: IndexPath, withSender sender: Any?) -> Bool
+
+    @available(iOS 5.0, *)
+    func tableView(_ tableView: UITableView, performAction action: Selector, forRowAt indexPath: IndexPath, withSender sender: Any?)
+
+
+    // Focus
+
+    @available(iOS 9.0, *)
+    func tableView(_ tableView: UITableView, canFocusRowAt indexPath: IndexPath) -> Bool
+
+    @available(iOS 9.0, *)
+    func tableView(_ tableView: UITableView, shouldUpdateFocusIn context: UITableViewFocusUpdateContext) -> Bool
+
+    @available(iOS 9.0, *)
+    func tableView(_ tableView: UITableView, didUpdateFocusIn context: UITableViewFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator)
+
+    @available(iOS 9.0, *)
+    func indexPathForPreferredFocusedView(in tableView: UITableView) -> IndexPath?
+
+
+    // Spring Loading
+
+    // Allows opting-out of spring loading for an particular row.
+    // If you want the interaction effect on a different subview of the spring loaded cell, modify the context.targetView property. The default is the cell.
+    // If this method is not implemented, the default is YES except when the row is part of a drag session.
+    @available(iOS 11.0, *)
+    func tableView(_ tableView: UITableView, shouldSpringLoadRowAt indexPath: IndexPath, with context: UISpringLoadedInteractionContext) -> Bool
 }
 
 // MARK: - 管理器数据源代理
