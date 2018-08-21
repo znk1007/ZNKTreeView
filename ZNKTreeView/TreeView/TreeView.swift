@@ -812,18 +812,29 @@ extension TreeView: UITableViewDelegate {
     // -tableView:shouldHighlightRowAtIndexPath: is called when a touch comes down on a row.
     // Returning NO to that message halts the selection process and does not cause the currently selected row to lose its selected look while the touch is down.
     @available(iOS 6.0, *)
-    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
+            return delegate.treeView(self, shouldHighlightFor: node.object, at: indexPath)
+        }
+        return true
+    }
 
-    @available(iOS 6.0, *)
-    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath)
+    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
+        if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
+            delegate.treeView(self, didHighlightFor: node.object, at: indexPath)
+        }
+    }
 
-    @available(iOS 6.0, *)
-    func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath)
+    func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
+        if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
+            delegate.treeView(self, didUnhighlightFor: node.object, at: indexPath)
+        }
+    }
 
 
-    // Called before the user changes the selection. Return a new indexPath, or nil, to change the proposed selection.
-    @available(iOS 2.0, *)
-    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath?
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        
+    }
 
     @available(iOS 3.0, *)
     func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath?

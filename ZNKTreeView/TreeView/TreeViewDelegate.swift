@@ -150,7 +150,7 @@ protocol TreeViewDelegate {
     ///   - indexPath: 地址索引
     func treeView(_ treeView: TreeView, accessoryButtonTappedFor item: Any, at indexPath: IndexPath)
 
-    /// 选中指定元素单元格是，是否高亮
+    /// 选中指定元素单元格，是否高亮
     ///
     /// - Parameters:
     ///   - treeView: 树形图
@@ -159,6 +159,21 @@ protocol TreeViewDelegate {
     /// - Returns: 是否高亮
     func treeView(_ treeView: TreeView, shouldHighlightFor item: Any, at indexPath: IndexPath) -> Bool
 
+    /// 选中单元格已完成高亮
+    ///
+    /// - Parameters:
+    ///   - treeView: 树形图
+    ///   - item: 指定元素
+    ///   - indexPath: 地址索引
+    func treeView(_ treeView: TreeView, didHighlightFor item: Any, at indexPath: IndexPath)
+
+    /// 已取消指定元素高亮
+    ///
+    /// - Parameters:
+    ///   - treeView: 树形图
+    ///   - item: 指定元素
+    ///   - indexPath: 地址索引
+    func treeView(_ treeView: TreeView, didUnhighlightFor item: Any, at indexPath: IndexPath)
 }
 
 extension TreeViewDelegate {
@@ -212,6 +227,8 @@ extension TreeViewDelegate {
     func treeView(_ treeView: TreeView, shouldHighlightFor item: Any, at indexPath: IndexPath) -> Bool {
         return true
     }
+
+    func treeView(_ treeView: TreeView, didUnhighlightFor item: Any, at indexPath: IndexPath) {}
 }
 
 
