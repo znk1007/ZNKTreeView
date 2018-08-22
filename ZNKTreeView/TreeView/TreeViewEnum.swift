@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 /// 批量更新类型
 ///
 /// - insertion: 插入

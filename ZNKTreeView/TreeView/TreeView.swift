@@ -846,43 +846,65 @@ extension TreeView: UITableViewDelegate {
         return indexPath
     }
 
-    // Editing
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
+        if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
+            return delegate.treeView(self, editingStyleFor: node.object, at: indexPath)
+        }
+        return .none
+    }
 
-    // Allows customization of the editingStyle for a particular cell located at 'indexPath'. If not implemented, all editable cells will have UITableViewCellEditingStyleDelete set for them when the table has editing property set to YES.
-    @available(iOS 2.0, *)
-    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle
+    func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String? {
+        if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
+            return delegate.treeView(self, titleForDeleteConfirmationButtonForItem: node.object, at: indexPath)
+        }
+        return nil
+    }
 
-    @available(iOS 3.0, *)
-    func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String?
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
 
-
-    // Use -tableView:trailingSwipeActionsConfigurationForRowAtIndexPath: instead of this method, which will be deprecated in a future release.
-    // This method supersedes -tableView:titleForDeleteConfirmationButtonForRowAtIndexPath: if return value is non-nil
-    @available(iOS 8.0, *)
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]?
-
-
-    // Swipe actions
-    // These methods supersede -editActionsForRowAtIndexPath: if implemented
-    // return nil to get the default swipe actions
-    @available(iOS 11.0, *)
-    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
+    }
 
     @available(iOS 11.0, *)
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
+            return delegate.treeView(self, leadingSwipeActionsConfigurationFor: node.object, at: indexPath)
+        }
+        return nil
+    }
+
+    @available(iOS 11.0, *)
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
+            return delegate.treeView(self, trailingSwipeActionsConfigurationFor: node.object, at: indexPath)
+        }
+        return nil
+    }
 
 
-    // Controls whether the background is indented while editing.  If not implemented, the default is YES.  This is unrelated to the indentation level below.  This method only applies to grouped style table views.
+    func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
+        if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
+            return delegate.treeView(self, shouldIndentWhileEditingFor: node.object, at: indexPath)
+        }
+        return false
+    }
+
+
+    func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
+        if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
+            delegate.treeView(self, willBeginEditingFor: node.object, at: indexPath)
+        }
+    }
+
     @available(iOS 2.0, *)
-    func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool
-
-
-    // The willBegin/didEnd methods are called whenever the 'editing' property is automatically changed by the table (allowing insert/delete/move). This is done by a swipe activating a single row
-    @available(iOS 2.0, *)
-    func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath)
-
-    @available(iOS 2.0, *)
-    func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?)
+    func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
+        if let delegate = delegate {
+            if let indexPath = indexPath, let node = controller?.treeNodeFor(indexPath) {
+                delegate.treeView(self, didEndEditingFor: node.object, at: indexPath)
+            } else {
+                delegate.treeView(self, didEndEditingFor: nil, at: nil)
+            }
+        }
+    }
 
 
     // Moving/reordering
