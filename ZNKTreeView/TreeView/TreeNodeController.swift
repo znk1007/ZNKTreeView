@@ -144,4 +144,20 @@ extension TreeNodeController {
         return rootNode.treeNodeFor(indexPath)
     }
 
+    func move(_ sourceIndexPath: IndexPath, targetIndexPath: IndexPath) {
+        let sourceSection = sourceIndexPath.section
+        let targetSection = targetIndexPath.section
+        let sourceRow = sourceIndexPath.row
+        let targetRow = sourceIndexPath.row
+
+        if rootNodes.count > sourceSection && rootNodes.count > targetSection {
+            if sourceRow < 0 && targetRow < 0 {
+                
+            } else {
+
+            }
+            rootNodes[sourceSection].remove(sourceIndexPath)
+        }
+    }
+
 }

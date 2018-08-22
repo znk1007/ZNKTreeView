@@ -22,7 +22,7 @@ final class TreeNode {
         }
     }
     /// 任意数据
-    let object: Any
+    var object: Any
     /// 父节点
     let parent: TreeNode?
     /// 子节点数组
@@ -158,6 +158,20 @@ final class TreeNode {
                 self.children.remove(at: index)
             }
             child.remove(node)
+        }
+    }
+
+    /// 更新节点元素值
+    ///
+    /// - Parameters:
+    ///   - indexPath: 地址索引
+    ///   - object: 元素
+    func update(_ indexPath: IndexPath, object: Any) {
+        for child in self.children {
+            if let index = self.children.index(where: {$0.indexPath.compare(indexPath) == .orderedSame}) {
+                self.children[index].object = object
+            }
+            child.update(indexPath, object: object)
         }
     }
 
