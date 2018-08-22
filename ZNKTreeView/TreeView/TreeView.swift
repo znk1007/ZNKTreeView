@@ -833,19 +833,18 @@ extension TreeView: UITableViewDelegate {
 
 
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        
+        if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
+            return delegate.treeView(self, willSelect: node.object, at: indexPath)
+        }
+        return indexPath
     }
 
-    @available(iOS 3.0, *)
-    func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath?
-
-    // Called after the user changes the selection.
-    @available(iOS 2.0, *)
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
-
-    @available(iOS 3.0, *)
-    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath)
-
+    func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath? {
+        if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
+            return delegate.treeView(self, willDeselect: node.object, at: indexPath)
+        }
+        return indexPath
+    }
 
     // Editing
 

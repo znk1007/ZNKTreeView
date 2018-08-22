@@ -174,6 +174,24 @@ protocol TreeViewDelegate {
     ///   - item: 指定元素
     ///   - indexPath: 地址索引
     func treeView(_ treeView: TreeView, didUnhighlightFor item: Any, at indexPath: IndexPath)
+
+    /// 将选择指定元素的单元格
+    ///
+    /// - Parameters:
+    ///   - treeView: 树形图
+    ///   - item: 指定元素
+    ///   - indexPath: 地址索引
+    /// - Returns: 将选中的地址索引
+    func treeView(_ treeView: TreeView, willSelect item: Any, at indexPath: IndexPath) -> IndexPath?
+
+    /// 将取消选择指定元素的单元格
+    ///
+    /// - Parameters:
+    ///   - treeView: 树形图
+    ///   - item: 指定元素
+    ///   - indexPath: 地址索引
+    /// - Returns: 将取消选中的地址索引
+    func treeView(_ treeView: TreeView, willDeselect item: Any, at indexPath: IndexPath) -> IndexPath?
 }
 
 extension TreeViewDelegate {
@@ -229,6 +247,14 @@ extension TreeViewDelegate {
     }
 
     func treeView(_ treeView: TreeView, didUnhighlightFor item: Any, at indexPath: IndexPath) {}
+
+    func treeView(_ treeView: TreeView, willSelect item: Any, at indexPath: IndexPath) -> IndexPath? {
+        return nil
+    }
+
+    func treeView(_ treeView: TreeView, willDeselect item: Any, at indexPath: IndexPath) -> IndexPath? {
+        return nil
+    }
 }
 
 
