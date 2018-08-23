@@ -144,19 +144,24 @@ extension TreeNodeController {
         return rootNode.treeNodeFor(indexPath)
     }
 
-    func move(_ sourceIndexPath: IndexPath, targetIndexPath: IndexPath) {
+    /// 移动结点
+    ///
+    /// - Parameters:
+    ///   - sourceIndexPath: 原地址索引
+    ///   - targetIndexPath: 目标地址索引
+    func moveNode(_ sourceIndexPath: IndexPath, targetIndexPath: IndexPath) {
         let sourceSection = sourceIndexPath.section
         let targetSection = targetIndexPath.section
         let sourceRow = sourceIndexPath.row
         let targetRow = sourceIndexPath.row
 
         if rootNodes.count > sourceSection && rootNodes.count > targetSection {
-            if sourceRow < 0 && targetRow < 0 {
-                
-            } else {
-
+            if sourceRow < 0 || targetRow < 0 {
+                return
             }
+            guard let sourceNode = treeNodeFor(sourceIndexPath) else { return }
             rootNodes[sourceSection].remove(sourceIndexPath)
+            rootNodes[targetSection].insert(sourceNode, at: targetIndexPath)
         }
     }
 

@@ -319,10 +319,12 @@ extension TreeViewDelegate {
         return true
     }
 
+    func treeView(_ treeView: TreeView, didHighlightFor item: Any, at indexPath: IndexPath) {}
+
     func treeView(_ treeView: TreeView, didUnhighlightFor item: Any, at indexPath: IndexPath) {}
 
     func treeView(_ treeView: TreeView, willSelect item: Any, at indexPath: IndexPath) -> IndexPath? {
-        return nil
+        return indexPath
     }
 
     func treeView(_ treeView: TreeView, willDeselect item: Any, at indexPath: IndexPath) -> IndexPath? {

@@ -806,12 +806,6 @@ extension TreeView: UITableViewDelegate {
         }
     }
 
-
-    // Selection
-
-    // -tableView:shouldHighlightRowAtIndexPath: is called when a touch comes down on a row.
-    // Returning NO to that message halts the selection process and does not cause the currently selected row to lose its selected look while the touch is down.
-    @available(iOS 6.0, *)
     func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
         if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
             return delegate.treeView(self, shouldHighlightFor: node.object, at: indexPath)
@@ -861,7 +855,10 @@ extension TreeView: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-
+        if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
+            return delegate.treeView(self, editActionsFor: node.object, at: indexPath)
+        }
+        return nil
     }
 
     @available(iOS 11.0, *)
@@ -906,54 +903,6 @@ extension TreeView: UITableViewDelegate {
         }
     }
 
-
-    // Moving/reordering
-
-    // Allows customization of the target row for a particular row as it is being moved/reordered
-    @available(iOS 2.0, *)
-    func tableView(_ tableView: UITableView, targetIndexPathForMoveFromRowAt sourceIndexPath: IndexPath, toProposedIndexPath proposedDestinationIndexPath: IndexPath) -> IndexPath
-
-
-    // Indentation
-
-    @available(iOS 2.0, *)
-    func tableView(_ tableView: UITableView, indentationLevelForRowAt indexPath: IndexPath) -> Int // return 'depth' of row for hierarchies
-
-
-    // Copy/Paste.  All three methods must be implemented by the delegate.
-
-    @available(iOS 5.0, *)
-    func tableView(_ tableView: UITableView, shouldShowMenuForRowAt indexPath: IndexPath) -> Bool
-
-    @available(iOS 5.0, *)
-    func tableView(_ tableView: UITableView, canPerformAction action: Selector, forRowAt indexPath: IndexPath, withSender sender: Any?) -> Bool
-
-    @available(iOS 5.0, *)
-    func tableView(_ tableView: UITableView, performAction action: Selector, forRowAt indexPath: IndexPath, withSender sender: Any?)
-
-
-    // Focus
-
-    @available(iOS 9.0, *)
-    func tableView(_ tableView: UITableView, canFocusRowAt indexPath: IndexPath) -> Bool
-
-    @available(iOS 9.0, *)
-    func tableView(_ tableView: UITableView, shouldUpdateFocusIn context: UITableViewFocusUpdateContext) -> Bool
-
-    @available(iOS 9.0, *)
-    func tableView(_ tableView: UITableView, didUpdateFocusIn context: UITableViewFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator)
-
-    @available(iOS 9.0, *)
-    func indexPathForPreferredFocusedView(in tableView: UITableView) -> IndexPath?
-
-
-    // Spring Loading
-
-    // Allows opting-out of spring loading for an particular row.
-    // If you want the interaction effect on a different subview of the spring loaded cell, modify the context.targetView property. The default is the cell.
-    // If this method is not implemented, the default is YES except when the row is part of a drag session.
-    @available(iOS 11.0, *)
-    func tableView(_ tableView: UITableView, shouldSpringLoadRowAt indexPath: IndexPath, with context: UISpringLoadedInteractionContext) -> Bool
 }
 
 // MARK: - 管理器数据源代理

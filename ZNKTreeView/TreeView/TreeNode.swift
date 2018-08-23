@@ -161,6 +161,20 @@ final class TreeNode {
         }
     }
 
+    /// 指定的地址索引插入结点
+    ///
+    /// - Parameters:
+    ///   - node: 结点
+    ///   - indexPath: 地址索引
+    func insert(_ node: TreeNode, at indexPath: IndexPath) {
+        for child in self.children {
+            if let index = self.children.index(where: {$0.indexPath.compare(indexPath) == .orderedSame}) {
+                self.children.insert(node, at: index)
+            }
+            child.insert(node, at: indexPath)
+        }
+    }
+
     /// 更新节点元素值
     ///
     /// - Parameters:
