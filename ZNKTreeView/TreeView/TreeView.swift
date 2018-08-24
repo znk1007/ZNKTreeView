@@ -777,26 +777,25 @@ extension TreeView: UITableViewDelegate {
         }
     }
 
-
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         if let delegate = delegate, let node = controller?.treeNodeFor(indexPath) {
             return delegate.treeView(self, estimatedHeightFor: node.object, at: indexPath)
         }
-        return 0
+        return 50
     }
 
     func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
         if let delegate = delegate {
             return delegate.treeView(self, estimatedHeightForHeaderInRoot: section)
         }
-        return 0
+        return 50
     }
 
     func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {
         if let delegate = delegate {
             return delegate.treeView(self, estimatedHeightForFooterInRoot: section)
         }
-        return 0
+        return 50
     }
 
 

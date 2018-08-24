@@ -14,26 +14,18 @@
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.SwiftErrorBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ZNKTreeView/TreeView/TreeView.swift"
-            timestampString = "556680108.4754339"
+            timestampString = "556765876.111271"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "833"
-            endingLineNumber = "833"
-            landmarkName = "tableView(_:willSelectRowAt:)"
+            startingLineNumber = "804"
+            endingLineNumber = "804"
+            landmarkName = "tableView(_:accessoryButtonTappedForRowWith:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

@@ -51,6 +51,7 @@ class TreeViewHeaderView: UITableViewHeaderFooterView {
     /// - Parameter text: 文本
     func updateHeader(_ text: String, completion: ((Bool) -> ())?) {
         guard let label = label else { return }
+        print("header text ---> ", text)
         label.text = text
         hearderBtnAction = completion
     }

@@ -302,15 +302,15 @@ extension TreeViewDelegate {
     func treeView(_ treeView: TreeView, didEndDisplayingFooterView view: UIView, inRoot index: Int) {}
 
     func treeView(_ treeView: TreeView, estimatedHeightFor item: Any, at indexPath: IndexPath) -> CGFloat {
-        return 0
+        return 50
     }
 
     func treeView(_ treeView: TreeView, estimatedHeightForHeaderInRoot index: Int) -> CGFloat {
-        return 0
+        return 50
     }
 
     func treeView(_ treeView: TreeView, estimatedHeightForFooterInRoot index: Int) -> CGFloat {
-        return 0
+        return 50
     }
 
     func treeView(_ treeView: TreeView, accessoryButtonTappedFor item: Any, at indexPath: IndexPath) {}
@@ -328,7 +328,7 @@ extension TreeViewDelegate {
     }
 
     func treeView(_ treeView: TreeView, willDeselect item: Any, at indexPath: IndexPath) -> IndexPath? {
-        return nil
+        return indexPath
     }
 
     func treeView(_ treeView: TreeView, editingStyleFor item: Any, at indexPath: IndexPath) -> UITableViewCellEditingStyle {

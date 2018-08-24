@@ -106,7 +106,6 @@ extension ViewController: TreeViewDataSource {
 
             headerView?.updateHeader(item.name, completion: { [weak self] (expand) in
                 print("is expand ---> ", expand)
-//                treeView.updateExpandShrink(at: indexPath)
                 treeView.updateExpandShrink(at: indexPath, expandOrShrinkChildren: true)
 
             })
