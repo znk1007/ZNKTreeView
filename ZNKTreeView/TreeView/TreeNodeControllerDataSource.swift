@@ -28,7 +28,4 @@ protocol TreeNodeControllerDataSource {
     ///   - rootIndex: 根节点下标
     /// - Returns: 节点数据源
     func treeNode(at childIndex: Int, of node: TreeNode?, in rootIndex: Int) -> TreeNode?
-
-    
-
 }
