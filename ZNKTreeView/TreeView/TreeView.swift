@@ -677,6 +677,11 @@ extension TreeView {
         guard let table = tableView else { return 0 }
         return table.numberOfRows(inSection: index)
     }
+
+    func moveItem(_ sourceIndexPath: IndexPath, to targetIndexPath: IndexPath, moveChilren: Bool) {
+        guard let table = tableView, let controller = controller else { return }
+        controller.moveNode(sourceIndexPath, targetIndexPath: targetIndexPath, moveChildren: moveChilren)
+    }
 }
 
 // MARK: - 表格数据源代理
@@ -695,6 +700,7 @@ extension TreeView: UITableViewDataSource {
         }
         return .init()
     }
+    
 }
 
 
@@ -915,8 +921,8 @@ extension TreeView: TreeNodeControllerDataSource {
     }
 
     func treeNode(at childIndex: Int, of node: TreeNode?, in rootIndex: Int) -> TreeNode? {
-        if let item = dataSource?.treeView(self, childIndex: childIndex, for: node?.object, in: rootIndex) {
-            return TreeNode.init(object: item, isExpand: expandAll, parent: node)
+        if let item = dataSource?.treeView(self, childIndex: childIndex, for: node?.object, in: rootIndex), let child = item.0, let identifier = item.1 {
+            return TreeNode.init(identifier: identifier, object: child, isExpand: expandAll, parent: node)
         }
         return nil
     }

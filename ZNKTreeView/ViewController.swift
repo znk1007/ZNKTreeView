@@ -33,6 +33,9 @@ class ViewController: UIViewController {
                 weakSelf.treeView.reloadData()
             }
         }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+            self.treeView.moveItem(IndexPath.init(row: 0, section: 1), to: IndexPath.init(row: 0, section: 0))
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -136,11 +139,13 @@ extension ViewController: TreeViewDataSource {
         }
     }
 
-    func treeView(_ treeView: TreeView, childIndex: Int, for item: Any?, in rootIndex: Int) -> Any? {
+    func treeView(_ treeView: TreeView, childIndex: Int, for item: Any?, in rootIndex: Int) -> (Any?, String?) {
         if let item = item as? TreeItem {
-            return item.children[childIndex]
+            let child = item.children[childIndex]
+            return (child, child.identifier)
         } else {
-            return treeItems[rootIndex]
+            let child = treeItems[rootIndex]
+            return (child, child.identifier)
         }
     }
 

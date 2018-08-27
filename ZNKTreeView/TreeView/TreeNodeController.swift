@@ -149,7 +149,7 @@ extension TreeNodeController {
     /// - Parameters:
     ///   - sourceIndexPath: 原地址索引
     ///   - targetIndexPath: 目标地址索引
-    func moveNode(_ sourceIndexPath: IndexPath, targetIndexPath: IndexPath) {
+    func moveNode(_ sourceIndexPath: IndexPath, targetIndexPath: IndexPath, moveChildren: Bool) -> ([IndexPath], [IndexPath]){
         let sourceSection = sourceIndexPath.section
         let targetSection = targetIndexPath.section
         let sourceRow = sourceIndexPath.row
@@ -157,12 +157,20 @@ extension TreeNodeController {
 
         if rootNodes.count > sourceSection && rootNodes.count > targetSection {
             if sourceRow < 0 || targetRow < 0 {
-                return
+                return ([], [])
             }
-            guard let sourceNode = treeNodeFor(sourceIndexPath) else { return }
+            guard let sourceNode = treeNodeFor(sourceIndexPath) else { return ([], []) }
+            if moveChildren {
+                
+            } else {
+
+            }
             rootNodes[sourceSection].remove(sourceIndexPath)
             rootNodes[targetSection].insert(sourceNode, at: targetIndexPath)
+            rootNodes[sourceSection].resetAllIndexPath()
+            rootNodes[targetSection].resetAllIndexPath()
         }
+        return ([], [])
     }
 
 }

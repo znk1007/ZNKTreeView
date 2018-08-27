@@ -21,6 +21,8 @@ final class TreeNode {
             }
         }
     }
+    /// 唯一标识
+    let identifier: String
     /// 任意数据
     var object: Any
     /// 父节点
@@ -52,7 +54,8 @@ final class TreeNode {
     ///   - object: 任意数据
     ///   - parent: 父节点
     ///   - children: 子节点数组
-    init(object: Any, isExpand: Bool, parent: TreeNode?, children: [TreeNode] = []) {
+    init(identifier: String, object: Any, isExpand: Bool, parent: TreeNode?, children: [TreeNode] = []) {
+        self.identifier = identifier
         self.parent = parent
         self.isExpand = isExpand
         self.object = object
@@ -101,6 +104,22 @@ final class TreeNode {
         }
         for child in self.children {
             if let node = child.treeNodeFor(indexPath) {
+                return node
+            }
+        }
+        return nil
+    }
+
+    /// 根据唯一标识获取节点
+    ///
+    /// - Parameter idenfitifer: 唯一标识
+    /// - Returns: 节点
+    func treeNodeFor(_ idenfitifer: String) -> TreeNode? {
+        if self.identifier == identifier {
+            return self
+        }
+        for child in self.children {
+            if let node = child.treeNodeFor(identifier) {
                 return node
             }
         }
